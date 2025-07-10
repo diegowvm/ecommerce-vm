@@ -2,41 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* E-commerce Design System - Modern & Futuristic */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Modern Dark Theme */
+    --background: 222 15% 6%;
+    --foreground: 210 40% 98%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 222 20% 8%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 222 20% 8%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Vibrant Primary - Electric Blue */
+    --primary: 220 100% 60%;
+    --primary-foreground: 222 15% 6%;
+    --primary-glow: 220 100% 70%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Premium Secondary - Purple Accent */
+    --secondary: 270 60% 50%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Subtle Muted */
+    --muted: 222 20% 12%;
+    --muted-foreground: 215 25% 65%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent - Neon Green */
+    --accent: 142 76% 50%;
+    --accent-foreground: 222 15% 6%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 222 20% 15%;
+    --input: 222 20% 12%;
+    --ring: 220 100% 60%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+
+    /* Custom Design Tokens */
+    --surface: 222 20% 10%;
+    --surface-hover: 222 20% 14%;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(220 100% 60%), hsl(270 60% 50%));
+    --gradient-secondary: linear-gradient(135deg, hsl(270 60% 50%), hsl(142 76% 50%));
+    --gradient-hero: linear-gradient(135deg, hsl(222 15% 6%), hsl(222 20% 8%));
+    --gradient-glass: linear-gradient(135deg, hsla(222 20% 15% / 0.8), hsla(222 20% 10% / 0.4));
+    
+    /* Shadows */
+    --shadow-soft: 0 4px 24px hsla(220 100% 60% / 0.12);
+    --shadow-glow: 0 0 32px hsla(220 100% 60% / 0.3);
+    --shadow-card: 0 8px 32px hsla(222 15% 2% / 0.6);
+    
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --sidebar-background: 0 0% 98%;
 
@@ -100,6 +123,74 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}
+
+@layer components {
+  /* Glass Effect */
+  .glass {
+    @apply backdrop-blur-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20;
+  }
+  
+  /* Gradient Text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
+  }
+  
+  /* Hover Glow Effect */
+  .hover-glow {
+    @apply transition-all duration-300 hover:shadow-[0_0_32px_rgba(59,130,246,0.3)];
+  }
+  
+  /* Product Card Hover */
+  .product-hover {
+    @apply transition-all duration-300 hover:scale-105 hover:shadow-2xl;
+  }
+  
+  /* Button Variants */
+  .btn-gradient {
+    @apply bg-gradient-to-r from-primary to-secondary text-primary-foreground;
+  }
+  
+  .btn-glass {
+    @apply glass hover:bg-white/20;
+  }
+}
+
+@layer utilities {
+  /* Animation Classes */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.6s ease-out;
+  }
+}
+
+/* Keyframes */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes glow {
+  from { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+  to { box-shadow: 0 0 30px rgba(59, 130, 246, 0.6); }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
   }
 }

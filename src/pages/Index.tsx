@@ -1,12 +1,19 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { Navbar } from "@/components/ui/navbar";
+import { HeroSection } from "@/components/ui/hero-section";
+import { FeaturedProducts } from "@/components/ui/featured-products";
+import { CategoriesSection } from "@/components/ui/categories-section";
+import { Footer } from "@/components/ui/footer";
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      <main className="pt-16">
+        <HeroSection />
+        <FeaturedProducts />
+        <CategoriesSection />
+      </main>
+      <Footer />
     </div>
   );
 };
