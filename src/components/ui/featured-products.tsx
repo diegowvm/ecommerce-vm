@@ -1,4 +1,6 @@
+import { useState, useEffect } from "react";
 import { ProductCard } from "./product-card";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "./button";
 import { ArrowRight } from "lucide-react";
 import product1 from "@/assets/product-1.jpg";

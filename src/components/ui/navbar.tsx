@@ -1,19 +1,59 @@
-import { useState } from "react";
-import { Search, ShoppingBag, User, Menu, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Search, ShoppingBag, User, Menu, X, LogOut, Settings } from "lucide-react";
 import { Button } from "./button";
 import { Input } from "./input";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "./dropdown-menu";
+import { Badge } from "./badge";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [cartItemsCount, setCartItemsCount] = useState(0);
+  const [searchTerm, setSearchTerm] = useState('');
+  const { user, signOut, isAdmin } = useAuth();
+  const navigate = useNavigate();
 
   const navigationItems = [
-    { name: "Novos Lançamentos", href: "#" },
-    { name: "Masculino", href: "#" },
-    { name: "Feminino", href: "#" },
-    { name: "Infantil", href: "#" },
-    { name: "Marcas", href: "#" },
-    { name: "Outlet", href: "#" },
+    { name: "Produtos", href: "/products" },
+    { name: "Masculino", href: "/products?category=masculino" },
+    { name: "Feminino", href: "/products?category=feminino" },
+    { name: "Infantil", href: "/products?category=infantil" },
+    { name: "Outlet", href: "/products?category=outlet" },
   ];
+
+  useEffect(() => {
+    if (user) {
+      fetchCartItemsCount();
+    }
+  }, [user]);
+
+  const fetchCartItemsCount = async () => {
+    if (!user) return;
+    
+    const { data } = await supabase
+      .from('cart_items')
+      .select('quantity')
+      .eq('user_id', user.id);
+    
+    const count = data?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+    setCartItemsCount(count);
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchTerm.trim())}`);
+      setSearchTerm('');
+      setIsMenuOpen(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
 
   return (
     <nav className="glass fixed top-0 left-0 right-0 z-50 border-b border-border/20">
@@ -21,33 +61,37 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <h1 className="text-2xl font-bold gradient-text">
+            <Link to="/" className="text-2xl font-bold gradient-text">
               KICKZONE
-            </h1>
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navigationItems.map((item) => (
-              <a
+              <Link
                 key={item.name}
-                href={item.href}
+                to={item.href}
                 className="text-foreground/80 hover:text-foreground transition-colors duration-200 hover:gradient-text"
               >
                 {item.name}
-              </a>
+              </Link>
             ))}
           </div>
 
           {/* Search Bar */}
-          <div className="hidden md:flex relative">
+          <form onSubmit={handleSearch} className="hidden md:flex relative">
             <Input
               type="search"
               placeholder="Buscar produtos..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-64 pr-10 bg-surface/50 border-border/30 focus:border-primary/50"
             />
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          </div>
+            <button type="submit" className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              <Search className="h-4 w-4 text-muted-foreground" />
+            </button>
+          </form>
 
           {/* Actions */}
           <div className="flex items-center space-x-4">
@@ -57,16 +101,57 @@ export function Navbar() {
             </Button>
             
             {/* User Account */}
-            <Button variant="ghost" size="icon" className="hover-glow">
-              <User className="h-5 w-5" />
-            </Button>
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="hover-glow">
+                    <User className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <div className="px-2 py-1.5 text-sm font-medium">
+                    {user.email}
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile">
+                      <User className="mr-2 h-4 w-4" />
+                      Meu Perfil
+                    </Link>
+                  </DropdownMenuItem>
+                  {isAdmin && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin">
+                        <Settings className="mr-2 h-4 w-4" />
+                        Painel Admin
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Sair
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button variant="ghost" size="icon" asChild className="hover-glow">
+                <Link to="/auth">
+                  <User className="h-5 w-5" />
+                </Link>
+              </Button>
+            )}
             
             {/* Shopping Bag */}
-            <Button variant="ghost" size="icon" className="hover-glow relative">
-              <ShoppingBag className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-primary text-xs flex items-center justify-center text-primary-foreground">
-                2
-              </span>
+            <Button variant="ghost" size="icon" className="hover-glow relative" asChild>
+              <Link to="/cart">
+                <ShoppingBag className="h-5 w-5" />
+                {cartItemsCount > 0 && (
+                  <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
+                    {cartItemsCount}
+                  </Badge>
+                )}
+              </Link>
             </Button>
 
             {/* Mobile Menu Button */}
@@ -84,23 +169,37 @@ export function Navbar() {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden py-4 space-y-4 animate-slide-up">
-            <div className="relative mb-4">
+            <form onSubmit={handleSearch} className="relative mb-4">
               <Input
                 type="search"
                 placeholder="Buscar produtos..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pr-10 bg-surface/50 border-border/30"
               />
-              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            </div>
+              <button type="submit" className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <Search className="h-4 w-4 text-muted-foreground" />
+              </button>
+            </form>
             {navigationItems.map((item) => (
-              <a
+              <Link
                 key={item.name}
-                href={item.href}
+                to={item.href}
                 className="block text-foreground/80 hover:text-primary transition-colors duration-200 py-2"
+                onClick={() => setIsMenuOpen(false)}
               >
                 {item.name}
-              </a>
+              </Link>
             ))}
+            {!user && (
+              <Link
+                to="/auth"
+                className="block text-foreground/80 hover:text-primary transition-colors duration-200 py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Entrar / Cadastrar
+              </Link>
+            )}
           </div>
         )}
       </div>
