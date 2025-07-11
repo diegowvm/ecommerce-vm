@@ -36,7 +36,7 @@ export default function Products() {
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
-  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all');
   const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'name');
 
   useEffect(() => {
@@ -115,7 +115,7 @@ export default function Products() {
 
   const clearFilters = () => {
     setSearchTerm('');
-    setSelectedCategory('');
+    setSelectedCategory('all');
     setSortBy('name');
     setSearchParams({});
   };
@@ -154,14 +154,14 @@ export default function Products() {
                   value={selectedCategory}
                   onValueChange={(value) => {
                     setSelectedCategory(value);
-                    updateSearchParams({ category: value || undefined });
+                    updateSearchParams({ category: value === 'all' ? undefined : value });
                   }}
                 >
                   <SelectTrigger className="w-full lg:w-[200px] bg-surface/50 border-border/30">
                     <SelectValue placeholder="Categoria" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todas as categorias</SelectItem>
+                    <SelectItem value="all">Todas as categorias</SelectItem>
                     {categories.map((category) => (
                       <SelectItem key={category.id} value={category.slug}>
                         {category.name}
