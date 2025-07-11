@@ -10,6 +10,9 @@ import Auth from "./pages/Auth";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import OrderConfirmation from "./pages/OrderConfirmation";
+import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 
@@ -34,7 +37,17 @@ const App = () => (
             } />
             <Route path="/checkout" element={
               <ProtectedRoute>
-                <div>Checkout (Em desenvolvimento)</div>
+                <Checkout />
+              </ProtectedRoute>
+            } />
+            <Route path="/order-confirmation/:orderId" element={
+              <ProtectedRoute>
+                <OrderConfirmation />
+              </ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <Profile />
               </ProtectedRoute>
             } />
             <Route path="/admin" element={
