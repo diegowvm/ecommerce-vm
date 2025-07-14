@@ -62,7 +62,7 @@ export function Navbar() {
           {/* Logo */}
           <div className="flex items-center">
             <Link to="/" className="text-2xl font-bold gradient-text">
-              KICKZONE
+              XEGAI OUTLET
             </Link>
           </div>
 

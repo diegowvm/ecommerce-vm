@@ -70,27 +70,25 @@ export function Footer() {
           <div className="lg:col-span-2 space-y-6">
             <div>
               <h2 className="text-3xl font-bold gradient-text mb-4">
-                KICKZONE
+                XEGAI OUTLET
               </h2>
               <p className="text-muted-foreground leading-relaxed">
-                A sua loja online de calçados esportivos premium. 
-                Oferecemos os melhores produtos das marcas mais conceituadas 
-                do mundo com a melhor experiência de compra.
+                Seu destino de moda online: os melhores calçados, roupas e acessórios premium em um só lugar, com qualidade e confiança.
               </p>
             </div>
             
             <div className="space-y-3">
               <div className="flex items-center space-x-3 text-muted-foreground">
                 <Phone className="h-5 w-5 text-primary" />
-                <span>(11) 4000-0000</span>
+                <span>(44 99151-2466)</span>
               </div>
               <div className="flex items-center space-x-3 text-muted-foreground">
                 <Mail className="h-5 w-5 text-primary" />
-                <span>contato@kickzone.com.br</span>
+                <span>contato.xegaientregas@gmail.com</span>
               </div>
               <div className="flex items-center space-x-3 text-muted-foreground">
                 <MapPin className="h-5 w-5 text-primary" />
-                <span>São Paulo, SP - Brasil</span>
+                <span>Maringá, PR - Brasil</span>
               </div>
             </div>
 
@@ -166,7 +164,7 @@ export function Footer() {
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-muted-foreground text-sm">
-              © 2024 KickZone. Todos os direitos reservados.
+              © 2025 Xegai Outlet. Todos os direitos reservados.
             </p>
             <div className="flex space-x-6 text-sm">
               <a href="#" className="text-muted-foreground hover:text-primary transition-colors">

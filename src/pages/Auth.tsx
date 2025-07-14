@@ -62,7 +62,7 @@ export default function Auth() {
         </div>
 
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold gradient-text mb-2">KICKZONE</h1>
+          <h1 className="text-3xl font-bold gradient-text mb-2">XEGAI OUTLET</h1>
           <p className="text-muted-foreground">Entre na sua conta ou crie uma nova</p>
         </div>
 

@@ -41,7 +41,7 @@ export default function AdminDashboardPage() {
                     <span className="text-primary font-bold text-sm">K</span>
                   </div>
                   <div>
-                    <h1 className="font-bold text-lg">KickZone Admin</h1>
+                    <h1 className="font-bold text-lg">Xegai Admin</h1>
                     <p className="text-xs text-muted-foreground">Sistema de Gestão</p>
                   </div>
                 </div>
