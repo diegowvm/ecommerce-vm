@@ -1,33 +1,29 @@
 import { Button } from "./button";
 import { ArrowRight, Play } from "lucide-react";
 import heroShoe from "@/assets/hero-shoe.jpg";
-
 export function HeroSection() {
-  return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-hero">
+  return <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-hero">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
-        <img
-          src={heroShoe}
-          alt="Hero Product"
-          className="w-full h-full object-cover opacity-50"
-        />
+        <img src={heroShoe} alt="Hero Product" className="w-full h-full object-cover opacity-50" />
         <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/50 to-transparent" />
       </div>
 
       {/* Floating Elements */}
       <div className="absolute top-20 left-20 w-32 h-32 bg-primary/20 rounded-full blur-xl animate-float" />
-      <div className="absolute bottom-20 right-20 w-48 h-48 bg-accent/20 rounded-full blur-xl animate-float" style={{ animationDelay: '2s' }} />
-      <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-secondary/20 rounded-full blur-xl animate-float" style={{ animationDelay: '4s' }} />
+      <div className="absolute bottom-20 right-20 w-48 h-48 bg-accent/20 rounded-full blur-xl animate-float" style={{
+      animationDelay: '2s'
+    }} />
+      <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-secondary/20 rounded-full blur-xl animate-float" style={{
+      animationDelay: '4s'
+    }} />
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-8 animate-slide-up">
             <div className="space-y-4">
-              <p className="text-primary font-medium text-lg tracking-wide">
-                NOVA COLEÇÃO 2024
-              </p>
+              <p className="text-primary font-medium text-lg tracking-wide">NOVA COLEÇÃO 2025</p>
               <h1 className="text-5xl md:text-7xl font-bold leading-tight">
                 O FUTURO
                 <br />
@@ -42,19 +38,12 @@ export function HeroSection() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
-                size="lg" 
-                className="btn-gradient hover-glow group text-lg px-8 py-6"
-              >
+              <Button size="lg" className="btn-gradient hover-glow group text-lg px-8 py-6">
                 Explorar Coleção
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
               
-              <Button 
-                variant="outline" 
-                size="lg"
-                className="btn-glass group text-lg px-8 py-6"
-              >
+              <Button variant="outline" size="lg" className="btn-glass group text-lg px-8 py-6">
                 <Play className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
                 Assistir Vídeo
               </Button>
@@ -78,11 +67,7 @@ export function HeroSection() {
 
           <div className="relative">
             <div className="relative z-10 animate-float">
-              <img
-                src={heroShoe}
-                alt="Tênis Futurístico"
-                className="w-full max-w-md mx-auto drop-shadow-2xl"
-              />
+              <img src={heroShoe} alt="Tênis Futurístico" className="w-full max-w-md mx-auto drop-shadow-2xl" />
             </div>
             
             {/* Glow Effects */}
@@ -98,6 +83,5 @@ export function HeroSection() {
           <div className="w-1 h-3 bg-primary rounded-full mt-2 animate-pulse" />
         </div>
       </div>
-    </section>
-  );
+    </section>;
 }
