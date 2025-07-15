@@ -21,6 +21,8 @@ import AdminUsers from "./pages/admin/AdminUsers";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AdminInventory from "./pages/admin/AdminInventory";
 import AdminSettings from "./pages/admin/AdminSettings";
+import AddressBook from "./pages/user/AddressBook";
+import Wishlist from "./pages/user/Wishlist";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -97,6 +99,19 @@ const App = () => (
                 <AdminSettings />
               </ProtectedRoute>
             } />
+            
+            {/* User Pages */}
+            <Route path="/profile/addresses" element={
+              <ProtectedRoute>
+                <AddressBook />
+              </ProtectedRoute>
+            } />
+            <Route path="/profile/wishlist" element={
+              <ProtectedRoute>
+                <Wishlist />
+              </ProtectedRoute>
+            } />
+            
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

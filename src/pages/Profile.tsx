@@ -11,7 +11,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { User, Package, MapPin, Phone, Mail, Calendar } from "lucide-react";
+import { User, Package, MapPin, Phone, Mail, Calendar, Heart, Settings } from "lucide-react";
+import { AvatarUpload } from "@/components/user/profile/AvatarUpload";
+import { AddressManager } from "@/components/user/addresses/AddressManager";
+import { WishlistManager } from "@/components/user/wishlist/WishlistManager";
 
 interface Profile {
   id: string;
@@ -146,6 +149,47 @@ export default function Profile() {
     }
   };
 
+  const updateAvatarUrl = async (newAvatarUrl: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({
+          user_id: user.id,
+          avatar_url: newAvatarUrl,
+          updated_at: new Date().toISOString(),
+        });
+
+      if (error) throw error;
+
+      // Update local profile state
+      setProfile(prev => prev ? { ...prev, avatar_url: newAvatarUrl } : null);
+    } catch (error) {
+      console.error('Error updating avatar:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível atualizar o avatar.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const getUserInitials = () => {
+    if (formData.full_name) {
+      return formData.full_name
+        .split(' ')
+        .map(name => name.charAt(0))
+        .join('')
+        .toUpperCase()
+        .slice(0, 2);
+    }
+    if (user?.email) {
+      return user.email.charAt(0).toUpperCase();
+    }
+    return 'U';
+  };
+
   const getStatusBadge = (status: string) => {
     const statusMap = {
       pending: { label: 'Pendente', variant: 'secondary' as const },
@@ -193,7 +237,7 @@ export default function Profile() {
           </div>
 
           <Tabs defaultValue="profile" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="profile" className="flex items-center">
                 <User className="mr-2 h-4 w-4" />
                 Perfil
@@ -202,80 +246,107 @@ export default function Profile() {
                 <Package className="mr-2 h-4 w-4" />
                 Pedidos
               </TabsTrigger>
+              <TabsTrigger value="addresses" className="flex items-center">
+                <MapPin className="mr-2 h-4 w-4" />
+                Endereços
+              </TabsTrigger>
+              <TabsTrigger value="wishlist" className="flex items-center">
+                <Heart className="mr-2 h-4 w-4" />
+                Favoritos
+              </TabsTrigger>
+              <TabsTrigger value="settings" className="flex items-center">
+                <Settings className="mr-2 h-4 w-4" />
+                Configurações
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="profile" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <User className="mr-2 h-5 w-5" />
-                    Informações Pessoais
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="email">Email</Label>
-                      <div className="flex items-center mt-1">
-                        <Mail className="mr-2 h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm">{user?.email}</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Email não pode ser alterado
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="full_name">Nome Completo</Label>
-                      <Input
-                        id="full_name"
-                        value={formData.full_name}
-                        onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
-                        placeholder="Seu nome completo"
-                      />
-                    </div>
+              <div className="grid gap-6 md:grid-cols-3">
+                <Card className="md:col-span-1">
+                  <CardHeader>
+                    <CardTitle className="text-center">Foto do Perfil</CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex justify-center">
+                    <AvatarUpload
+                      currentAvatarUrl={profile?.avatar_url}
+                      userInitials={getUserInitials()}
+                      onAvatarUpdate={updateAvatarUrl}
+                    />
+                  </CardContent>
+                </Card>
 
-                    <div>
-                      <Label htmlFor="phone">Telefone</Label>
-                      <div className="relative">
-                        <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Card className="md:col-span-2">
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <User className="mr-2 h-5 w-5" />
+                      Informações Pessoais
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="email">Email</Label>
+                        <div className="flex items-center mt-1">
+                          <Mail className="mr-2 h-4 w-4 text-muted-foreground" />
+                          <span className="text-sm">{user?.email}</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Email não pode ser alterado
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="full_name">Nome Completo</Label>
                         <Input
-                          id="phone"
-                          value={formData.phone}
-                          onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                          placeholder="(11) 99999-9999"
-                          className="pl-10"
+                          id="full_name"
+                          value={formData.full_name}
+                          onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
+                          placeholder="Seu nome completo"
                         />
                       </div>
-                    </div>
 
-                    <div>
-                      <Label>Data de Cadastro</Label>
-                      <div className="flex items-center mt-1">
-                        <Calendar className="mr-2 h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm">
-                          {user?.created_at ? formatDate(user.created_at) : 'N/A'}
-                        </span>
+                      <div>
+                        <Label htmlFor="phone">Telefone</Label>
+                        <div className="relative">
+                          <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="phone"
+                            value={formData.phone}
+                            onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                            placeholder="(11) 99999-9999"
+                            className="pl-10"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label>Data de Cadastro</Label>
+                        <div className="flex items-center mt-1">
+                          <Calendar className="mr-2 h-4 w-4 text-muted-foreground" />
+                          <span className="text-sm">
+                            {user?.created_at ? formatDate(user.created_at) : 'N/A'}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="flex space-x-4 pt-4">
-                    <Button 
-                      onClick={updateProfile} 
-                      disabled={updating}
-                    >
-                      {updating ? "Salvando..." : "Salvar Alterações"}
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      onClick={signOut}
-                    >
-                      Sair da Conta
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                    <div className="flex space-x-4 pt-4">
+                      <Button 
+                        onClick={updateProfile} 
+                        disabled={updating}
+                      >
+                        {updating ? "Salvando..." : "Salvar Alterações"}
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        onClick={signOut}
+                      >
+                        Sair da Conta
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </TabsContent>
 
             <TabsContent value="orders" className="space-y-6">
@@ -365,6 +436,63 @@ export default function Profile() {
                       ))}
                     </div>
                   )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="addresses" className="space-y-6">
+              <AddressManager />
+            </TabsContent>
+
+            <TabsContent value="wishlist" className="space-y-6">
+              <WishlistManager />
+            </TabsContent>
+
+            <TabsContent value="settings" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Settings className="mr-2 h-5 w-5" />
+                    Configurações
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-medium mb-4">Segurança</h3>
+                      <Button variant="outline">
+                        Alterar Senha
+                      </Button>
+                    </div>
+
+                    <Separator />
+
+                    <div>
+                      <h3 className="text-lg font-medium mb-4">Preferências</h3>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium">Notificações por email</p>
+                            <p className="text-sm text-muted-foreground">
+                              Receber emails sobre pedidos e promoções
+                            </p>
+                          </div>
+                          <Button variant="outline" size="sm">
+                            Configurar
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    <div>
+                      <h3 className="text-lg font-medium mb-4">Conta</h3>
+                      <Button variant="destructive" onClick={signOut}>
+                        Sair da Conta
+                      </Button>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
