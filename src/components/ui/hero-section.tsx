@@ -1,11 +1,27 @@
 import { Button } from "./button";
 import { ArrowRight, Play } from "lucide-react";
 import heroShoe from "@/assets/hero-shoe.jpg";
+import { OptimizedImage } from "./optimized-image";
+import { useImagePreloader } from "@/hooks/useImagePreloader";
 export function HeroSection() {
+  // Preload critical hero image
+  useImagePreloader({
+    images: [heroShoe],
+    priority: true,
+  });
+
   return <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-hero">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
-        <img src={heroShoe} alt="Hero Product" className="w-full h-full object-cover opacity-50" />
+        <OptimizedImage 
+          src={heroShoe} 
+          alt="Hero Product" 
+          width={1920}
+          height={1080}
+          priority={true}
+          lazy={false}
+          className="w-full h-full object-cover opacity-50" 
+        />
         <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/50 to-transparent" />
       </div>
 
@@ -67,7 +83,15 @@ export function HeroSection() {
 
           <div className="relative">
             <div className="relative z-10 animate-float">
-              <img src={heroShoe} alt="Tênis Futurístico" className="w-full max-w-md mx-auto drop-shadow-2xl" />
+              <OptimizedImage 
+                src={heroShoe} 
+                alt="Tênis Futurístico" 
+                width={500}
+                height={500}
+                priority={true}
+                lazy={false}
+                className="w-full max-w-md mx-auto drop-shadow-2xl" 
+              />
             </div>
             
             {/* Glow Effects */}

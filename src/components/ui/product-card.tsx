@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Heart, ShoppingBag, Star } from "lucide-react";
 import { Button } from "./button";
 import { Badge } from "./badge";
+import { LazyImage } from "./lazy-image";
 
 interface ProductCardProps {
   id: string;
@@ -75,13 +76,16 @@ export function ProductCard({
 
         {/* Product Image */}
         <div className="relative mb-6 group/image">
-          <div className="aspect-square bg-gradient-to-br from-surface to-muted/50 rounded-xl overflow-hidden">
-            <img
-              src={image}
-              alt={name}
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-            />
-          </div>
+          <LazyImage
+            src={image}
+            alt={name}
+            width={400}
+            height={400}
+            aspectRatio="1/1"
+            containerClassName="aspect-square bg-gradient-to-br from-surface to-muted/50 rounded-xl overflow-hidden"
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+            fallbackSrc="/placeholder.svg"
+          />
           
           {/* Quick Add Button */}
           <Button 

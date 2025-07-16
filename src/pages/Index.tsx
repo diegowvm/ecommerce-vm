@@ -4,6 +4,8 @@ import { FeaturedProducts } from "@/components/ui/featured-products";
 import { CategoriesSection } from "@/components/ui/categories-section";
 import { Footer } from "@/components/ui/footer";
 import CookieConsentBanner from "@/components/ui/cookie-consent-banner";
+import { LazyComponent } from "@/components/ui/lazy-component";
+import { PerformanceMonitor } from "@/components/ui/performance-monitor";
 
 const Index = () => {
   return (
@@ -11,11 +13,20 @@ const Index = () => {
       <Navbar />
       <main className="pt-16">
         <HeroSection />
-        <FeaturedProducts />
-        <CategoriesSection />
+        <LazyComponent>
+          <FeaturedProducts />
+        </LazyComponent>
+        <LazyComponent>
+          <CategoriesSection />
+        </LazyComponent>
       </main>
-      <Footer />
-      <CookieConsentBanner />
+      <LazyComponent>
+        <Footer />
+      </LazyComponent>
+      <LazyComponent>
+        <CookieConsentBanner />
+      </LazyComponent>
+      <PerformanceMonitor />
     </div>
   );
 };
