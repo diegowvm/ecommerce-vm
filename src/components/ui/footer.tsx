@@ -1,33 +1,62 @@
 import { Facebook, Instagram, Twitter, Youtube, Mail, Phone, MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "./button";
 import { Input } from "./input";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export function Footer() {
+  const [email, setEmail] = useState("");
+  const [isSubscribing, setIsSubscribing] = useState(false);
+  const { toast } = useToast();
+
   const footerLinks = {
     produtos: [
-      "Novos Lançamentos",
-      "Masculino",
-      "Feminino",
-      "Infantil",
-      "Outlet",
-      "Marcas"
+      { name: "Novos Lançamentos", path: "/products?featured=true" },
+      { name: "Masculino", path: "/products?category=masculino" },
+      { name: "Feminino", path: "/products?category=feminino" },
+      { name: "Infantil", path: "/products?category=infantil" },
+      { name: "Outlet", path: "/products?outlet=true" }
     ],
     ajuda: [
-      "Central de Ajuda",
-      "Meus Pedidos",
-      "Trocas e Devoluções",
-      "Guia de Tamanhos",
-      "Formas de Pagamento",
-      "Frete e Entrega"
+      { name: "Central de Ajuda", path: "/help" },
+      { name: "Meus Pedidos", path: "/profile", requireAuth: true },
+      { name: "Trocas e Devoluções", path: "/return-policy" },
+      { name: "Guia de Tamanhos", path: "/size-guide" },
+      { name: "Formas de Pagamento", path: "/payment-methods" },
+      { name: "Frete e Entrega", path: "/shipping-info" }
     ],
     empresa: [
-      "Sobre Nós",
-      "Carreiras",
-      "Imprensa",
-      "Sustentabilidade",
-      "Investidores",
-      "Termos de Uso"
+      { name: "Sobre Nós", path: "/about" },
+      { name: "Carreiras", path: "/careers" },
+      { name: "Como Funciona", path: "/how-it-works" },
+      { name: "Contato", path: "/contact" }
     ]
+  };
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setIsSubscribing(true);
+    
+    // Simular call para newsletter
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      toast({
+        title: "Inscrição realizada!",
+        description: "Você receberá nossas novidades no e-mail informado.",
+      });
+      setEmail("");
+    } catch (error) {
+      toast({
+        title: "Erro na inscrição",
+        description: "Tente novamente mais tarde.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubscribing(false);
+    }
   };
 
   return (
@@ -45,19 +74,26 @@ export function Footer() {
               </p>
             </div>
             
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+            <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
               <Input
                 type="email"
                 placeholder="Seu melhor e-mail"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
                 className="flex-1 bg-background/50 border-border/30 focus:border-primary/50"
               />
-              <Button className="btn-gradient px-8">
-                Inscrever-se
+              <Button 
+                type="submit" 
+                disabled={isSubscribing}
+                className="btn-gradient px-8"
+              >
+                {isSubscribing ? "Inscrevendo..." : "Inscrever-se"}
               </Button>
-            </div>
+            </form>
             
             <p className="text-sm text-muted-foreground">
-              Ao se inscrever, você concorda com nossa Política de Privacidade
+              Ao se inscrever, você concorda com nossa <Link to="/privacy-policy" className="text-primary hover:underline">Política de Privacidade</Link>
             </p>
           </div>
         </div>
@@ -113,13 +149,13 @@ export function Footer() {
             <h4 className="font-semibold text-lg">Produtos</h4>
             <ul className="space-y-3">
               {footerLinks.produtos.map((link) => (
-                <li key={link}>
-                  <a 
-                    href="#" 
+                <li key={link.name}>
+                  <Link 
+                    to={link.path}
                     className="text-muted-foreground hover:text-primary transition-colors"
                   >
-                    {link}
-                  </a>
+                    {link.name}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -129,13 +165,13 @@ export function Footer() {
             <h4 className="font-semibold text-lg">Ajuda</h4>
             <ul className="space-y-3">
               {footerLinks.ajuda.map((link) => (
-                <li key={link}>
-                  <a 
-                    href="#" 
+                <li key={link.name}>
+                  <Link 
+                    to={link.path}
                     className="text-muted-foreground hover:text-primary transition-colors"
                   >
-                    {link}
-                  </a>
+                    {link.name}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -145,13 +181,13 @@ export function Footer() {
             <h4 className="font-semibold text-lg">Empresa</h4>
             <ul className="space-y-3">
               {footerLinks.empresa.map((link) => (
-                <li key={link}>
-                  <a 
-                    href="#" 
+                <li key={link.name}>
+                  <Link 
+                    to={link.path}
                     className="text-muted-foreground hover:text-primary transition-colors"
                   >
-                    {link}
-                  </a>
+                    {link.name}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -167,15 +203,15 @@ export function Footer() {
               © 2025 Xegai Outlet. Todos os direitos reservados.
             </p>
             <div className="flex space-x-6 text-sm">
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+              <Link to="/privacy-policy" className="text-muted-foreground hover:text-primary transition-colors">
                 Política de Privacidade
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+              </Link>
+              <Link to="/terms-of-service" className="text-muted-foreground hover:text-primary transition-colors">
                 Termos de Serviço
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                Cookies
-              </a>
+              </Link>
+              <Link to="/return-policy" className="text-muted-foreground hover:text-primary transition-colors">
+                Política de Devoluções
+              </Link>
             </div>
           </div>
         </div>
