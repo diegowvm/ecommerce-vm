@@ -7,6 +7,8 @@ import { Plus, Settings, Activity, Database } from "lucide-react";
 import { ApiConnectionsList } from "./ApiConnectionsList";
 import { SyncLogsTable } from "./SyncLogsTable";
 import { AddApiDialog } from "./AddApiDialog";
+import { ApiHealthDashboard } from "./ApiHealthDashboard";
+import { RateLimitMonitor } from "./RateLimitMonitor";
 import { useToast } from "@/hooks/use-toast";
 
 interface ApiConnection {
@@ -196,8 +198,9 @@ export function ApiIntegrationsManager() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="connections">Conexões</TabsTrigger>
+          <TabsTrigger value="health">Saúde da API</TabsTrigger>
           <TabsTrigger value="rate-limits">Rate Limits</TabsTrigger>
           <TabsTrigger value="logs">Logs</TabsTrigger>
         </TabsList>
@@ -210,10 +213,12 @@ export function ApiIntegrationsManager() {
           />
         </TabsContent>
 
+        <TabsContent value="health" className="space-y-6">
+          <ApiHealthDashboard />
+        </TabsContent>
+
         <TabsContent value="rate-limits" className="space-y-6">
-          <div className="text-center py-8">
-            <p>Monitor de Rate Limits será implementado aqui</p>
-          </div>
+          <RateLimitMonitor />
         </TabsContent>
 
         <TabsContent value="logs" className="space-y-6">
