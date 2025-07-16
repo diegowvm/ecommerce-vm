@@ -10,8 +10,8 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Play, Square, RefreshCw, AlertCircle, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { productSyncService } from "@/services/ProductSyncService";
-import { createMarketplaceAdapter, SUPPORTED_MARKETPLACES } from "@/integrations/marketplaces";
+import { supabase } from '@/integrations/supabase/client';
+import { SUPPORTED_MARKETPLACES } from "@/integrations/marketplaces";
 
 export function MarketplaceSync() {
   const [isRunning, setIsRunning] = useState(false);
@@ -37,30 +37,30 @@ export function MarketplaceSync() {
     setLastResults(null);
 
     try {
-      // TODO: Get real credentials from Supabase Secrets or user configuration
-      const mockCredentials = {
-        clientId: 'mock_client_id',
-        clientSecret: 'mock_client_secret',
-        redirectUri: 'http://localhost:3000/auth/callback'
-      };
-
-      // Create adapter
-      const adapter = createMarketplaceAdapter(selectedMarketplace as any, mockCredentials);
-
       // Simulate progress updates
       const progressInterval = setInterval(() => {
         setProgress(prev => Math.min(prev + 10, 90));
       }, 500);
 
-      // Start sync
-      const result = await productSyncService.importProductsFromMarketplace(
-        adapter,
-        selectedMarketplace,
-        {
-          maxProducts: parseInt(maxProducts) || 100,
-          categoryFilter: categoryFilter || undefined
+      // Start sync via secure Edge Function
+      const { data: result, error: functionError } = await supabase.functions.invoke('sync-products', {
+        body: {
+          operation: 'import_products',
+          marketplaceName: selectedMarketplace,
+          options: {
+            maxProducts: parseInt(maxProducts) || 100,
+            categoryFilter: categoryFilter || undefined
+          }
         }
-      );
+      });
+
+      if (functionError) {
+        throw new Error(`Sync failed: ${functionError.message}`);
+      }
+
+      if (!result?.success) {
+        throw new Error(result?.message || 'Sync failed');
+      }
 
       clearInterval(progressInterval);
       setProgress(100);

@@ -152,14 +152,24 @@ export class OrderFulfillmentService {
         throw new Error(`Order ${orderId} has no marketplace information`);
       }
 
-      // 2. Get marketplace adapter
-      const adapter = this.getMarketplaceAdapter(orderAny.marketplace_name);
-      if (!adapter) {
-        throw new Error(`Failed to create adapter for ${orderAny.marketplace_name}`);
+      // 2. Get order status from marketplace via secure Edge Function
+      const { data: statusResult, error: functionError } = await supabase.functions.invoke('order-fulfillment', {
+        body: {
+          operation: 'get_order_status',
+          marketplaceName: orderAny.marketplace_name,
+          marketplaceOrderId: orderAny.marketplace_order_id
+        }
+      });
+
+      if (functionError) {
+        throw new Error(`Edge Function error: ${functionError.message}`);
       }
 
-      // 3. Get order status from marketplace
-      const marketplaceStatus = await adapter.getOrderStatus(orderAny.marketplace_order_id);
+      if (!statusResult?.success) {
+        throw new Error(statusResult?.message || 'Failed to get order status');
+      }
+
+      const marketplaceStatus = statusResult.status;
       
       // 4. Update order in database (using simple update for now)
       const { error: updateError } = await supabase
@@ -293,28 +303,15 @@ export class OrderFulfillmentService {
   }
 
   /**
-   * Create order in marketplace
+   * Create order in marketplace via secure Edge Function
    */
   private async createMarketplaceOrder(
     marketplaceName: string,
     items: (OrderItem & { products: Product | null })[],
     order: OrderWithItems
   ): Promise<OrderConfirmation> {
-    const adapter = this.getMarketplaceAdapter(marketplaceName);
-    if (!adapter) {
-      throw new Error(`Failed to create adapter for ${marketplaceName}`);
-    }
-
-    // Authenticate
-    if (!adapter.isAuthenticated) {
-      const authSuccess = await adapter.authenticate();
-      if (!authSuccess) {
-        throw new Error(`Authentication failed for ${marketplaceName}`);
-      }
-    }
-
     // Build order request
-    const orderRequest: OrderRequest = {
+    const orderRequest = {
       items: items.map(item => ({
         productId: item.product_id,
         marketplaceProductId: item.products?.id || item.product_id,
@@ -323,56 +320,37 @@ export class OrderFulfillmentService {
         color: item.color || undefined,
         size: item.size || undefined
       })),
-      shippingAddress: order.shipping_address as any, // Type assertion for JSON field
+      shippingAddress: order.shipping_address,
       paymentMethod: {
         type: 'credit_card' // TODO: Get from actual order payment info
       },
       marketplaceName
     };
 
-    // Create order in marketplace
-    return await adapter.createOrder(orderRequest);
-  }
-
-  /**
-   * Get marketplace adapter
-   */
-  private getMarketplaceAdapter(marketplaceName: string) {
-    try {
-      // TODO: Get real credentials from secure storage
-      const mockCredentials = this.getMockCredentials(marketplaceName);
-      return createMarketplaceAdapter(marketplaceName as any, mockCredentials);
-    } catch (error) {
-      console.error(`Failed to create adapter for ${marketplaceName}:`, error);
-      return null;
-    }
-  }
-
-  /**
-   * Get mock credentials (replace with real secure storage)
-   */
-  private getMockCredentials(marketplaceName: string) {
-    const credentialsMap = {
-      'MercadoLivre': {
-        clientId: 'mock_ml_client_id',
-        clientSecret: 'mock_ml_client_secret',
-        redirectUri: 'http://localhost:3000/auth/callback'
-      },
-      'Amazon': {
-        clientId: 'mock_amazon_client_id',
-        clientSecret: 'mock_amazon_client_secret',
-        refreshToken: 'mock_refresh_token',
-        region: 'us-east-1',
-        sellerId: 'mock_seller_id'
-      },
-      'AliExpress': {
-        appKey: 'mock_aliexpress_app_key',
-        appSecret: 'mock_aliexpress_app_secret'
+    // Call secure Edge Function to create order
+    const { data: result, error: functionError } = await supabase.functions.invoke('order-fulfillment', {
+      body: {
+        operation: 'create_order',
+        orderRequest,
+        marketplaceName
       }
-    };
+    });
 
-    return credentialsMap[marketplaceName] || {};
+    if (functionError) {
+      throw new Error(`Edge Function error: ${functionError.message}`);
+    }
+
+    if (!result?.success) {
+      throw new Error(result?.message || 'Failed to create marketplace order');
+    }
+
+    return result.orderConfirmation;
   }
+
+  /**
+   * SECURITY: All marketplace operations now handled via secure Edge Functions
+   * Direct adapter access removed to prevent credential exposure
+   */
 
   /**
    * Update order with marketplace information

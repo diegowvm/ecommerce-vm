@@ -419,14 +419,14 @@ export class ProductSyncService {
   }
   
   /**
-   * Update product stock and price from marketplace
+   * Update product stock and price from marketplace via secure Edge Function
    */
   async updateProductStockAndPrice(
     productId: string, 
     marketplaceName: string
   ): Promise<{ success: boolean; message: string }> {
     try {
-      // Get product details to find marketplace product ID
+      // Get product details
       const { data: product, error: productError } = await supabase
         .from('products')
         .select('name, description')
@@ -437,49 +437,22 @@ export class ProductSyncService {
         throw new Error(`Product not found: ${productId}`);
       }
 
-      // Create adapter for the marketplace
-      // TODO: Get real credentials from secure storage
-      const mockCredentials = this.getMockCredentials(marketplaceName);
-      const adapter = this.createAdapter(marketplaceName, mockCredentials);
-
-      if (!adapter) {
-        throw new Error(`Unsupported marketplace: ${marketplaceName}`);
-      }
-
-      // Authenticate
-      if (!adapter.isAuthenticated) {
-        const authSuccess = await adapter.authenticate();
-        if (!authSuccess) {
-          throw new Error(`Authentication failed for ${marketplaceName}`);
+      // Call secure Edge Function to update product
+      const { data: result, error: functionError } = await supabase.functions.invoke('sync-products', {
+        body: {
+          operation: 'update_product',
+          productId,
+          marketplaceName,
+          productName: product.name
         }
-      }
-
-      // Search for the product to get current data
-      // Using product name as search query (in real implementation, you'd store marketplace_product_id)
-      const searchResults = await adapter.searchProducts({
-        query: product.name,
-        limit: 1
       });
 
-      if (searchResults.length === 0) {
-        throw new Error(`Product not found in ${marketplaceName}`);
+      if (functionError) {
+        throw new Error(`Edge Function error: ${functionError.message}`);
       }
 
-      const marketplaceProduct = searchResults[0];
-
-      // Update product in database
-      const { error: updateError } = await supabase
-        .from('products')
-        .update({
-          price: marketplaceProduct.price,
-          original_price: marketplaceProduct.originalPrice,
-          stock: marketplaceProduct.stock || 0,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', productId);
-
-      if (updateError) {
-        throw new Error(`Failed to update product: ${updateError.message}`);
+      if (!result?.success) {
+        throw new Error(result?.message || 'Unknown error from Edge Function');
       }
 
       return {
@@ -499,44 +472,9 @@ export class ProductSyncService {
   }
 
   /**
-   * Helper method to create marketplace adapter
+   * SECURITY: All credential access now handled via secure Edge Functions
+   * These methods have been removed to prevent credential exposure
    */
-  private createAdapter(marketplaceName: string, credentials: any) {
-    const { createMarketplaceAdapter } = require('@/integrations/marketplaces');
-    
-    try {
-      return createMarketplaceAdapter(marketplaceName as any, credentials);
-    } catch (error) {
-      console.error(`Failed to create adapter for ${marketplaceName}:`, error);
-      return null;
-    }
-  }
-
-  /**
-   * Get mock credentials (replace with real secure storage)
-   */
-  private getMockCredentials(marketplaceName: string) {
-    const credentialsMap = {
-      'MercadoLivre': {
-        clientId: 'mock_ml_client_id',
-        clientSecret: 'mock_ml_client_secret',
-        redirectUri: 'http://localhost:3000/auth/callback'
-      },
-      'Amazon': {
-        clientId: 'mock_amazon_client_id',
-        clientSecret: 'mock_amazon_client_secret',
-        refreshToken: 'mock_refresh_token',
-        region: 'us-east-1',
-        sellerId: 'mock_seller_id'
-      },
-      'AliExpress': {
-        appKey: 'mock_aliexpress_app_key',
-        appSecret: 'mock_aliexpress_app_secret'
-      }
-    };
-
-    return credentialsMap[marketplaceName] || {};
-  }
 }
 
 // Export singleton instance
