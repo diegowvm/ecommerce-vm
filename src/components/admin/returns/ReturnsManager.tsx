@@ -55,7 +55,7 @@ export function ReturnsManager() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [returns, setReturns] = useState<OrderReturn[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
   const [showReturnDialog, setShowReturnDialog] = useState(false);
   const [selectedOrderItem, setSelectedOrderItem] = useState<{ orderId: string; itemId: string; productName: string } | null>(null);
@@ -174,7 +174,7 @@ export function ReturnsManager() {
         item.products?.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     
-    const matchesStatus = statusFilter === '' || order.return_status === statusFilter;
+    const matchesStatus = statusFilter === 'all' || statusFilter === '' || order.return_status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
@@ -281,7 +281,7 @@ export function ReturnsManager() {
                     <SelectValue placeholder="Todos os status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos</SelectItem>
+                    <SelectItem value="all">Todos</SelectItem>
                     <SelectItem value="return_requested">Devolução Solicitada</SelectItem>
                     <SelectItem value="cancelled">Cancelado</SelectItem>
                   </SelectContent>
