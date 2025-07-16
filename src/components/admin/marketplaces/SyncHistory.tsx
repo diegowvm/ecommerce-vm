@@ -26,8 +26,8 @@ interface SyncLog {
 export function SyncHistory() {
   const [logs, setLogs] = useState<SyncLog[]>([]);
   const [filteredLogs, setFilteredLogs] = useState<SyncLog[]>([]);
-  const [selectedMarketplace, setSelectedMarketplace] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedMarketplace, setSelectedMarketplace] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
@@ -59,11 +59,11 @@ export function SyncHistory() {
   const filterLogs = () => {
     let filtered = logs;
 
-    if (selectedMarketplace) {
+    if (selectedMarketplace && selectedMarketplace !== 'all') {
       filtered = filtered.filter(log => log.marketplace_name === selectedMarketplace);
     }
 
-    if (selectedStatus) {
+    if (selectedStatus && selectedStatus !== 'all') {
       filtered = filtered.filter(log => log.status === selectedStatus);
     }
 
@@ -178,7 +178,7 @@ export function SyncHistory() {
                 <SelectValue placeholder="Todos marketplaces" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos</SelectItem>
+                <SelectItem value="all">Todos</SelectItem>
                 <SelectItem value="MercadoLivre">MercadoLivre</SelectItem>
                 <SelectItem value="Amazon">Amazon</SelectItem>
                 <SelectItem value="AliExpress">AliExpress</SelectItem>
@@ -190,7 +190,7 @@ export function SyncHistory() {
                 <SelectValue placeholder="Todos status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos</SelectItem>
+                <SelectItem value="all">Todos</SelectItem>
                 <SelectItem value="completed">Concluído</SelectItem>
                 <SelectItem value="running">Executando</SelectItem>
                 <SelectItem value="failed">Falhou</SelectItem>
