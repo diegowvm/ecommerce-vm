@@ -437,23 +437,43 @@ export class ProductSyncService {
         throw new Error(`Product not found: ${productId}`);
       }
 
-      // Call secure Edge Function to update product
-      const { data: result, error: functionError } = await supabase.functions.invoke('sync-products', {
-        body: {
-          operation: 'update_product',
-          productId,
-          marketplaceName,
-          productName: product.name
+      // Call secure Edge Function to update product with reliability service
+      const result = await ApiReliabilityService.callExternalApi(
+        `sync-products-${productId}`,
+        async () => {
+          console.log(`[ProductSync] Updating product ${productId} via Edge Function`);
+          const { data, error } = await supabase.functions.invoke('sync-products', {
+            body: {
+              operation: 'update_product',
+              productId,
+              marketplaceName,
+              productName: product.name
+            }
+          });
+
+          if (error) {
+            const edgeError = new Error(`Edge Function error: ${error.message}`);
+            (edgeError as any).status = 500;
+            throw edgeError;
+          }
+
+          if (!data?.success) {
+            const edgeError = new Error(data?.message || 'Unknown error from Edge Function');
+            (edgeError as any).status = 400;
+            throw edgeError;
+          }
+
+          return data;
+        },
+        {
+          maxRetries: 3,
+          baseDelay: 1500,
+          retryCondition: (error) => {
+            const status = error?.status;
+            return status === 500 || status === 502 || status === 503;
+          }
         }
-      });
-
-      if (functionError) {
-        throw new Error(`Edge Function error: ${functionError.message}`);
-      }
-
-      if (!result?.success) {
-        throw new Error(result?.message || 'Unknown error from Edge Function');
-      }
+      );
 
       return {
         success: true,

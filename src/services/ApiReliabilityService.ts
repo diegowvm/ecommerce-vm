@@ -1,3 +1,5 @@
+import { logger } from './EnhancedLoggingService';
+
 // Utility for implementing retry logic with exponential backoff and circuit breaker pattern
 export class ApiReliabilityService {
   private static circuitBreakers = new Map<string, CircuitBreaker>();
@@ -38,7 +40,7 @@ export class ApiReliabilityService {
           maxDelay
         );
         
-        console.log(`Retry attempt ${attempt + 1}/${maxRetries} after ${delay}ms delay`);
+        logger.logRetryAttempt('api_call', attempt + 1, maxRetries, error, delay);
         await this.sleep(delay);
       }
     }
@@ -172,6 +174,7 @@ class CircuitBreaker {
     
     if (this.failureCount >= this.options.failureThreshold!) {
       this.state = 'OPEN';
+      logger.logCircuitBreakerEvent('unknown', 'opened', this.failureCount);
     }
   }
 }
