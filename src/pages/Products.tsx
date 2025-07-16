@@ -7,8 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { PaginationComponent } from '@/components/ui/pagination-component';
 import { Search, Filter, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { usePagination, applyPagination, getSupabaseTotalCount } from '@/hooks/usePagination';
 
 interface Product {
   id: string;
@@ -39,10 +41,13 @@ export default function Products() {
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all');
   const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'name');
 
+  // Pagination
+  const pagination = usePagination({ defaultItemsPerPage: 12 });
+
   useEffect(() => {
     fetchCategories();
     fetchProducts();
-  }, [searchParams]);
+  }, [searchParams, pagination.currentPage, pagination.itemsPerPage]);
 
   const fetchCategories = async () => {
     const { data } = await supabase
@@ -57,45 +62,61 @@ export default function Products() {
 
   const fetchProducts = async () => {
     setLoading(true);
-    let query = supabase
-      .from('products')
-      .select(`
-        *,
-        categories (name, slug)
-      `);
-
-    // Apply filters
-    const search = searchParams.get('search');
-    const category = searchParams.get('category');
-
-    if (search) {
-      query = query.ilike('name', `%${search}%`);
-    }
-
-    if (category) {
-      query = query.eq('categories.slug', category);
-    }
-
-    // Apply sorting
-    const sort = searchParams.get('sort') || 'name';
-    if (sort === 'price_asc') {
-      query = query.order('price', { ascending: true });
-    } else if (sort === 'price_desc') {
-      query = query.order('price', { ascending: false });
-    } else {
-      query = query.order('name');
-    }
-
-    const { data } = await query;
     
-    if (data) {
-      setProducts(data);
+    try {
+      // Build base query
+      let query = supabase
+        .from('products')
+        .select(`
+          *,
+          categories (name, slug)
+        `, { count: 'exact' });
+
+      // Apply filters
+      const search = searchParams.get('search');
+      const category = searchParams.get('category');
+
+      if (search) {
+        query = query.ilike('name', `%${search}%`);
+      }
+
+      if (category && category !== 'all') {
+        query = query.eq('categories.slug', category);
+      }
+
+      // Apply sorting
+      const sort = searchParams.get('sort') || 'name';
+      if (sort === 'price_asc') {
+        query = query.order('price', { ascending: true });
+      } else if (sort === 'price_desc') {
+        query = query.order('price', { ascending: false });
+      } else {
+        query = query.order('name');
+      }
+
+      // Apply pagination
+      const paginatedQuery = applyPagination(query, {
+        offset: pagination.offset,
+        limit: pagination.limit
+      });
+
+      const { data, error, count } = await paginatedQuery;
+      
+      if (error) throw error;
+
+      setProducts(data || []);
+      pagination.setTotalItems(count || 0);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      setProducts([]);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    pagination.goToPage(1); // Reset to first page on search
     updateSearchParams({ search: searchTerm || undefined });
   };
 
@@ -117,6 +138,7 @@ export default function Products() {
     setSearchTerm('');
     setSelectedCategory('all');
     setSortBy('name');
+    pagination.reset();
     setSearchParams({});
   };
 
@@ -154,6 +176,7 @@ export default function Products() {
                   value={selectedCategory}
                   onValueChange={(value) => {
                     setSelectedCategory(value);
+                    pagination.goToPage(1); // Reset to first page on filter change
                     updateSearchParams({ category: value === 'all' ? undefined : value });
                   }}
                 >
@@ -175,6 +198,7 @@ export default function Products() {
                   value={sortBy}
                   onValueChange={(value) => {
                     setSortBy(value);
+                    pagination.goToPage(1); // Reset to first page on sort change
                     updateSearchParams({ sort: value });
                   }}
                 >
@@ -234,21 +258,35 @@ export default function Products() {
               ))}
             </div>
           ) : products.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {products.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  id={product.id}
-                  name={product.name}
-                  brand={product.categories?.name || 'Marca'}
-                  price={product.price}
-                  originalPrice={product.original_price}
-                  image={product.image_url}
-                  rating={4.5}
-                  reviews={127}
-                />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {products.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    id={product.id}
+                    name={product.name}
+                    brand={product.categories?.name || 'Marca'}
+                    price={product.price}
+                    originalPrice={product.original_price}
+                    image={product.image_url}
+                    rating={4.5}
+                    reviews={127}
+                  />
+                ))}
+              </div>
+              
+              {/* Pagination */}
+              <PaginationComponent
+                currentPage={pagination.currentPage}
+                totalPages={pagination.totalPages}
+                totalItems={pagination.totalItems}
+                itemsPerPage={pagination.itemsPerPage}
+                onPageChange={pagination.goToPage}
+                onItemsPerPageChange={pagination.setItemsPerPage}
+                loading={loading}
+                itemsPerPageOptions={[12, 24, 48, 96]}
+              />
+            </>
           ) : (
             <div className="text-center py-16">
               <div className="mb-4">
