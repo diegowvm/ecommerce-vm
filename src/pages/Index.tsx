@@ -1,7 +1,6 @@
 import { Navbar } from "@/components/ui/navbar";
 import { HeroSection } from "@/components/ui/hero-section";
 import { FeaturedProducts } from "@/components/ui/featured-products";
-import { CategoriesSection } from "@/components/ui/categories-section";
 import { Footer } from "@/components/ui/footer";
 import CookieConsentBanner from "@/components/ui/cookie-consent-banner";
 import { LazyComponent } from "@/components/ui/lazy-component";
@@ -15,9 +14,6 @@ const Index = () => {
         <HeroSection />
         <LazyComponent>
           <FeaturedProducts />
-        </LazyComponent>
-        <LazyComponent>
-          <CategoriesSection />
         </LazyComponent>
       </main>
       <LazyComponent>
