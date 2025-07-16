@@ -1,7 +1,9 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ApiIntegrationsManager } from "@/components/admin/api-integrations/ApiIntegrationsManager";
+import ApiMonitoring from "./AdminApiMonitoring";
 
 export default function AdminApiIntegrations() {
   const { isAdmin } = useAuth();

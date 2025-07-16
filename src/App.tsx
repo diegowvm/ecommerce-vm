@@ -1,10 +1,10 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { CacheProvider } from "@/lib/cache";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Products from "./pages/Products";
@@ -23,6 +23,8 @@ import AdminInventory from "./pages/admin/AdminInventory";
 import AdminSettings from "./pages/admin/AdminSettings";
 import AdminMarketplaces from "./pages/admin/AdminMarketplaces";
 import AdminReturns from "./pages/admin/AdminReturns";
+import AdminApiIntegrations from "./pages/admin/AdminApiIntegrations";
+import AdminApiMonitoring from "./pages/admin/AdminApiMonitoring";
 import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ReturnPolicy from "./pages/ReturnPolicy";
@@ -30,10 +32,8 @@ import AddressBook from "./pages/user/AddressBook";
 import Wishlist from "./pages/user/Wishlist";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
-
 const App = () => (
-  <QueryClientProvider client={queryClient}>
+  <CacheProvider>
     <AuthProvider>
       <TooltipProvider>
         <Toaster />
@@ -124,6 +124,16 @@ const App = () => (
                 <AdminMarketplaces />
               </ProtectedRoute>
             } />
+            <Route path="/admin/api-integrations" element={
+              <ProtectedRoute requireAdmin>
+                <AdminApiIntegrations />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/api-monitoring" element={
+              <ProtectedRoute requireAdmin>
+                <AdminApiMonitoring />
+              </ProtectedRoute>
+            } />
             <Route path="/admin/returns" element={
               <ProtectedRoute requireAdmin>
                 <AdminReturns />
@@ -135,7 +145,7 @@ const App = () => (
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
-  </QueryClientProvider>
+  </CacheProvider>
 );
 
 export default App;
