@@ -29,7 +29,7 @@ export function CategoryMappings() {
   const [mappings, setMappings] = useState<CategoryMapping[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedMarketplace, setSelectedMarketplace] = useState('');
+  const [selectedMarketplace, setSelectedMarketplace] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const { toast } = useToast();
@@ -164,7 +164,7 @@ export function CategoryMappings() {
       mapping.marketplace_category_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       mapping.category_name?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesMarketplace = selectedMarketplace === '' || 
+    const matchesMarketplace = selectedMarketplace === 'all' || selectedMarketplace === '' || 
       mapping.marketplace_name === selectedMarketplace;
 
     return matchesSearch && matchesMarketplace;
@@ -201,7 +201,7 @@ export function CategoryMappings() {
                 <SelectValue placeholder="Todos marketplaces" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos</SelectItem>
+                <SelectItem value="all">Todos</SelectItem>
                 <SelectItem value="MercadoLivre">MercadoLivre</SelectItem>
                 <SelectItem value="Amazon">Amazon</SelectItem>
                 <SelectItem value="AliExpress">AliExpress</SelectItem>
