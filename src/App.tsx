@@ -23,6 +23,9 @@ import AdminInventory from "./pages/admin/AdminInventory";
 import AdminSettings from "./pages/admin/AdminSettings";
 import AdminMarketplaces from "./pages/admin/AdminMarketplaces";
 import AdminReturns from "./pages/admin/AdminReturns";
+import TermsOfService from "./pages/TermsOfService";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import ReturnPolicy from "./pages/ReturnPolicy";
 import AddressBook from "./pages/user/AddressBook";
 import Wishlist from "./pages/user/Wishlist";
 import NotFound from "./pages/NotFound";
@@ -71,6 +74,9 @@ const App = () => (
                 <Wishlist />
               </ProtectedRoute>
             } />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/return-policy" element={<ReturnPolicy />} />
             
             {/* Admin routes */}
             <Route path="/admin" element={
