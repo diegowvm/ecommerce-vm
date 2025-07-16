@@ -28,8 +28,8 @@ export function SyncLogsTable() {
   const [logs, setLogs] = useState<SyncLog[]>([]);
   const [filteredLogs, setFilteredLogs] = useState<SyncLog[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [marketplaceFilter, setMarketplaceFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [marketplaceFilter, setMarketplaceFilter] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
@@ -68,11 +68,11 @@ export function SyncLogsTable() {
       );
     }
 
-    if (statusFilter) {
+    if (statusFilter && statusFilter !== 'all') {
       filtered = filtered.filter(log => log.status === statusFilter);
     }
 
-    if (marketplaceFilter) {
+    if (marketplaceFilter && marketplaceFilter !== 'all') {
       filtered = filtered.filter(log => log.marketplace_name === marketplaceFilter);
     }
 
@@ -178,7 +178,7 @@ export function SyncLogsTable() {
               <SelectValue placeholder="Todos marketplaces" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todos</SelectItem>
+              <SelectItem value="all">Todos</SelectItem>
               {marketplaces.map((marketplace) => (
                 <SelectItem key={marketplace} value={marketplace}>
                   {marketplace}
@@ -192,7 +192,7 @@ export function SyncLogsTable() {
               <SelectValue placeholder="Todos status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todos</SelectItem>
+              <SelectItem value="all">Todos</SelectItem>
               <SelectItem value="completed">Concluído</SelectItem>
               <SelectItem value="running">Executando</SelectItem>
               <SelectItem value="failed">Falhou</SelectItem>
