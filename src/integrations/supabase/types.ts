@@ -65,6 +65,57 @@ export type Database = {
         }
         Relationships: []
       }
+      advanced_category_mappings: {
+        Row: {
+          api_connection_id: string
+          auto_mapped: boolean | null
+          confidence_score: number | null
+          created_at: string
+          id: string
+          local_category_id: string | null
+          mapping_rules: Json | null
+          marketplace_category_path: string
+          updated_at: string
+        }
+        Insert: {
+          api_connection_id: string
+          auto_mapped?: boolean | null
+          confidence_score?: number | null
+          created_at?: string
+          id?: string
+          local_category_id?: string | null
+          mapping_rules?: Json | null
+          marketplace_category_path: string
+          updated_at?: string
+        }
+        Update: {
+          api_connection_id?: string
+          auto_mapped?: boolean | null
+          confidence_score?: number | null
+          created_at?: string
+          id?: string
+          local_category_id?: string | null
+          mapping_rules?: Json | null
+          marketplace_category_path?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "advanced_category_mappings_api_connection_id_fkey"
+            columns: ["api_connection_id"]
+            isOneToOne: false
+            referencedRelation: "api_connections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "advanced_category_mappings_local_category_id_fkey"
+            columns: ["local_category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       api_alerts: {
         Row: {
           alert_type: string
@@ -101,6 +152,63 @@ export type Database = {
           severity?: string
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      api_connections: {
+        Row: {
+          api_key_reference: string | null
+          connection_name: string
+          connection_status: string | null
+          created_at: string
+          id: string
+          is_active: boolean | null
+          last_test_at: string | null
+          marketplace_name: string
+          oauth_access_token: string | null
+          oauth_expires_at: string | null
+          oauth_refresh_token: string | null
+          rate_limit_remaining: number | null
+          rate_limit_reset_at: string | null
+          settings: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          api_key_reference?: string | null
+          connection_name: string
+          connection_status?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          last_test_at?: string | null
+          marketplace_name: string
+          oauth_access_token?: string | null
+          oauth_expires_at?: string | null
+          oauth_refresh_token?: string | null
+          rate_limit_remaining?: number | null
+          rate_limit_reset_at?: string | null
+          settings?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          api_key_reference?: string | null
+          connection_name?: string
+          connection_status?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          last_test_at?: string | null
+          marketplace_name?: string
+          oauth_access_token?: string | null
+          oauth_expires_at?: string | null
+          oauth_refresh_token?: string | null
+          rate_limit_remaining?: number | null
+          rate_limit_reset_at?: string | null
+          settings?: Json | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -245,6 +353,129 @@ export type Database = {
             columns: ["xegai_category_id"]
             isOneToOne: false
             referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_products: {
+        Row: {
+          api_connection_id: string
+          attributes: Json | null
+          auto_sync_enabled: boolean | null
+          available_quantity: number | null
+          brand: string | null
+          categories: string[] | null
+          condition: string | null
+          created_at: string
+          currency: string | null
+          description: string | null
+          gtin: string | null
+          id: string
+          images: string[] | null
+          is_imported: boolean | null
+          last_sync_at: string | null
+          local_product_id: string | null
+          marketplace_name: string
+          marketplace_product_id: string
+          marketplace_url: string | null
+          markup_type: string | null
+          markup_value: number | null
+          model: string | null
+          original_price: number | null
+          price: number
+          profit_margin: number | null
+          seller_info: Json | null
+          shipping_info: Json | null
+          sku: string | null
+          sold_quantity: number | null
+          sync_errors: string[] | null
+          sync_status: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          api_connection_id: string
+          attributes?: Json | null
+          auto_sync_enabled?: boolean | null
+          available_quantity?: number | null
+          brand?: string | null
+          categories?: string[] | null
+          condition?: string | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          gtin?: string | null
+          id?: string
+          images?: string[] | null
+          is_imported?: boolean | null
+          last_sync_at?: string | null
+          local_product_id?: string | null
+          marketplace_name: string
+          marketplace_product_id: string
+          marketplace_url?: string | null
+          markup_type?: string | null
+          markup_value?: number | null
+          model?: string | null
+          original_price?: number | null
+          price: number
+          profit_margin?: number | null
+          seller_info?: Json | null
+          shipping_info?: Json | null
+          sku?: string | null
+          sold_quantity?: number | null
+          sync_errors?: string[] | null
+          sync_status?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          api_connection_id?: string
+          attributes?: Json | null
+          auto_sync_enabled?: boolean | null
+          available_quantity?: number | null
+          brand?: string | null
+          categories?: string[] | null
+          condition?: string | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          gtin?: string | null
+          id?: string
+          images?: string[] | null
+          is_imported?: boolean | null
+          last_sync_at?: string | null
+          local_product_id?: string | null
+          marketplace_name?: string
+          marketplace_product_id?: string
+          marketplace_url?: string | null
+          markup_type?: string | null
+          markup_value?: number | null
+          model?: string | null
+          original_price?: number | null
+          price?: number
+          profit_margin?: number | null
+          seller_info?: Json | null
+          shipping_info?: Json | null
+          sku?: string | null
+          sold_quantity?: number | null
+          sync_errors?: string[] | null
+          sync_status?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_products_api_connection_id_fkey"
+            columns: ["api_connection_id"]
+            isOneToOne: false
+            referencedRelation: "api_connections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_products_local_product_id_fkey"
+            columns: ["local_product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
             referencedColumns: ["id"]
           },
         ]
@@ -532,6 +763,131 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      sync_executions: {
+        Row: {
+          api_connection_id: string
+          completed_at: string | null
+          errors: string[] | null
+          execution_log: string | null
+          execution_type: string
+          id: string
+          products_failed: number | null
+          products_found: number | null
+          products_imported: number | null
+          products_processed: number | null
+          products_updated: number | null
+          started_at: string
+          status: string | null
+          summary: Json | null
+          sync_schedule_id: string | null
+        }
+        Insert: {
+          api_connection_id: string
+          completed_at?: string | null
+          errors?: string[] | null
+          execution_log?: string | null
+          execution_type: string
+          id?: string
+          products_failed?: number | null
+          products_found?: number | null
+          products_imported?: number | null
+          products_processed?: number | null
+          products_updated?: number | null
+          started_at?: string
+          status?: string | null
+          summary?: Json | null
+          sync_schedule_id?: string | null
+        }
+        Update: {
+          api_connection_id?: string
+          completed_at?: string | null
+          errors?: string[] | null
+          execution_log?: string | null
+          execution_type?: string
+          id?: string
+          products_failed?: number | null
+          products_found?: number | null
+          products_imported?: number | null
+          products_processed?: number | null
+          products_updated?: number | null
+          started_at?: string
+          status?: string | null
+          summary?: Json | null
+          sync_schedule_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sync_executions_api_connection_id_fkey"
+            columns: ["api_connection_id"]
+            isOneToOne: false
+            referencedRelation: "api_connections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sync_executions_sync_schedule_id_fkey"
+            columns: ["sync_schedule_id"]
+            isOneToOne: false
+            referencedRelation: "sync_schedules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sync_schedules: {
+        Row: {
+          api_connection_id: string
+          created_at: string
+          cron_expression: string
+          failure_count: number | null
+          id: string
+          is_active: boolean | null
+          last_run_at: string | null
+          next_run_at: string | null
+          run_count: number | null
+          schedule_type: string
+          settings: Json | null
+          success_count: number | null
+          updated_at: string
+        }
+        Insert: {
+          api_connection_id: string
+          created_at?: string
+          cron_expression: string
+          failure_count?: number | null
+          id?: string
+          is_active?: boolean | null
+          last_run_at?: string | null
+          next_run_at?: string | null
+          run_count?: number | null
+          schedule_type: string
+          settings?: Json | null
+          success_count?: number | null
+          updated_at?: string
+        }
+        Update: {
+          api_connection_id?: string
+          created_at?: string
+          cron_expression?: string
+          failure_count?: number | null
+          id?: string
+          is_active?: boolean | null
+          last_run_at?: string | null
+          next_run_at?: string | null
+          run_count?: number | null
+          schedule_type?: string
+          settings?: Json | null
+          success_count?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sync_schedules_api_connection_id_fkey"
+            columns: ["api_connection_id"]
+            isOneToOne: false
+            referencedRelation: "api_connections"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {

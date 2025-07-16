@@ -2,7 +2,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ApiIntegrationsManager } from "@/components/admin/api-integrations/ApiIntegrationsManager";
+import { RealApiConnectionsManager } from "@/components/admin/api-integrations/RealApiConnectionsManager";
 import ApiMonitoring from "./AdminApiMonitoring";
 
 export default function AdminApiIntegrations() {
@@ -43,7 +43,7 @@ export default function AdminApiIntegrations() {
           <AdminSidebar />
           
           <main className="flex-1 p-6 bg-gradient-to-br from-background via-background/95 to-surface/30">
-            <ApiIntegrationsManager />
+            <RealApiConnectionsManager />
           </main>
         </div>
       </SidebarProvider>
