@@ -53,3 +53,9 @@ verify_jwt = false
 
 [functions.api-cache]
 verify_jwt = false
+
+[functions.order-fulfillment]
+verify_jwt = false
+
+[functions.sync-products]
+verify_jwt = false
