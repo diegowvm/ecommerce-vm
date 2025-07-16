@@ -4,6 +4,8 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Plus, Layers, Search } from 'lucide-react';
 import { CategoryList } from './CategoryList';
 import { CategoryForm } from './CategoryForm';
+import { PaginationComponent } from '@/components/ui/pagination-component';
+import { usePagination, applyPagination, getSupabaseTotalCount } from '@/hooks/usePagination';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -15,16 +17,50 @@ export function CategoriesManager() {
   const [editingCategory, setEditingCategory] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
+  const {
+    currentPage,
+    itemsPerPage,
+    totalItems,
+    totalPages,
+    offset,
+    goToPage,
+    setItemsPerPage,
+    setTotalItems
+  } = usePagination({ defaultItemsPerPage: 10 });
+
   useEffect(() => {
     fetchCategories();
-  }, []);
+  }, [currentPage, itemsPerPage, searchTerm]);
 
   const fetchCategories = async () => {
     try {
-      const { data, error } = await supabase
+      setLoading(true);
+      
+      // Build filters
+      const filters = {};
+      if (searchTerm) {
+        filters['name.ilike'] = searchTerm;
+      }
+
+      // Get total count
+      const totalCount = await getSupabaseTotalCount(supabase, 'categories', filters);
+      setTotalItems(totalCount);
+
+      // Build query
+      let query = supabase
         .from('categories')
         .select('*')
         .order('name');
+
+      // Apply filters
+      if (searchTerm) {
+        query = query.ilike('name', `%${searchTerm}%`);
+      }
+
+      // Apply pagination
+      query = applyPagination(query, { offset, limit: itemsPerPage });
+
+      const { data, error } = await query;
 
       if (error) throw error;
       setCategories(data || []);
@@ -98,9 +134,8 @@ export function CategoriesManager() {
     }
   };
 
-  const filteredCategories = categories.filter(category =>
-    category.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Remove client-side filtering since we're doing server-side pagination
+  const filteredCategories = categories;
 
   if (showForm) {
     return (
@@ -164,6 +199,17 @@ export function CategoriesManager() {
         loading={loading}
         onEdit={handleEditCategory}
         onDelete={handleDeleteCategory}
+      />
+
+      {/* Pagination */}
+      <PaginationComponent
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        itemsPerPage={itemsPerPage}
+        onPageChange={goToPage}
+        onItemsPerPageChange={setItemsPerPage}
+        loading={loading}
       />
     </div>
   );

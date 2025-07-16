@@ -5,6 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { ShoppingCart, DollarSign, Clock, CheckCircle, Search, Filter } from 'lucide-react';
 import { OrderList } from './OrderList';
 import { OrderDetail } from './OrderDetail';
+import { PaginationComponent } from '@/components/ui/pagination-component';
+import { usePagination, applyPagination, getSupabaseTotalCount } from '@/hooks/usePagination';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -24,9 +26,20 @@ export function OrdersManager() {
     totalRevenue: 0
   });
 
+  const {
+    currentPage,
+    itemsPerPage,
+    totalItems,
+    totalPages,
+    offset,
+    goToPage,
+    setItemsPerPage,
+    setTotalItems
+  } = usePagination({ defaultItemsPerPage: 10 });
+
   useEffect(() => {
     fetchOrders();
-  }, []);
+  }, [currentPage, itemsPerPage, searchTerm, statusFilter]);
 
   useEffect(() => {
     calculateStats();
@@ -34,7 +47,23 @@ export function OrdersManager() {
 
   const fetchOrders = async () => {
     try {
-      const { data, error } = await supabase
+      setLoading(true);
+      
+      // Build filters
+      const filters = {};
+      if (searchTerm) {
+        filters['id.ilike'] = searchTerm;
+      }
+      if (statusFilter) {
+        filters['status'] = statusFilter;
+      }
+
+      // Get total count
+      const totalCount = await getSupabaseTotalCount(supabase, 'orders', filters);
+      setTotalItems(totalCount);
+
+      // Build query
+      let query = supabase
         .from('orders')
         .select(`
           *,
@@ -44,6 +73,19 @@ export function OrdersManager() {
           )
         `)
         .order('created_at', { ascending: false });
+
+      // Apply filters
+      if (searchTerm) {
+        query = query.ilike('id', `%${searchTerm}%`);
+      }
+      if (statusFilter) {
+        query = query.eq('status', statusFilter);
+      }
+
+      // Apply pagination
+      query = applyPagination(query, { offset, limit: itemsPerPage });
+
+      const { data, error } = await query;
 
       if (error) throw error;
       setOrders(data || []);
@@ -111,12 +153,8 @@ export function OrdersManager() {
     }
   };
 
-  const filteredOrders = orders.filter(order => {
-    const matchesSearch = order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         order.user_id.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = !statusFilter || order.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  // Remove client-side filtering since we're doing server-side pagination
+  const filteredOrders = orders;
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -245,6 +283,17 @@ export function OrdersManager() {
         loading={loading}
         onOrderClick={handleOrderClick}
         onUpdateStatus={handleUpdateOrderStatus}
+      />
+
+      {/* Pagination */}
+      <PaginationComponent
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        itemsPerPage={itemsPerPage}
+        onPageChange={goToPage}
+        onItemsPerPageChange={setItemsPerPage}
+        loading={loading}
       />
     </div>
   );

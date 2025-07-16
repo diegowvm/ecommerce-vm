@@ -9,6 +9,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { PaginationComponent } from '@/components/ui/pagination-component';
+import { usePagination, applyPagination, getSupabaseTotalCount } from '@/hooks/usePagination';
 import { AlertCircle, ArrowLeft, Package, RefreshCw, Search, RotateCcw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -62,16 +64,43 @@ export function ReturnsManager() {
   const [returnReason, setReturnReason] = useState('');
   const { toast } = useToast();
 
+  const {
+    currentPage,
+    itemsPerPage,
+    totalItems,
+    totalPages,
+    offset,
+    goToPage,
+    setItemsPerPage,
+    setTotalItems
+  } = usePagination({ defaultItemsPerPage: 10 });
+
   useEffect(() => {
     loadData();
-  }, []);
+  }, [currentPage, itemsPerPage, searchTerm, statusFilter]);
 
   const loadData = async () => {
     try {
       setIsLoading(true);
       
+      // Build filters for orders
+      const filters = {};
+      if (searchTerm) {
+        filters['id.ilike'] = searchTerm;
+      }
+      if (statusFilter !== 'all') {
+        filters['return_status'] = statusFilter;
+      }
+
+      // Get total count for orders
+      const totalCount = await getSupabaseTotalCount(supabase, 'orders', {
+        ...filters,
+        'return_status.not.is.null,status.eq.cancelled': true
+      });
+      setTotalItems(totalCount);
+
       // Load orders with return requests or issues
-      const { data: ordersData, error: ordersError } = await supabase
+      let ordersQuery = supabase
         .from('orders')
         .select(`
           *,
@@ -83,9 +112,22 @@ export function ReturnsManager() {
         .or('return_status.not.is.null,status.eq.cancelled')
         .order('created_at', { ascending: false });
 
+      // Apply filters
+      if (searchTerm) {
+        ordersQuery = ordersQuery.ilike('id', `%${searchTerm}%`);
+      }
+      if (statusFilter !== 'all') {
+        ordersQuery = ordersQuery.eq('return_status', statusFilter);
+      }
+
+      // Apply pagination
+      ordersQuery = applyPagination(ordersQuery, { offset, limit: itemsPerPage });
+
+      const { data: ordersData, error: ordersError } = await ordersQuery;
+
       if (ordersError) throw ordersError;
 
-      // Load return records
+      // Load return records (no pagination needed for now)
       const { data: returnsData, error: returnsError } = await supabase
         .from('order_returns')
         .select('*')
@@ -167,16 +209,8 @@ export function ReturnsManager() {
 
   const processedReturns = returns.filter(ret => ret.status !== 'requested');
 
-  const filteredPendingOrders = pendingOrders.filter(order => {
-    const matchesSearch = searchTerm === '' || 
-      order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.order_items.some(item => 
-        item.products?.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    
-    const matchesStatus = statusFilter === 'all' || statusFilter === '' || order.return_status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  // Remove client-side filtering since we're doing server-side pagination
+  const filteredPendingOrders = pendingOrders;
 
   return (
     <div className="space-y-6">
@@ -373,6 +407,17 @@ export function ReturnsManager() {
                   </TableBody>
                 </Table>
               </div>
+
+              {/* Pagination */}
+              <PaginationComponent
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={totalItems}
+                itemsPerPage={itemsPerPage}
+                onPageChange={goToPage}
+                onItemsPerPageChange={setItemsPerPage}
+                loading={isLoading}
+              />
             </CardContent>
           </Card>
         </TabsContent>

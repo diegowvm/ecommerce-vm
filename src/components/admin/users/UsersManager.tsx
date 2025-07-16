@@ -5,6 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { Users, UserCheck, Shield, Search, Filter } from 'lucide-react';
 import { UserList } from './UserList';
 import { UserDetail } from './UserDetail';
+import { PaginationComponent } from '@/components/ui/pagination-component';
+import { usePagination, applyPagination, getSupabaseTotalCount } from '@/hooks/usePagination';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -22,9 +24,20 @@ export function UsersManager() {
     newThisMonth: 0
   });
 
+  const {
+    currentPage,
+    itemsPerPage,
+    totalItems,
+    totalPages,
+    offset,
+    goToPage,
+    setItemsPerPage,
+    setTotalItems
+  } = usePagination({ defaultItemsPerPage: 10 });
+
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [currentPage, itemsPerPage, searchTerm, roleFilter]);
 
   useEffect(() => {
     calculateStats();
@@ -32,13 +45,36 @@ export function UsersManager() {
 
   const fetchUsers = async () => {
     try {
-      const { data, error } = await supabase
+      setLoading(true);
+      
+      // Build filters
+      const filters = {};
+      if (searchTerm) {
+        filters['full_name.ilike'] = searchTerm;
+      }
+
+      // Get total count
+      const totalCount = await getSupabaseTotalCount(supabase, 'profiles', filters);
+      setTotalItems(totalCount);
+
+      // Build query
+      let query = supabase
         .from('profiles')
         .select(`
           *,
           user_roles(role)
         `)
         .order('created_at', { ascending: false });
+
+      // Apply filters
+      if (searchTerm) {
+        query = query.ilike('full_name', `%${searchTerm}%`);
+      }
+
+      // Apply pagination
+      query = applyPagination(query, { offset, limit: itemsPerPage });
+
+      const { data, error } = await query;
 
       if (error) throw error;
       setUsers(data || []);
@@ -117,15 +153,11 @@ export function UsersManager() {
     }
   };
 
+  // Apply role filter client-side since it's a join condition
   const filteredUsers = users.filter(user => {
-    const matchesSearch = 
-      user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.user_id?.toLowerCase().includes(searchTerm.toLowerCase());
-    
     const userRole = user.user_roles?.[0]?.role || 'user';
     const matchesRole = !roleFilter || userRole === roleFilter;
-    
-    return matchesSearch && matchesRole;
+    return matchesRole;
   });
 
   if (selectedUser) {
@@ -234,6 +266,17 @@ export function UsersManager() {
         loading={loading}
         onUserClick={handleUserClick}
         onUpdateRole={handleUpdateUserRole}
+      />
+
+      {/* Pagination */}
+      <PaginationComponent
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        itemsPerPage={itemsPerPage}
+        onPageChange={goToPage}
+        onItemsPerPageChange={setItemsPerPage}
+        loading={loading}
       />
     </div>
   );

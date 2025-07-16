@@ -1,9 +1,13 @@
-import { useWishlist } from '@/hooks/useWishlist';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Heart, ShoppingCart, Trash2, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { PaginationComponent } from '@/components/ui/pagination-component';
+import { usePagination, applyPagination, getSupabaseTotalCount } from '@/hooks/usePagination';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,10 +21,101 @@ import {
 } from '@/components/ui/alert-dialog';
 
 export function WishlistManager() {
-  const { wishlistItems, loading, removeFromWishlist } = useWishlist();
+  const { toast } = useToast();
+  const [wishlistItems, setWishlistItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const {
+    currentPage,
+    itemsPerPage,
+    totalItems,
+    totalPages,
+    offset,
+    goToPage,
+    setItemsPerPage,
+    setTotalItems
+  } = usePagination({ defaultItemsPerPage: 9 });
+
+  useEffect(() => {
+    fetchWishlistItems();
+  }, [currentPage, itemsPerPage]);
+
+  const fetchWishlistItems = async () => {
+    try {
+      setLoading(true);
+      
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Get total count
+      const totalCount = await getSupabaseTotalCount(supabase, 'wishlist', { user_id: user.id });
+      setTotalItems(totalCount);
+
+      // Build query with pagination
+      let query = supabase
+        .from('wishlist')
+        .select(`
+          *,
+          products(
+            id,
+            name,
+            price,
+            original_price,
+            image_url,
+            active
+          )
+        `)
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      // Apply pagination
+      query = applyPagination(query, { offset, limit: itemsPerPage });
+
+      const { data, error } = await query;
+
+      if (error) throw error;
+      setWishlistItems(data || []);
+    } catch (error) {
+      console.error('Error fetching wishlist:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível carregar seus favoritos",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleRemove = async (productId: string) => {
-    await removeFromWishlist(productId);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('wishlist')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('product_id', productId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Removido",
+        description: "Produto removido dos favoritos",
+      });
+
+      // Refresh the list
+      fetchWishlistItems();
+    } catch (error) {
+      console.error('Error removing from wishlist:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível remover o produto",
+        variant: "destructive",
+      });
+    }
   };
 
   if (loading) {
@@ -161,6 +256,19 @@ export function WishlistManager() {
             </Card>
           ))}
         </div>
+      )}
+
+      {/* Pagination */}
+      {wishlistItems.length > 0 && (
+        <PaginationComponent
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          itemsPerPage={itemsPerPage}
+          onPageChange={goToPage}
+          onItemsPerPageChange={setItemsPerPage}
+          loading={loading}
+        />
       )}
     </div>
   );
