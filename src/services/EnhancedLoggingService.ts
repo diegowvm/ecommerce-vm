@@ -117,6 +117,33 @@ export class EnhancedLoggingService {
     });
   }
 
+  logApiError(marketplace: string, operation: string, message: string): void {
+    this.log('error', `API Error: ${marketplace} - ${operation}`, {
+      operation_type: 'api_error',
+      marketplace,
+      operation,
+      error_message: message
+    });
+  }
+
+  logApiSuccess(marketplace: string, operation: string, duration: number): void {
+    this.log('info', `API Success: ${marketplace} - ${operation}`, {
+      operation_type: 'api_success',
+      marketplace,
+      operation,
+      duration_ms: duration
+    });
+  }
+
+  logRateLimitEvent(marketplace: string, event: string, details: any): void {
+    this.log('warn', `Rate Limit: ${marketplace} - ${event}`, {
+      operation_type: 'rate_limit',
+      marketplace,
+      event,
+      ...details
+    });
+  }
+
   // Get logs with filtering
   getLogs(
     filter: {

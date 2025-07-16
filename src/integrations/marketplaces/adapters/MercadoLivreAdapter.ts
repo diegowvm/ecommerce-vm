@@ -63,25 +63,17 @@ export class MercadoLivreAdapter implements MarketplaceAdapter {
 
       const searchUrl = `https://api.mercadolibre.com/sites/MLB/search?${searchParams.toString()}`;
 
-      // 2. Make API call with reliability service
-      const data = await ApiReliabilityService.callExternalApi(
-        `mercadolivre-search`,
+      // 2. Make API call with rate limiting and reliability service
+      const data = await ApiReliabilityService.callMarketplaceApi<any>(
+        'mercadolivre',
         async () => {
           console.log(`[MercadoLivre] Searching products: ${searchUrl}`);
-          const response = await fetch(searchUrl, {
+          return await fetch(searchUrl, {
             headers: {
               'Authorization': `Bearer ${this.accessToken?.token}`,
               'Content-Type': 'application/json'
             }
           });
-
-          if (!response.ok) {
-            const error = new Error(`API Error: ${response.status} ${response.statusText}`);
-            (error as any).status = response.status;
-            throw error;
-          }
-
-          return await response.json();
         },
         {
           maxRetries: 3,
@@ -112,25 +104,17 @@ export class MercadoLivreAdapter implements MarketplaceAdapter {
         await this.authenticate();
       }
 
-      // Get product details with reliability service
-      const data = await ApiReliabilityService.callExternalApi(
-        `mercadolivre-product-${productId}`,
+      // Get product details with rate limiting and reliability service
+      const data = await ApiReliabilityService.callMarketplaceApi<any>(
+        'mercadolivre',
         async () => {
           console.log(`[MercadoLivre] Getting product details: ${productId}`);
-          const response = await fetch(`https://api.mercadolibre.com/items/${productId}`, {
+          return await fetch(`https://api.mercadolibre.com/items/${productId}`, {
             headers: {
               'Authorization': `Bearer ${this.accessToken?.token}`,
               'Content-Type': 'application/json'
             }
           });
-
-          if (!response.ok) {
-            const error = new Error(`API Error: ${response.status} ${response.statusText}`);
-            (error as any).status = response.status;
-            throw error;
-          }
-
-          return await response.json();
         },
         {
           maxRetries: 2,
@@ -215,12 +199,12 @@ export class MercadoLivreAdapter implements MarketplaceAdapter {
         await this.authenticate();
       }
 
-      // Update inventory with reliability service
-      await ApiReliabilityService.callExternalApi(
-        `mercadolivre-inventory-${productId}`,
+      // Update inventory with rate limiting and reliability service
+      await ApiReliabilityService.callMarketplaceApi<any>(
+        'mercadolivre',
         async () => {
           console.log(`[MercadoLivre] Updating inventory for product ${productId}: ${quantity}`);
-          const response = await fetch(`https://api.mercadolibre.com/items/${productId}`, {
+          return await fetch(`https://api.mercadolibre.com/items/${productId}`, {
             method: 'PUT',
             headers: {
               'Authorization': `Bearer ${this.accessToken?.token}`,
@@ -230,14 +214,6 @@ export class MercadoLivreAdapter implements MarketplaceAdapter {
               available_quantity: quantity
             })
           });
-
-          if (!response.ok) {
-            const error = new Error(`API Error: ${response.status} ${response.statusText}`);
-            (error as any).status = response.status;
-            throw error;
-          }
-
-          return await response.json();
         },
         {
           maxRetries: 3,

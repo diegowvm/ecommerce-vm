@@ -1,4 +1,5 @@
 import { logger } from './EnhancedLoggingService';
+import { rateLimitManager } from './RateLimitManager';
 
 // Utility for implementing retry logic with exponential backoff and circuit breaker pattern
 export class ApiReliabilityService {
@@ -62,17 +63,56 @@ export class ApiReliabilityService {
     return circuitBreaker.execute(operation);
   }
 
-  // Combined retry + circuit breaker
+  // Combined retry + circuit breaker + rate limiting
   static async callExternalApi<T>(
     serviceKey: string,
     operation: () => Promise<T>,
     retryOptions?: Parameters<typeof ApiReliabilityService.retry>[1],
-    circuitOptions?: Parameters<typeof ApiReliabilityService.withCircuitBreaker>[2]
+    circuitOptions?: Parameters<typeof ApiReliabilityService.withCircuitBreaker>[2],
+    enableRateLimit = true
   ): Promise<T> {
-    return this.withCircuitBreaker(
+    const wrappedOperation = () => this.withCircuitBreaker(
       serviceKey,
       () => this.retry(operation, retryOptions),
       circuitOptions
+    );
+
+    if (enableRateLimit) {
+      return rateLimitManager.executeWithRateLimit(serviceKey, wrappedOperation);
+    }
+
+    return wrappedOperation();
+  }
+
+  // Rate-limited API call with response header monitoring
+  static async callMarketplaceApi<T>(
+    marketplace: string,
+    operation: () => Promise<Response>,
+    retryOptions?: Parameters<typeof ApiReliabilityService.retry>[1]
+  ): Promise<T> {
+    return rateLimitManager.executeWithRateLimit(
+      marketplace,
+      async () => {
+        const response = await this.retry(operation, retryOptions);
+        
+        // Extract and update rate limit information from headers
+        const headers: Record<string, string> = {};
+        response.headers.forEach((value, key) => {
+          headers[key.toLowerCase()] = value;
+        });
+        
+        rateLimitManager.updateRateLimitStatus(marketplace, headers);
+        
+        if (!response.ok) {
+          const error = new Error(`API Error: ${response.status} ${response.statusText}`);
+          (error as any).status = response.status;
+          (error as any).response = response;
+          (error as any).headers = headers;
+          throw error;
+        }
+        
+        return await response.json();
+      }
     );
   }
 

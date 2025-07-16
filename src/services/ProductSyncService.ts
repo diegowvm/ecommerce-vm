@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { ApiReliabilityService } from './ApiReliabilityService';
+import { rateLimitManager } from './RateLimitManager';
 import { 
   MarketplaceAdapter, 
   Product as MarketplaceProduct, 
@@ -30,6 +31,9 @@ export class ProductSyncService {
     let syncLogId: string | null = null;
     
     try {
+      // Initialize rate limiting if not already done
+      await rateLimitManager.initialize();
+      
       // Create sync log entry
       syncLogId = await this.createSyncLog(marketplaceName, 'import');
       

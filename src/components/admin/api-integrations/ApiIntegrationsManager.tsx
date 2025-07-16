@@ -196,9 +196,10 @@ export function ApiIntegrationsManager() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="connections">Conexões de API</TabsTrigger>
-          <TabsTrigger value="logs">Logs de Sincronização</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="connections">Conexões</TabsTrigger>
+          <TabsTrigger value="rate-limits">Rate Limits</TabsTrigger>
+          <TabsTrigger value="logs">Logs</TabsTrigger>
         </TabsList>
 
         <TabsContent value="connections" className="space-y-6">
@@ -207,6 +208,12 @@ export function ApiIntegrationsManager() {
             onDelete={handleDeleteApi}
             onTest={handleTestConnection}
           />
+        </TabsContent>
+
+        <TabsContent value="rate-limits" className="space-y-6">
+          <div className="text-center py-8">
+            <p>Monitor de Rate Limits será implementado aqui</p>
+          </div>
         </TabsContent>
 
         <TabsContent value="logs" className="space-y-6">
