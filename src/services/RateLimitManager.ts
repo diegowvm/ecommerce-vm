@@ -305,21 +305,31 @@ export class RateLimitManager {
   /**
    * Get current queue information for monitoring
    */
-  getQueueInfo(marketplace: string): {
+  async getQueueInfo(marketplace: string): Promise<{
     running: number;
     pending: number;
     reservoir: number | null;
-  } {
+  }> {
     const limiter = this.getLimiter(marketplace);
     if (!limiter) {
       return { running: 0, pending: 0, reservoir: null };
     }
 
-    return {
-      running: limiter.running(),
-      pending: limiter.queued(),
-      reservoir: limiter.reservoir || 0
-    };
+    try {
+      const [running, pending] = await Promise.all([
+        Promise.resolve(limiter.running()),
+        Promise.resolve(limiter.queued())
+      ]);
+
+      return {
+        running,
+        pending,
+        reservoir: null // Bottleneck doesn't expose reservoir count directly
+      };
+    } catch (error) {
+      console.error(`[RateLimit] Error getting queue info for ${marketplace}:`, error);
+      return { running: 0, pending: 0, reservoir: null };
+    }
   }
 
   /**

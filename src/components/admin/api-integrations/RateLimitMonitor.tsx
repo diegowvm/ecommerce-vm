@@ -43,7 +43,7 @@ export const RateLimitMonitor: React.FC = () => {
 
       for (const connection of connections || []) {
         const status = rateLimitManager.getRateLimitStatus(connection.marketplace_name);
-        const queueInfo = rateLimitManager.getQueueInfo(connection.marketplace_name);
+        const queueInfo = await rateLimitManager.getQueueInfo(connection.marketplace_name);
         const settings = connection.settings as any;
 
         rateLimitData.push({
