@@ -98,29 +98,69 @@ export function AdminDashboard() {
       const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
       const conversionRate = usersCount.count && totalOrders ? (totalOrders / usersCount.count) * 100 : 0;
 
-      // Mock data for charts (replace with real data later)
-      const salesData = [
-        { month: 'Jan', revenue: 12000, orders: 45 },
-        { month: 'Fev', revenue: 19000, orders: 67 },
-        { month: 'Mar', revenue: 15000, orders: 52 },
-        { month: 'Abr', revenue: 25000, orders: 89 },
-        { month: 'Mai', revenue: 22000, orders: 78 },
-        { month: 'Jun', revenue: 30000, orders: 95 }
-      ];
+      // Processar dados reais para gráficos
+      const currentDate = new Date();
+      const last6Months = [];
+      
+      for (let i = 5; i >= 0; i--) {
+        const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+        const monthName = date.toLocaleDateString('pt-BR', { month: 'short' });
+        const monthOrders = ordersData.data?.filter(order => {
+          const orderDate = new Date(order.created_at);
+          return orderDate.getMonth() === date.getMonth() && orderDate.getFullYear() === date.getFullYear();
+        }) || [];
+        
+        last6Months.push({
+          month: monthName,
+          revenue: monthOrders.reduce((sum, order) => sum + Number(order.total), 0),
+          orders: monthOrders.length
+        });
+      }
 
-      const categoryData = [
-        { name: 'Esportivos', value: 35, color: COLORS[0] },
-        { name: 'Casual', value: 30, color: COLORS[1] },
-        { name: 'Formal', value: 20, color: COLORS[2] },
-        { name: 'Outros', value: 15, color: COLORS[3] }
-      ];
+      // Buscar produtos mais vendidos reais
+      const { data: topProductsData } = await supabase
+        .from('order_items')
+        .select(`
+          product_id,
+          quantity,
+          price,
+          products (name)
+        `)
+        .limit(100);
 
-      const statusData = [
-        { status: 'Entregue', count: 156, color: '#10B981' },
-        { status: 'Processando', count: 43, color: '#F59E0B' },
-        { status: 'Enviado', count: 27, color: '#3B82F6' },
-        { status: 'Cancelado', count: 12, color: '#EF4444' }
-      ];
+      const productSales = topProductsData?.reduce((acc, item) => {
+        const productName = item.products?.name || 'Produto Desconhecido';
+        if (!acc[productName]) {
+          acc[productName] = { name: productName, sales: 0, revenue: 0 };
+        }
+        acc[productName].sales += item.quantity;
+        acc[productName].revenue += item.price * item.quantity;
+        return acc;
+      }, {} as Record<string, { name: string; sales: number; revenue: number }>) || {};
+
+      const topProducts = Object.values(productSales)
+        .sort((a, b) => b.sales - a.sales)
+        .slice(0, 3);
+
+      // Buscar estatísticas reais de status
+      const statusCounts = ordersData.data?.reduce((acc, order) => {
+        const status = order.status || 'pending';
+        const statusMap = {
+          'pending': 'Processando',
+          'shipped': 'Enviado',
+          'delivered': 'Entregue',
+          'cancelled': 'Cancelado'
+        };
+        const displayStatus = statusMap[status as keyof typeof statusMap] || 'Outros';
+        acc[displayStatus] = (acc[displayStatus] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>) || {};
+
+      const statusData = Object.entries(statusCounts).map(([status, count], index) => ({
+        status,
+        count,
+        color: ['#10B981', '#F59E0B', '#3B82F6', '#EF4444'][index] || '#6B7280'
+      }));
 
       setStats({
         totalProducts: productsCount.count || 0,
@@ -131,15 +171,17 @@ export function AdminDashboard() {
         monthlyOrders,
         averageOrderValue,
         conversionRate,
-        topProducts: [
-          { name: 'Air Max Pro', sales: 156, revenue: 23400 },
-          { name: 'Classic Runner', sales: 134, revenue: 19800 },
-          { name: 'Sport Elite', sales: 98, revenue: 14200 }
+        topProducts: topProducts.length > 0 ? topProducts : [
+          { name: 'Nenhum produto vendido', sales: 0, revenue: 0 }
         ],
         recentOrders: ordersData.data?.slice(0, 5) || [],
-        salesData,
-        categoryData,
-        statusData
+        salesData: last6Months,
+        categoryData: [
+          { name: 'Sem dados', value: 100, color: COLORS[0] }
+        ],
+        statusData: statusData.length > 0 ? statusData : [
+          { status: 'Sem pedidos', count: 0, color: '#6B7280' }
+        ]
       });
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
