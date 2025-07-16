@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
-import { waitFor } from '@testing-library/react';
 import { useWishlist } from '../useWishlist';
 import { createMockUser } from '@/test-utils/factories';
 
@@ -46,11 +45,13 @@ describe('useWishlist', () => {
           order: vi.fn().mockResolvedValue({ data: [], error: null }),
         }),
       }),
+      insert: vi.fn(),
+      delete: vi.fn(),
     });
 
     const { result } = renderHook(() => useWishlist());
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(result.current.wishlistItems).toEqual([]);
       expect(result.current.loading).toBe(false);
     });
@@ -68,11 +69,13 @@ describe('useWishlist', () => {
           order: vi.fn().mockResolvedValue({ data: mockWishlistItems, error: null }),
         }),
       }),
+      insert: vi.fn(),
+      delete: vi.fn(),
     });
 
     const { result } = renderHook(() => useWishlist());
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(result.current.wishlistItems).toEqual(mockWishlistItems);
       expect(result.current.loading).toBe(false);
     });
@@ -93,7 +96,7 @@ describe('useWishlist', () => {
 
     const { result } = renderHook(() => useWishlist());
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
 
@@ -124,7 +127,7 @@ describe('useWishlist', () => {
 
     const { result } = renderHook(() => useWishlist());
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
 
@@ -151,7 +154,7 @@ describe('useWishlist', () => {
 
     const { result } = renderHook(() => useWishlist());
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
 
@@ -175,7 +178,7 @@ describe('useWishlist', () => {
 
     const { result } = renderHook(() => useWishlist());
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(result.current.wishlistItems).toEqual([]);
       expect(result.current.loading).toBe(false);
     });

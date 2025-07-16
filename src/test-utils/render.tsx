@@ -25,4 +25,3 @@ const customRender = (ui: ReactElement, options?: RenderOptions) =>
 
 export * from '@testing-library/react';
 export { customRender as render };
-export { screen, waitFor } from '@testing-library/react';
