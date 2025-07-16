@@ -416,6 +416,126 @@ export class ProductSyncService {
     
     return data || [];
   }
+  
+  /**
+   * Update product stock and price from marketplace
+   */
+  async updateProductStockAndPrice(
+    productId: string, 
+    marketplaceName: string
+  ): Promise<{ success: boolean; message: string }> {
+    try {
+      // Get product details to find marketplace product ID
+      const { data: product, error: productError } = await supabase
+        .from('products')
+        .select('name, description')
+        .eq('id', productId)
+        .single();
+
+      if (productError || !product) {
+        throw new Error(`Product not found: ${productId}`);
+      }
+
+      // Create adapter for the marketplace
+      // TODO: Get real credentials from secure storage
+      const mockCredentials = this.getMockCredentials(marketplaceName);
+      const adapter = this.createAdapter(marketplaceName, mockCredentials);
+
+      if (!adapter) {
+        throw new Error(`Unsupported marketplace: ${marketplaceName}`);
+      }
+
+      // Authenticate
+      if (!adapter.isAuthenticated) {
+        const authSuccess = await adapter.authenticate();
+        if (!authSuccess) {
+          throw new Error(`Authentication failed for ${marketplaceName}`);
+        }
+      }
+
+      // Search for the product to get current data
+      // Using product name as search query (in real implementation, you'd store marketplace_product_id)
+      const searchResults = await adapter.searchProducts({
+        query: product.name,
+        limit: 1
+      });
+
+      if (searchResults.length === 0) {
+        throw new Error(`Product not found in ${marketplaceName}`);
+      }
+
+      const marketplaceProduct = searchResults[0];
+
+      // Update product in database
+      const { error: updateError } = await supabase
+        .from('products')
+        .update({
+          price: marketplaceProduct.price,
+          original_price: marketplaceProduct.originalPrice,
+          stock: marketplaceProduct.stock || 0,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', productId);
+
+      if (updateError) {
+        throw new Error(`Failed to update product: ${updateError.message}`);
+      }
+
+      return {
+        success: true,
+        message: `Product ${productId} updated successfully from ${marketplaceName}`
+      };
+
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error(`Failed to update product ${productId}:`, errorMessage);
+      
+      return {
+        success: false,
+        message: errorMessage
+      };
+    }
+  }
+
+  /**
+   * Helper method to create marketplace adapter
+   */
+  private createAdapter(marketplaceName: string, credentials: any) {
+    const { createMarketplaceAdapter } = require('@/integrations/marketplaces');
+    
+    try {
+      return createMarketplaceAdapter(marketplaceName as any, credentials);
+    } catch (error) {
+      console.error(`Failed to create adapter for ${marketplaceName}:`, error);
+      return null;
+    }
+  }
+
+  /**
+   * Get mock credentials (replace with real secure storage)
+   */
+  private getMockCredentials(marketplaceName: string) {
+    const credentialsMap = {
+      'MercadoLivre': {
+        clientId: 'mock_ml_client_id',
+        clientSecret: 'mock_ml_client_secret',
+        redirectUri: 'http://localhost:3000/auth/callback'
+      },
+      'Amazon': {
+        clientId: 'mock_amazon_client_id',
+        clientSecret: 'mock_amazon_client_secret',
+        refreshToken: 'mock_refresh_token',
+        region: 'us-east-1',
+        sellerId: 'mock_seller_id'
+      },
+      'AliExpress': {
+        appKey: 'mock_aliexpress_app_key',
+        appSecret: 'mock_aliexpress_app_secret'
+      }
+    };
+
+    return credentialsMap[marketplaceName] || {};
+  }
 }
 
 // Export singleton instance
