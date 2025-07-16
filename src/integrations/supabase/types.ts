@@ -130,6 +130,83 @@ export type Database = {
         }
         Relationships: []
       }
+      marketplace_category_mappings: {
+        Row: {
+          created_at: string
+          id: string
+          marketplace_category_id: string
+          marketplace_category_name: string
+          marketplace_name: string
+          updated_at: string
+          xegai_category_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          marketplace_category_id: string
+          marketplace_category_name: string
+          marketplace_name: string
+          updated_at?: string
+          xegai_category_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          marketplace_category_id?: string
+          marketplace_category_name?: string
+          marketplace_name?: string
+          updated_at?: string
+          xegai_category_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_category_mappings_xegai_category_id_fkey"
+            columns: ["xegai_category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_sync_logs: {
+        Row: {
+          completed_at: string | null
+          errors: string[] | null
+          id: string
+          marketplace_name: string
+          operation_type: string
+          products_imported: number | null
+          products_processed: number | null
+          products_updated: number | null
+          started_at: string
+          status: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          errors?: string[] | null
+          id?: string
+          marketplace_name: string
+          operation_type: string
+          products_imported?: number | null
+          products_processed?: number | null
+          products_updated?: number | null
+          started_at?: string
+          status?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          errors?: string[] | null
+          id?: string
+          marketplace_name?: string
+          operation_type?: string
+          products_imported?: number | null
+          products_processed?: number | null
+          products_updated?: number | null
+          started_at?: string
+          status?: string | null
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           color: string | null
