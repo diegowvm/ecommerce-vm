@@ -21,6 +21,8 @@ import AdminUsers from "./pages/admin/AdminUsers";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AdminInventory from "./pages/admin/AdminInventory";
 import AdminSettings from "./pages/admin/AdminSettings";
+import AdminMarketplaces from "./pages/admin/AdminMarketplaces";
+import AdminReturns from "./pages/admin/AdminReturns";
 import AddressBook from "./pages/user/AddressBook";
 import Wishlist from "./pages/user/Wishlist";
 import NotFound from "./pages/NotFound";
@@ -49,7 +51,7 @@ const App = () => (
                 <Checkout />
               </ProtectedRoute>
             } />
-            <Route path="/order-confirmation/:orderId" element={
+            <Route path="/order-confirmation" element={
               <ProtectedRoute>
                 <OrderConfirmation />
               </ProtectedRoute>
@@ -59,6 +61,18 @@ const App = () => (
                 <Profile />
               </ProtectedRoute>
             } />
+            <Route path="/profile/addresses" element={
+              <ProtectedRoute>
+                <AddressBook />
+              </ProtectedRoute>
+            } />
+            <Route path="/profile/wishlist" element={
+              <ProtectedRoute>
+                <Wishlist />
+              </ProtectedRoute>
+            } />
+            
+            {/* Admin routes */}
             <Route path="/admin" element={
               <ProtectedRoute requireAdmin>
                 <AdminDashboard />
@@ -99,20 +113,17 @@ const App = () => (
                 <AdminSettings />
               </ProtectedRoute>
             } />
-            
-            {/* User Pages */}
-            <Route path="/profile/addresses" element={
-              <ProtectedRoute>
-                <AddressBook />
+            <Route path="/admin/marketplaces" element={
+              <ProtectedRoute requireAdmin>
+                <AdminMarketplaces />
               </ProtectedRoute>
             } />
-            <Route path="/profile/wishlist" element={
-              <ProtectedRoute>
-                <Wishlist />
+            <Route path="/admin/returns" element={
+              <ProtectedRoute requireAdmin>
+                <AdminReturns />
               </ProtectedRoute>
             } />
             
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

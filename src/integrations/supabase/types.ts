@@ -255,31 +255,103 @@ export type Database = {
           },
         ]
       }
+      order_returns: {
+        Row: {
+          created_at: string
+          id: string
+          marketplace_return_id: string | null
+          order_id: string
+          order_item_id: string | null
+          processed_at: string | null
+          reason: string
+          refund_amount: number | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          marketplace_return_id?: string | null
+          order_id: string
+          order_item_id?: string | null
+          processed_at?: string | null
+          reason: string
+          refund_amount?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          marketplace_return_id?: string | null
+          order_id?: string
+          order_item_id?: string | null
+          processed_at?: string | null
+          reason?: string
+          refund_amount?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_returns_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_returns_order_item_id_fkey"
+            columns: ["order_item_id"]
+            isOneToOne: false
+            referencedRelation: "order_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           created_at: string
           id: string
+          marketplace_order_id: string | null
+          marketplace_status: string | null
+          return_reason: string | null
+          return_requested_at: string | null
+          return_status: string | null
           shipping_address: Json | null
           status: string
           total: number
+          tracking_code: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           created_at?: string
           id?: string
+          marketplace_order_id?: string | null
+          marketplace_status?: string | null
+          return_reason?: string | null
+          return_requested_at?: string | null
+          return_status?: string | null
           shipping_address?: Json | null
           status?: string
           total: number
+          tracking_code?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           created_at?: string
           id?: string
+          marketplace_order_id?: string | null
+          marketplace_status?: string | null
+          return_reason?: string | null
+          return_requested_at?: string | null
+          return_status?: string | null
           shipping_address?: Json | null
           status?: string
           total?: number
+          tracking_code?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -296,6 +368,7 @@ export type Database = {
           id: string
           image_url: string | null
           images: string[] | null
+          marketplace_name: string | null
           name: string
           original_price: number | null
           price: number
@@ -313,6 +386,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           images?: string[] | null
+          marketplace_name?: string | null
           name: string
           original_price?: number | null
           price: number
@@ -330,6 +404,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           images?: string[] | null
+          marketplace_name?: string | null
           name?: string
           original_price?: number | null
           price?: number

@@ -188,6 +188,103 @@ function chunkArray<T>(array: T[], chunkSize: number): T[][] {
 }
 
 /**
+ * Schedule hourly order status sync
+ */
+export async function scheduleHourlyOrderStatusSync() {
+  console.log('Starting hourly order status sync...');
+
+  try {
+    // Get orders that need status updates
+    const { data: orders, error } = await supabase
+      .from('orders')
+      .select('*')
+      .in('status', ['pending', 'confirmed', 'processing', 'shipped'])
+      .order('updated_at', { ascending: true });
+
+    if (error) {
+      throw new Error(`Failed to fetch orders: ${error.message}`);
+    }
+
+    if (!orders || orders.length === 0) {
+      console.log('No orders found for status sync');
+      return;
+    }
+
+    // Filter orders that have marketplace information
+    const marketplaceOrders = orders.filter((order: any) => 
+      order.marketplace_order_id && order.marketplace_name
+    );
+
+    if (marketplaceOrders.length === 0) {
+      console.log('No marketplace orders found for status sync');
+      return;
+    }
+
+    console.log(`Found ${marketplaceOrders.length} marketplace orders to sync status`);
+
+    const { orderFulfillmentService } = await import('@/services/OrderFulfillmentService');
+    
+    let successCount = 0;
+    let errorCount = 0;
+
+    // Process orders with delay to respect rate limits
+    for (const order of marketplaceOrders) {
+      try {
+        const result = await orderFulfillmentService.updateOrderStatusFromMarketplace(order.id);
+        
+        if (result.success) {
+          successCount++;
+          console.log(`✓ Updated order ${order.id} status`);
+        } else {
+          errorCount++;
+          console.error(`✗ Failed to update order ${order.id}:`, result.message);
+        }
+
+        // Add delay between requests
+        await delay(2000); // 2 seconds
+
+      } catch (error) {
+        errorCount++;
+        console.error(`✗ Error updating order ${order.id}:`, error);
+      }
+    }
+
+    console.log(`Order status sync completed. Success: ${successCount}, Errors: ${errorCount}`);
+
+    // Log sync summary
+    await supabase
+      .from('marketplace_sync_logs')
+      .insert({
+        marketplace_name: 'Order Status Sync',
+        operation_type: 'hourly_order_status_update',
+        products_processed: marketplaceOrders.length,
+        products_imported: 0,
+        products_updated: successCount,
+        errors: errorCount > 0 ? [`${errorCount} orders failed to sync`] : [],
+        status: errorCount === 0 ? 'completed' : 'completed',
+        completed_at: new Date().toISOString()
+      });
+
+  } catch (error) {
+    console.error('Hourly order status sync failed:', error);
+    
+    // Log sync error
+    await supabase
+      .from('marketplace_sync_logs')
+      .insert({
+        marketplace_name: 'Order Status Sync',
+        operation_type: 'hourly_order_status_update',
+        products_processed: 0,
+        products_imported: 0,
+        products_updated: 0,
+        errors: [error instanceof Error ? error.message : 'Unknown error'],
+        status: 'failed',
+        completed_at: new Date().toISOString()
+      });
+  }
+}
+
+/**
  * Start scheduled sync with interval
  */
 export function startScheduledSync() {
@@ -196,14 +293,23 @@ export function startScheduledSync() {
     console.log('Starting initial daily sync...');
     scheduleDailySync();
     
+    console.log('Starting initial hourly order status sync...');
+    scheduleHourlyOrderStatusSync();
+    
     // Schedule daily sync (24 hours = 24 * 60 * 60 * 1000 ms)
     setInterval(() => {
       console.log('Running scheduled daily sync...');
       scheduleDailySync();
     }, 24 * 60 * 60 * 1000);
     
-    console.log('Daily sync scheduler started');
+    // Schedule hourly order status sync (1 hour = 60 * 60 * 1000 ms)
+    setInterval(() => {
+      console.log('Running scheduled hourly order status sync...');
+      scheduleHourlyOrderStatusSync();
+    }, 60 * 60 * 1000);
+    
+    console.log('Daily sync and hourly order status sync schedulers started');
   } else {
-    console.log('Daily sync scheduler disabled in development mode');
+    console.log('Sync schedulers disabled in development mode');
   }
 }
