@@ -10,6 +10,11 @@ export {
   validateSession
 } from './auth';
 
+// Import adapters for internal use
+import { MercadoLivreAdapter } from './adapters/MercadoLivreAdapter';
+import { AmazonAdapter } from './adapters/AmazonAdapter';
+import { AliExpressAdapter } from './adapters/AliExpressAdapter';
+
 // Adapter exports
 export { MercadoLivreAdapter } from './adapters/MercadoLivreAdapter';
 export { AmazonAdapter } from './adapters/AmazonAdapter';
