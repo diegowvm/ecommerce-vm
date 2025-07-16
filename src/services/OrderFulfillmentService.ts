@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { createMarketplaceAdapter } from '@/integrations/marketplaces';
+import { ApiReliabilityService } from './ApiReliabilityService';
 import { 
   OrderRequest, 
   OrderConfirmation,
