@@ -25,6 +25,7 @@ import {
   Search,
   Upload
 } from 'lucide-react';
+import { AddApiDialog } from './AddApiDialog';
 
 interface ApiConnection {
   id: string;
@@ -317,6 +318,7 @@ export function RealApiConnectionsManager() {
           <TabsTrigger value="connections">Conexões</TabsTrigger>
           <TabsTrigger value="products">Produtos Importados</TabsTrigger>
           <TabsTrigger value="sync">Sincronização</TabsTrigger>
+          <TabsTrigger value="config">Configurações</TabsTrigger>
         </TabsList>
 
         <TabsContent value="connections" className="space-y-4">
@@ -506,48 +508,79 @@ export function RealApiConnectionsManager() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        <TabsContent value="config" className="space-y-4">
+          <div className="grid gap-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Status das Conexões</CardTitle>
+                <CardDescription>
+                  Monitoramento das conexões de API e suas configurações
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {connections.map((connection) => (
+                    <div key={connection.id} className="border rounded-lg p-4 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <span className="text-2xl">{getMarketplaceIcon(connection.marketplace_name)}</span>
+                          <div>
+                            <h4 className="font-medium">{connection.connection_name}</h4>
+                            <p className="text-sm text-muted-foreground">{connection.marketplace_name}</p>
+                          </div>
+                        </div>
+                        {getStatusBadge(connection.connection_status)}
+                      </div>
+                      
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                        <div>
+                          <p className="text-muted-foreground">Última verificação</p>
+                          <p>{connection.last_test_at ? new Date(connection.last_test_at).toLocaleString() : 'Nunca'}</p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">Rate limit</p>
+                          <p>{connection.rate_limit_remaining || 'N/A'}</p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">OAuth expira</p>
+                          <p>{connection.oauth_expires_at ? new Date(connection.oauth_expires_at).toLocaleDateString() : 'N/A'}</p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">Status</p>
+                          <Switch 
+                            checked={connection.is_active}
+                            onCheckedChange={async (checked) => {
+                              await supabase
+                                .from('api_connections')
+                                .update({ is_active: checked })
+                                .eq('id', connection.id);
+                              loadConnections();
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
       </Tabs>
 
       {/* Dialog para nova conexão */}
-      <Dialog open={showConnectionDialog} onOpenChange={setShowConnectionDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Conectar Marketplace</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="grid gap-4">
-              <Button 
-                className="justify-start h-16" 
-                variant="outline"
-                onClick={() => handleOAuthConnect('mercadolivre')}
-                disabled={isLoading}
-              >
-                <span className="text-2xl mr-3">🛒</span>
-                <div className="text-left">
-                  <div className="font-medium">MercadoLivre</div>
-                  <div className="text-sm text-muted-foreground">
-                    Conectar com MercadoLivre Brasil
-                  </div>
-                </div>
-              </Button>
-              <Button 
-                className="justify-start h-16" 
-                variant="outline"
-                onClick={() => handleOAuthConnect('amazon')}
-                disabled={isLoading}
-              >
-                <span className="text-2xl mr-3">📦</span>
-                <div className="text-left">
-                  <div className="font-medium">Amazon</div>
-                  <div className="text-sm text-muted-foreground">
-                    Conectar com Amazon SP-API
-                  </div>
-                </div>
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <AddApiDialog
+        open={showConnectionDialog}
+        onOpenChange={setShowConnectionDialog}
+        onAdd={(newApi) => {
+          loadConnections();
+          toast({
+            title: "Conexão Adicionada",
+            description: `${newApi.name} foi configurado com sucesso!`,
+          });
+        }}
+      />
 
       {/* Dialog para busca de produtos */}
       <Dialog open={showProductSearch} onOpenChange={setShowProductSearch}>

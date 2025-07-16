@@ -8,6 +8,8 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { TestTube, AlertCircle, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface ApiConnection {
   name: string;
@@ -36,6 +38,7 @@ export function AddApiDialog({ open, onOpenChange, onAdd }: AddApiDialogProps) {
   const [isTestingConnection, setIsTestingConnection] = useState(false);
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const platforms = [
     { value: 'MercadoLivre', label: 'MercadoLivre' },
@@ -92,27 +95,23 @@ export function AddApiDialog({ open, onOpenChange, onAdd }: AddApiDialogProps) {
     setTestResult(null);
 
     try {
-      // Simulate API test
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Random success/failure for demo
-      const success = Math.random() > 0.3;
-      
-      if (success) {
-        setTestResult({
-          success: true,
-          message: 'Conexão testada com sucesso!'
-        });
-      } else {
-        setTestResult({
-          success: false,
-          message: 'Falha na conexão. Verifique as credenciais.'
-        });
-      }
-    } catch (error) {
+      const { data, error } = await supabase.functions.invoke('test-marketplace-api', {
+        body: {
+          marketplace: platform,
+          credentials
+        }
+      });
+
+      if (error) throw error;
+
+      setTestResult({
+        success: true,
+        message: 'Conexão testada com sucesso!'
+      });
+    } catch (error: any) {
       setTestResult({
         success: false,
-        message: 'Erro ao testar conexão'
+        message: error.message || 'Erro ao testar conexão'
       });
     } finally {
       setIsTestingConnection(false);
@@ -131,7 +130,7 @@ export function AddApiDialog({ open, onOpenChange, onAdd }: AddApiDialogProps) {
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!testResult?.success) {
       toast({
         title: "Teste de Conexão Necessário",
@@ -141,23 +140,70 @@ export function AddApiDialog({ open, onOpenChange, onAdd }: AddApiDialogProps) {
       return;
     }
 
-    const newApi: Omit<ApiConnection, 'id'> = {
-      name,
-      platform,
-      status: 'connected',
-      lastSync: 'Nunca',
-      totalProducts: 0,
-      successRate: 0
-    };
+    if (!user) {
+      toast({
+        title: "Erro de Autenticação",
+        description: "Usuário não autenticado",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    onAdd(newApi);
-    
-    // Reset form
-    setStep(1);
-    setPlatform('');
-    setName('');
-    setCredentials({});
-    setTestResult(null);
+    try {
+      // Salvar credenciais no Supabase Secrets
+      const { error } = await supabase.functions.invoke('save-marketplace-credentials', {
+        body: {
+          marketplace: platform,
+          credentials
+        }
+      });
+
+      if (error) throw error;
+
+      // Criar conexão na tabela api_connections
+      const { error: dbError } = await supabase
+        .from('api_connections')
+        .insert({
+          connection_name: name,
+          marketplace_name: platform,
+          connection_status: 'connected',
+          user_id: user.id,
+          last_test_at: new Date().toISOString(),
+          is_active: true
+        });
+
+      if (dbError) throw dbError;
+
+      toast({
+        title: "Conexão Salva",
+        description: "Credenciais salvas com sucesso!",
+      });
+
+      const newApi: Omit<ApiConnection, 'id'> = {
+        name,
+        platform,
+        status: 'connected',
+        lastSync: 'Nunca',
+        totalProducts: 0,
+        successRate: 0
+      };
+
+      onAdd(newApi);
+      
+      // Reset form
+      setStep(1);
+      setPlatform('');
+      setName('');
+      setCredentials({});
+      setTestResult(null);
+      onOpenChange(false);
+    } catch (error: any) {
+      toast({
+        title: "Erro ao Salvar",
+        description: error.message || "Erro ao salvar conexão",
+        variant: "destructive",
+      });
+    }
   };
 
   const credentialFields = getCredentialFields(platform);
