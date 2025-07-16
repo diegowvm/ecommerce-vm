@@ -1,31 +1,18 @@
-import { useState } from "react"
 import { NavLink, useLocation } from "react-router-dom"
 import {
   LayoutDashboard,
   Package,
   ShoppingCart,
   Users,
-  UserCheck,
   BarChart3,
   Settings,
-  FileBarChart,
-  CreditCard,
-  MessageSquare,
-  Bell,
-  ShieldCheck,
   Database,
+  Store,
+  Zap,
   Activity,
-  TrendingUp,
-  PieChart,
-  Calendar,
-  Mail,
-  Phone,
-  Building2,
-  Truck,
-  Star,
-  Tags,
+  RotateCcw,
   Layers,
-  Filter
+  ShieldCheck
 } from "lucide-react"
 
 import {
@@ -44,38 +31,28 @@ import {
 const mainItems = [
   { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
   { title: "Analytics", url: "/admin/analytics", icon: BarChart3 },
-  { title: "Vendas", url: "/admin/sales", icon: TrendingUp },
 ]
 
-const crmItems = [
-  { title: "Clientes", url: "/admin/customers", icon: Users },
-  { title: "Leads", url: "/admin/leads", icon: UserCheck },
-  { title: "Comunicação", url: "/admin/communication", icon: MessageSquare },
-  { title: "Campanhas", url: "/admin/campaigns", icon: Mail },
-  { title: "Tickets", url: "/admin/tickets", icon: Phone },
-]
-
-const erpItems = [
+const catalogItems = [
   { title: "Produtos", url: "/admin/products", icon: Package },
   { title: "Categorias", url: "/admin/categories", icon: Layers },
   { title: "Estoque", url: "/admin/inventory", icon: Database },
-  { title: "Pedidos", url: "/admin/orders", icon: ShoppingCart },
-  { title: "Fornecedores", url: "/admin/suppliers", icon: Building2 },
-  { title: "Entregas", url: "/admin/deliveries", icon: Truck },
 ]
 
-const reportsItems = [
-  { title: "Relatórios", url: "/admin/reports", icon: FileBarChart },
-  { title: "Financeiro", url: "/admin/financial", icon: CreditCard },
-  { title: "Performance", url: "/admin/performance", icon: Activity },
-  { title: "Insights", url: "/admin/insights", icon: PieChart },
+const operationsItems = [
+  { title: "Pedidos", url: "/admin/orders", icon: ShoppingCart },
+  { title: "Devoluções", url: "/admin/returns", icon: RotateCcw },
+  { title: "Usuários", url: "/admin/users", icon: Users },
+]
+
+const integrationsItems = [
+  { title: "Marketplaces", url: "/admin/marketplaces", icon: Store },
+  { title: "Integrações API", url: "/admin/api-integrations", icon: Zap },
+  { title: "Monitoramento", url: "/admin/api-monitoring", icon: Activity },
 ]
 
 const systemItems = [
-  { title: "Usuários", url: "/admin/users", icon: UserCheck },
-  { title: "Permissões", url: "/admin/permissions", icon: ShieldCheck },
   { title: "Configurações", url: "/admin/settings", icon: Settings },
-  { title: "Notificações", url: "/admin/notifications", icon: Bell },
 ]
 
 export function AdminSidebar() {
@@ -144,14 +121,14 @@ export function AdminSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* CRM Section */}
+        {/* Catálogo Section */}
         <SidebarGroup>
           <SidebarGroupLabel className={collapsed ? "sr-only" : ""}>
-            CRM
+            Catálogo
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {crmItems.map((item) => (
+              {catalogItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <NavLink to={item.url} className={getNavCls(item.url)}>
@@ -165,14 +142,14 @@ export function AdminSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* ERP Section */}
+        {/* Operações Section */}
         <SidebarGroup>
           <SidebarGroupLabel className={collapsed ? "sr-only" : ""}>
-            ERP
+            Operações
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {erpItems.map((item) => (
+              {operationsItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <NavLink to={item.url} className={getNavCls(item.url)}>
@@ -186,14 +163,14 @@ export function AdminSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* Reports Section */}
+        {/* Integrações Section */}
         <SidebarGroup>
           <SidebarGroupLabel className={collapsed ? "sr-only" : ""}>
-            Relatórios
+            Integrações
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {reportsItems.map((item) => (
+              {integrationsItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <NavLink to={item.url} className={getNavCls(item.url)}>
