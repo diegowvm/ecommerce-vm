@@ -1,31 +1,26 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Search, ShoppingBag, User, Menu, X, LogOut, Settings } from "lucide-react";
+import { Button } from "./button";
+import { Input } from "./input";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "./dropdown-menu";
+import { Badge } from "./badge";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { SearchCommand } from "@/components/ui/search-command";
-import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
-import { Menu, X, Search, User, ShoppingCart, LogOut, Settings, Command } from "lucide-react";
 
 export function Navbar() {
-  const { user, signOut } = useAuth();
-  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [cartItemsCount, setCartItemsCount] = useState(0);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showSearch, setShowSearch] = useState(false);
-
-  // Keyboard shortcuts
-  useKeyboardShortcuts({
-    onSearchOpen: () => setShowSearch(true)
-  });
+  const [searchTerm, setSearchTerm] = useState('');
+  const { user, signOut, isAdmin } = useAuth();
+  const navigate = useNavigate();
 
   const navigationItems = [
     { name: "Produtos", href: "/products" },
-    { name: "Sobre", href: "/about" },
-    { name: "Como Funciona", href: "/how-it-works" },
-    { name: "Contato", href: "/contact" },
+    { name: "Masculino", href: "/products?category=masculino" },
+    { name: "Feminino", href: "/products?category=feminino" },
+    { name: "Infantil", href: "/products?category=infantil" },
+    { name: "Outlet", href: "/products?category=outlet" },
   ];
 
   useEffect(() => {
@@ -52,12 +47,6 @@ export function Navbar() {
       navigate(`/products?search=${encodeURIComponent(searchTerm.trim())}`);
       setSearchTerm('');
       setIsMenuOpen(false);
-    }
-  };
-
-  const handleQuickSearch = (query: string) => {
-    if (query.trim()) {
-      navigate(`/products?search=${encodeURIComponent(query.trim())}`);
     }
   };
 
@@ -90,23 +79,27 @@ export function Navbar() {
             ))}
           </div>
 
-          {/* Search */}
-          <div className="hidden md:flex items-center">
-            <Button
-              variant="ghost"
-              onClick={() => setShowSearch(true)}
-              className="gap-2 text-muted-foreground hover:text-foreground"
-            >
-              <Search className="w-4 h-4" />
-              <span className="hidden lg:inline">Buscar...</span>
-              <kbd className="hidden lg:inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
-                <span className="text-xs">⌘</span>K
-              </kbd>
-            </Button>
-          </div>
+          {/* Search Bar */}
+          <form onSubmit={handleSearch} className="hidden md:flex relative">
+            <Input
+              type="search"
+              placeholder="Buscar produtos..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-64 pr-10 bg-surface/50 border-border/30 focus:border-primary/50"
+            />
+            <button type="submit" className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              <Search className="h-4 w-4 text-muted-foreground" />
+            </button>
+          </form>
 
           {/* Actions */}
           <div className="flex items-center space-x-4">
+            {/* Mobile Search */}
+            <Button variant="ghost" size="icon" className="md:hidden">
+              <Search className="h-5 w-5" />
+            </Button>
+            
             {/* User Account */}
             {user ? (
               <DropdownMenu>
@@ -126,18 +119,14 @@ export function Navbar() {
                       Meu Perfil
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/wishlist">
-                      <Settings className="mr-2 h-4 w-4" />
-                      Lista de Favoritos
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/address-book">
-                      <Settings className="mr-2 h-4 w-4" />
-                      Meus Endereços
-                    </Link>
-                  </DropdownMenuItem>
+                  {isAdmin && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin">
+                        <Settings className="mr-2 h-4 w-4" />
+                        Painel Admin
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut}>
                     <LogOut className="mr-2 h-4 w-4" />
@@ -153,14 +142,14 @@ export function Navbar() {
               </Button>
             )}
             
-            {/* Shopping Cart */}
+            {/* Shopping Bag */}
             <Button variant="ghost" size="icon" className="hover-glow relative" asChild>
               <Link to="/cart">
-                <ShoppingCart className="h-5 w-5" />
+                <ShoppingBag className="h-5 w-5" />
                 {cartItemsCount > 0 && (
-                  <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs">
+                  <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
                     {cartItemsCount}
-                  </span>
+                  </Badge>
                 )}
               </Link>
             </Button>
@@ -179,19 +168,19 @@ export function Navbar() {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 space-y-4">
-          {/* Mobile Search */}
-          <div className="md:hidden mb-4">
-            <Button
-              variant="ghost"
-              onClick={() => setShowSearch(true)}
-              className="w-full justify-start gap-2 text-muted-foreground"
-            >
-              <Search className="w-4 h-4" />
-              Buscar produtos...
-            </Button>
-          </div>
-
+          <div className="md:hidden py-4 space-y-4 animate-slide-up">
+            <form onSubmit={handleSearch} className="relative mb-4">
+              <Input
+                type="search"
+                placeholder="Buscar produtos..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pr-10 bg-surface/50 border-border/30"
+              />
+              <button type="submit" className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <Search className="h-4 w-4 text-muted-foreground" />
+              </button>
+            </form>
             {navigationItems.map((item) => (
               <Link
                 key={item.name}
@@ -214,9 +203,6 @@ export function Navbar() {
           </div>
         )}
       </div>
-
-      {/* Global Search Command */}
-      <SearchCommand open={showSearch} onOpenChange={setShowSearch} />
     </nav>
   );
 }

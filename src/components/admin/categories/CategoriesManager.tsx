@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Plus, Layers, Search, Package, Eye } from 'lucide-react';
+import { Plus, Layers, Search } from 'lucide-react';
 import { CategoryList } from './CategoryList';
 import { CategoryForm } from './CategoryForm';
 import { PaginationComponent } from '@/components/ui/pagination-component';
@@ -52,7 +50,7 @@ export function CategoriesManager() {
       let query = supabase
         .from('categories')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('name');
 
       // Apply filters
       if (searchTerm) {
@@ -65,24 +63,7 @@ export function CategoriesManager() {
       const { data, error } = await query;
 
       if (error) throw error;
-      
-      // Get product count for each category
-      const categoriesWithCount = await Promise.all(
-        (data || []).map(async (category) => {
-          const { count } = await supabase
-            .from('products')
-            .select('*', { count: 'exact', head: true })
-            .eq('category_id', category.id)
-            .eq('active', true);
-          
-          return {
-            ...category,
-            product_count: count || 0
-          };
-        })
-      );
-      
-      setCategories(categoriesWithCount);
+      setCategories(data || []);
     } catch (error) {
       console.error('Error fetching categories:', error);
       toast({
@@ -182,64 +163,35 @@ export function CategoriesManager() {
         </Button>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total de Categorias</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalItems}</div>
-            <p className="text-xs text-muted-foreground">
-              Categorias cadastradas
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Produtos Categorizados</CardTitle>
-            <Eye className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {categories.reduce((sum, cat) => sum + (cat.product_count || 0), 0)}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Produtos com categoria
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Média por Categoria</CardTitle>
-            <Layers className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {categories.length > 0 ? Math.round(categories.reduce((sum, cat) => sum + (cat.product_count || 0), 0) / categories.length) : 0}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Produtos por categoria
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Stats Card */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Total de Categorias</CardTitle>
+          <Layers className="h-4 w-4 text-primary" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{categories.length}</div>
+          <p className="text-xs text-muted-foreground">
+            categorias cadastradas
+          </p>
+        </CardContent>
+      </Card>
 
       {/* Search */}
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-          <Input
-            placeholder="Buscar categorias..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-9"
-          />
-        </div>
-      </div>
+      <Card>
+        <CardContent className="p-6">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+            <input
+              type="text"
+              placeholder="Buscar categorias..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-border rounded-lg bg-background"
+            />
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Categories List */}
       <CategoryList

@@ -3,7 +3,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "./button";
 import { ArrowRight, Star, Heart, ShoppingBag } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "./carousel";
-import { LazyImage } from "./lazy-image";
 
 interface Product {
   id: string;
@@ -125,24 +124,19 @@ export function FeaturedProducts() {
                           {/* Background Gradient Effect */}
                           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                           
-                            {/* Image Container */}
-                            <div className="relative aspect-square overflow-hidden">
-                              {product.image_url || (product.images && product.images[0]) ? (
-                                <LazyImage
-                                  src={product.image_url || product.images?.[0] || ''}
-                                  alt={product.name}
-                                  width={600}
-                                  height={600}
-                                  aspectRatio="1/1"
-                                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                  fallbackSrc="/placeholder.svg"
-                                  containerClassName="w-full h-full"
-                                />
-                              ) : (
-                                <div className="w-full h-full bg-gradient-to-br from-muted/20 to-muted/40 flex items-center justify-center">
-                                  <ShoppingBag className="w-16 h-16 text-muted-foreground/30" />
-                                </div>
-                              )}
+                          {/* Image Container */}
+                          <div className="relative aspect-square overflow-hidden">
+                            {product.image_url || (product.images && product.images[0]) ? (
+                              <img
+                                src={product.image_url || product.images?.[0]}
+                                alt={product.name}
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-gradient-to-br from-muted/20 to-muted/40 flex items-center justify-center">
+                                <ShoppingBag className="w-16 h-16 text-muted-foreground/30" />
+                              </div>
+                            )}
                             
                             {/* Overlay Gradient */}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>

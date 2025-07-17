@@ -81,16 +81,7 @@ export default function Products() {
       }
 
       if (category && category !== 'all') {
-        // First get category ID from slug
-        const { data: categoryData } = await supabase
-          .from('categories')
-          .select('id')
-          .eq('slug', category)
-          .single();
-          
-        if (categoryData) {
-          query = query.eq('category_id', categoryData.id);
-        }
+        query = query.eq('categories.slug', category);
       }
 
       // Apply sorting

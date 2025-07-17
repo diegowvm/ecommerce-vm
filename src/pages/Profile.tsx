@@ -69,16 +69,10 @@ export default function Profile() {
         .from('profiles')
         .select('*')
         .eq('user_id', user.id)
-        .maybeSingle();
+        .single();
 
-      if (error) {
-        console.error('Error loading profile:', error);
-        toast({
-          title: "Erro",
-          description: "Não foi possível carregar o perfil.",
-          variant: "destructive",
-        });
-        return;
+      if (error && error.code !== 'PGRST116') {
+        throw error;
       }
 
       if (data) {
@@ -87,37 +81,9 @@ export default function Profile() {
           full_name: data.full_name || '',
           phone: data.phone || '',
         });
-      } else {
-        // Create profile if it doesn't exist
-        const newProfile = {
-          user_id: user.id,
-          full_name: user.user_metadata?.full_name || '',
-          phone: user.user_metadata?.phone || '',
-        };
-        
-        const { data: createdProfile, error: createError } = await supabase
-          .from('profiles')
-          .insert([newProfile])
-          .select()
-          .single();
-
-        if (createError) {
-          console.error('Error creating profile:', createError);
-        } else {
-          setProfile(createdProfile);
-          setFormData({
-            full_name: createdProfile.full_name || '',
-            phone: createdProfile.phone || '',
-          });
-        }
       }
     } catch (error) {
       console.error('Error loading profile:', error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível carregar o perfil.",
-        variant: "destructive",
-      });
     }
   };
 

@@ -1,18 +1,11 @@
 import { Button } from "./button";
 import { ArrowRight, Play } from "lucide-react";
 import heroShoe from "@/assets/hero-shoe.jpg";
-import { OptimizedImage } from "./optimized-image";
-import { useImagePreloader } from "@/hooks/useImagePreloader";
 export function HeroSection() {
-  // Preload critical hero image
-  useImagePreloader({
-    images: [heroShoe],
-    priority: true
-  });
   return <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-hero">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
-        <OptimizedImage src={heroShoe} alt="Hero Product" width={1920} height={1080} priority={true} lazy={false} className="w-full h-full object-cover opacity-50" />
+        <img src={heroShoe} alt="Hero Product" className="w-full h-full object-cover opacity-50" />
         <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/50 to-transparent" />
       </div>
 
@@ -45,9 +38,15 @@ export function HeroSection() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
+              <Button size="lg" className="btn-gradient hover-glow group text-lg px-8 py-6">
+                Explorar Coleção
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
               
-              
-              
+              <Button variant="outline" size="lg" className="btn-glass group text-lg px-8 py-6">
+                <Play className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                Assistir Vídeo
+              </Button>
             </div>
 
             <div className="flex items-center space-x-8 text-sm text-muted-foreground">
@@ -68,7 +67,7 @@ export function HeroSection() {
 
           <div className="relative">
             <div className="relative z-10 animate-float">
-              
+              <img src={heroShoe} alt="Tênis Futurístico" className="w-full max-w-md mx-auto drop-shadow-2xl" />
             </div>
             
             {/* Glow Effects */}
@@ -80,7 +79,9 @@ export function HeroSection() {
 
       {/* Scroll Indicator */}
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-        
+        <div className="w-6 h-10 border-2 border-primary/50 rounded-full flex justify-center">
+          <div className="w-1 h-3 bg-primary rounded-full mt-2 animate-pulse" />
+        </div>
       </div>
     </section>;
 }

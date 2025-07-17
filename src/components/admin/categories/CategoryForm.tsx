@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, Save, Upload, X } from 'lucide-react';
+import { ArrowLeft, Save } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -16,7 +16,6 @@ interface CategoryFormProps {
 export function CategoryForm({ category, onSave, onCancel }: CategoryFormProps) {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
@@ -50,43 +49,6 @@ export function CategoryForm({ category, onSave, onCancel }: CategoryFormProps) 
       name,
       slug: generateSlug(name)
     }));
-  };
-
-  const handleImageUpload = async (file: File) => {
-    if (!file) return;
-
-    setUploading(true);
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `categories/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(filePath);
-
-      setFormData(prev => ({ ...prev, image_url: publicUrl }));
-      
-      toast({
-        title: "Sucesso",
-        description: "Imagem carregada com sucesso.",
-      });
-    } catch (error) {
-      console.error('Erro ao fazer upload:', error);
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Não foi possível fazer upload da imagem.",
-      });
-    } finally {
-      setUploading(false);
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -185,57 +147,28 @@ export function CategoryForm({ category, onSave, onCancel }: CategoryFormProps) 
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="image_url">Imagem da Categoria</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  id="image_url"
-                  type="url"
-                  value={formData.image_url}
-                  onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
-                  placeholder="https://example.com/image.jpg"
-                />
-                <div className="relative">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) handleImageUpload(file);
-                    }}
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    disabled={uploading}
-                    className="gap-2"
-                  >
-                    <Upload className="h-4 w-4" />
-                    {uploading ? "Carregando..." : "Upload"}
-                  </Button>
-                </div>
-              </div>
+              <Label htmlFor="image_url">URL da Imagem</Label>
+              <Input
+                id="image_url"
+                type="url"
+                value={formData.image_url}
+                onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
+                placeholder="https://example.com/image.jpg"
+              />
             </div>
 
             {formData.image_url && (
               <div className="space-y-2">
                 <Label>Preview da Imagem</Label>
-                <div className="relative">
-                  <img
-                    src={formData.image_url}
+                <div className="w-32 h-32 rounded-lg bg-muted/20 overflow-hidden">
+                  <img 
+                    src={formData.image_url} 
                     alt="Preview"
-                    className="w-32 h-32 object-cover rounded-lg"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
                   />
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="sm"
-                    className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0"
-                    onClick={() => setFormData(prev => ({ ...prev, image_url: '' }))}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
                 </div>
               </div>
             )}
