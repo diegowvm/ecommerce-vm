@@ -1,6 +1,7 @@
 import { Facebook, Instagram, Twitter, Youtube, Mail, Phone, MapPin } from "lucide-react";
 import { Button } from "./button";
 import { Input } from "./input";
+import { Link } from "react-router-dom";
 
 export function Footer() {
   const footerLinks = {
@@ -128,32 +129,24 @@ export function Footer() {
           <div className="space-y-6">
             <h4 className="font-semibold text-lg">Ajuda</h4>
             <ul className="space-y-3">
-              {footerLinks.ajuda.map((link) => (
-                <li key={link}>
-                  <a 
-                    href="#" 
-                    className="text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    {link}
-                  </a>
-                </li>
-              ))}
+              <li><Link to="/help" className="text-muted-foreground hover:text-primary transition-colors">Central de Ajuda</Link></li>
+              <li><Link to="/profile" className="text-muted-foreground hover:text-primary transition-colors">Meus Pedidos</Link></li>
+              <li><Link to="/return-policy" className="text-muted-foreground hover:text-primary transition-colors">Trocas e Devoluções</Link></li>
+              <li><Link to="/size-guide" className="text-muted-foreground hover:text-primary transition-colors">Guia de Tamanhos</Link></li>
+              <li><Link to="/how-it-works" className="text-muted-foreground hover:text-primary transition-colors">Formas de Pagamento</Link></li>
+              <li><Link to="/how-it-works" className="text-muted-foreground hover:text-primary transition-colors">Frete e Entrega</Link></li>
             </ul>
           </div>
 
           <div className="space-y-6">
             <h4 className="font-semibold text-lg">Empresa</h4>
             <ul className="space-y-3">
-              {footerLinks.empresa.map((link) => (
-                <li key={link}>
-                  <a 
-                    href="#" 
-                    className="text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    {link}
-                  </a>
-                </li>
-              ))}
+              <li><Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">Sobre Nós</Link></li>
+              <li><Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">Carreiras</Link></li>
+              <li><Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">Imprensa</Link></li>
+              <li><Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">Sustentabilidade</Link></li>
+              <li><Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">Investidores</Link></li>
+              <li><Link to="/terms-of-service" className="text-muted-foreground hover:text-primary transition-colors">Termos de Uso</Link></li>
             </ul>
           </div>
         </div>
