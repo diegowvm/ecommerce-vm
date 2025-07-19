@@ -61,14 +61,15 @@ export default function Auth() {
           </Link>
         </div>
 
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold gradient-text mb-2">XEGAI OUTLET</h1>
-          <p className="text-muted-foreground">Entre na sua conta ou crie uma nova</p>
-        </div>
+
 
         <Card className="glass border-border/20">
           <CardHeader className="text-center">
-            <CardTitle>Acesso à Conta</CardTitle>
+            <img 
+              src="/placeholder.png" 
+              alt="Xegai Shop" 
+              className="h-56 w-auto mx-auto mb-0" 
+            />
             <CardDescription>
               Faça login ou cadastre-se para continuar
             </CardDescription>

@@ -99,7 +99,7 @@ export default function About() {
                 Nossa História
               </Badge>
               <h1 className="text-4xl md:text-6xl font-bold gradient-text">
-                Sobre a Xegai Outlet
+                Sobre a Xegai Shop
               </h1>
               <p className="text-xl text-muted-foreground leading-relaxed">
                 Somos uma empresa apaixonada por moda e tecnologia, dedicada a conectar pessoas 
@@ -189,9 +189,11 @@ export default function About() {
               
               <div className="relative">
                 <div className="aspect-square bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl flex items-center justify-center">
-                  <div className="text-6xl gradient-text font-bold">
-                    XEGAI
-                  </div>
+                  <img 
+                    src="/placeholder.png" 
+                    alt="Xegai Shop" 
+                    className="h-80 w-auto" 
+                  />
                 </div>
                 <div className="absolute -bottom-4 -right-4 bg-background border border-border rounded-lg p-4 shadow-lg">
                   <div className="flex items-center gap-3">
@@ -309,7 +311,7 @@ export default function About() {
               </h2>
               <p className="text-muted-foreground text-lg">
                 Junte-se a milhares de clientes satisfeitos e descubra por que 
-                a Xegai Outlet é a escolha certa para suas compras online.
+                a Xegai Shop é a escolha certa para suas compras online.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" className="btn-gradient">

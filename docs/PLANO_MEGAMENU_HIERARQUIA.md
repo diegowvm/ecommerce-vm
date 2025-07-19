@@ -143,4 +143,4 @@ graph TD
 
 ---
 
-**Este plano serve como blueprint para a implementação completa do MegaMenu dinâmico e hierarquia de categorias no Xegai Outlet.** 
+**Este plano serve como blueprint para a implementação completa do MegaMenu dinâmico e hierarquia de categorias no Xegai Shop .** 

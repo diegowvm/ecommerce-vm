@@ -34,7 +34,7 @@ export default function Contact() {
       icon: Mail,
       title: "E-mail",
       description: "Envie sua mensagem",
-      contact: "contato.xegaientregas@gmail.com",
+      contact: "contato@xegaishop.com.br",
       availability: "Resposta em até 24 horas",
       color: "bg-blue-500/10 text-blue-600",
       action: "Enviar E-mail"
@@ -67,13 +67,13 @@ export default function Contact() {
       icon: User,
       title: "Recursos Humanos",
       description: "Carreiras e oportunidades de trabalho",
-      email: "rh@xegaioutlet.com"
+      email: "rh@xegaishop.com.br"
     },
     {
       icon: Globe,
       title: "Imprensa",
       description: "Assessoria de imprensa e mídia",
-      email: "imprensa@xegaioutlet.com"
+      email: "imprensa@xegaishop.com.br"
     }
   ];
 
@@ -258,7 +258,7 @@ export default function Contact() {
                   <CardContent>
                     <div className="space-y-4">
                       <div>
-                        <h4 className="font-semibold mb-2">Xegai Outlet</h4>
+                        <h4 className="font-semibold mb-2">Xegai Shop</h4>
                         <p className="text-muted-foreground">
                           Maringá, Paraná<br />
                           Brasil<br />

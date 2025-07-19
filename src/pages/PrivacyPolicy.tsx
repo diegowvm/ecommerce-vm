@@ -13,7 +13,7 @@ const PrivacyPolicy = () => {
             <section>
               <h2 className="text-2xl font-semibold text-foreground mb-4">1. Compromisso com a Privacidade</h2>
               <p>
-                O Xegai Outlet está comprometido com a proteção da privacidade e dos dados pessoais de nossos 
+                O Xegai Shop está comprometido com a proteção da privacidade e dos dados pessoais de nossos 
                 usuários, em conformidade com a Lei Geral de Proteção de Dados (LGPD - Lei 13.709/2018) e 
                 demais regulamentações aplicáveis, incluindo o GDPR para usuários europeus.
               </p>

@@ -3,6 +3,7 @@ import { Footer } from "@/components/ui/footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import { 
   Search,
   ShoppingCart,
@@ -140,7 +141,7 @@ export default function HowItWorks() {
                 Como Funciona
               </Badge>
               <h1 className="text-4xl md:text-6xl font-bold gradient-text">
-                Como Comprar na Xegai Outlet
+                Como Comprar na Xegai Shop
               </h1>
               <p className="text-xl text-muted-foreground">
                 Descubra como é fácil, rápido e seguro fazer suas compras conosco. 
@@ -239,7 +240,7 @@ export default function HowItWorks() {
         <section className="py-20 bg-muted/20">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold mb-4">Por que Escolher a Xegai Outlet?</h2>
+              <h2 className="text-3xl font-bold mb-4">Por que Escolher a Xegai Shop?</h2>
               <p className="text-muted-foreground text-lg">
                 Oferecemos muito mais que produtos de qualidade
               </p>
@@ -387,9 +388,11 @@ export default function HowItWorks() {
                 <Button size="lg" className="btn-gradient">
                   Explorar Produtos
                 </Button>
-                <Button size="lg" variant="outline">
-                  Criar Minha Conta
-                </Button>
+                <Link to="/auth">
+                  <Button size="lg" variant="outline">
+                    Criar Minha Conta
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>

@@ -70,9 +70,11 @@ export function Footer() {
           {/* Brand Section */}
           <div className="lg:col-span-2 space-y-6">
             <div>
-              <h2 className="text-3xl font-bold gradient-text mb-4">
-                XEGAI OUTLET
-              </h2>
+              <img 
+                src="/placeholder.png" 
+                alt="Xegai Shop" 
+                className="h-48 w-auto mb-4" 
+              />
               <p className="text-muted-foreground leading-relaxed">
                 Seu destino de moda online: os melhores calçados, roupas e acessórios premium em um só lugar, com qualidade e confiança.
               </p>
@@ -85,7 +87,7 @@ export function Footer() {
               </div>
               <div className="flex items-center space-x-3 text-muted-foreground">
                 <Mail className="h-5 w-5 text-primary" />
-                <span>contato.xegaientregas@gmail.com</span>
+                <span>contato@xegaishop.com.br</span>
               </div>
               <div className="flex items-center space-x-3 text-muted-foreground">
                 <MapPin className="h-5 w-5 text-primary" />
@@ -157,7 +159,7 @@ export function Footer() {
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-muted-foreground text-sm">
-              © 2025 Xegai Outlet. Todos os direitos reservados.
+              © 2025 Xegai Shop. Todos os direitos reservados.
             </p>
             <div className="flex space-x-6 text-sm">
               <a href="#" className="text-muted-foreground hover:text-primary transition-colors">

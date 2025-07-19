@@ -13,7 +13,7 @@ const TermsOfService = () => {
             <section>
               <h2 className="text-2xl font-semibold text-foreground mb-4">1. Definições e Natureza do Serviço</h2>
               <p>
-                O Xegai Outlet é uma plataforma de comércio eletrônico que atua como intermediário e revendedor, 
+                O Xegai Shop é uma plataforma de comércio eletrônico que atua como intermediário e revendedor, 
                 conectando consumidores a produtos de fornecedores terceiros. Importante destacar que os produtos 
                 comercializados em nossa plataforma são enviados diretamente pelos fornecedores originais.
               </p>
@@ -27,7 +27,7 @@ const TermsOfService = () => {
             <section>
               <h2 className="text-2xl font-semibold text-foreground mb-4">2. Aceite dos Termos</h2>
               <p>
-                Ao acessar e utilizar o site do Xegai Outlet, você concorda integralmente com estes Termos de Uso. 
+                Ao acessar e utilizar o site do Xegai Shop, você concorda integralmente com estes Termos de Uso. 
                 Caso não concorde com qualquer disposição, solicitamos que não utilize nossos serviços.
               </p>
             </section>
@@ -70,7 +70,7 @@ const TermsOfService = () => {
                 de entrega são estimativas e podem variar conforme a localização e disponibilidade do fornecedor.
               </p>
               <p>
-                O Xegai Outlet atua como facilitador no processo de entrega, mas a execução física é de 
+                O Xegai Shop atua como facilitador no processo de entrega, mas a execução física é de 
                 responsabilidade do fornecedor original.
               </p>
             </section>
@@ -78,7 +78,7 @@ const TermsOfService = () => {
             <section>
               <h2 className="text-2xl font-semibold text-foreground mb-4">7. Limitação de Responsabilidade</h2>
               <p>
-                O Xegai Outlet não se responsabiliza por danos indiretos, consequenciais ou incidentais 
+                O Xegai Shop não se responsabiliza por danos indiretos, consequenciais ou incidentais 
                 decorrentes do uso de nossos serviços. Nossa responsabilidade está limitada ao valor do 
                 produto adquirido.
               </p>

@@ -1,8 +1,8 @@
-# XEGAI OUTLET - Documentação do Projeto
+# XEGAI SHOP - Documentação do Projeto
 
 ## Visão Geral
 
-O **Xegai Outlet** é uma plataforma de e-commerce moderna, focada em moda, calçados, roupas e acessórios, que conecta consumidores a produtos de qualidade de marcas renomadas, com experiência de compra inovadora, segura e acessível. O projeto é desenvolvido com tecnologias de ponta e integra funcionalidades avançadas tanto para o usuário final quanto para administradores e empresas parceiras.
+O **Xegai Shop** é uma plataforma de e-commerce moderna, focada em moda, calçados, roupas e acessórios, que conecta consumidores a produtos de qualidade de marcas renomadas, com experiência de compra inovadora, segura e acessível. O projeto é desenvolvido com tecnologias de ponta e integra funcionalidades avançadas tanto para o usuário final quanto para administradores e empresas parceiras.
 
 ---
 

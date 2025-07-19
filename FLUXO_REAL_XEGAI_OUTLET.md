@@ -1,6 +1,6 @@
-# Fluxo Real das Rotas - XEGAI OUTLET
+# Fluxo Real das Rotas - XEGAI SHOP
 
-Este documento descreve, de forma prática e detalhada, o fluxo de cada rota principal do projeto Xegai Outlet, desde o layout até as ações finais, incluindo movimentação de dados, navegação, integrações e componentes envolvidos.
+Este documento descreve, de forma prática e detalhada, o fluxo de cada rota principal do projeto Xegai Shop, desde o layout até as ações finais, incluindo movimentação de dados, navegação, integrações e componentes envolvidos.
 
 ---
 

@@ -60,12 +60,12 @@ export function Navbar() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center -ml-16">
+          <div className="flex items-center -ml-20 md:-ml-16">
             <Link to="/" className="flex items-center">
               <img 
                 src="/placeholder.png" 
-                alt="Xegai Outlet" 
-                className="h-32 w-auto scale-125" 
+                alt="Xegai Shop" 
+                className="h-24 md:h-32 w-auto scale-125" 
               />
             </Link>
           </div>

@@ -13,7 +13,7 @@ const ReturnPolicy = () => {
             <section>
               <h2 className="text-2xl font-semibold text-foreground mb-4">1. Compromisso com a Satisfação</h2>
               <p>
-                O Xegai Outlet está comprometido com a satisfação de nossos clientes e oferece uma política 
+                O Xegai Shop está comprometido com a satisfação de nossos clientes e oferece uma política 
                 de devolução transparente e justa, atuando como facilitador no processo entre você e nossos 
                 fornecedores parceiros.
               </p>
@@ -22,13 +22,13 @@ const ReturnPolicy = () => {
             <section>
               <h2 className="text-2xl font-semibold text-foreground mb-4">2. Natureza da Operação de Devolução</h2>
               <p>
-                <strong>Importante:</strong> Como o Xegai Outlet atua como intermediário entre consumidores e 
+                <strong>Importante:</strong> Como o Xegai Shop atua como intermediário entre consumidores e 
                 fornecedores, as políticas de devolução podem variar ligeiramente dependendo do fornecedor 
                 original do produto. No entanto, garantimos que todas as devoluções respeitarão os direitos 
                 mínimos estabelecidos pelo Código de Defesa do Consumidor.
               </p>
               <p>
-                O Xegai Outlet atuará como facilitador em todo o processo de devolução, coordenando com o 
+                O Xegai Shop atuará como facilitador em todo o processo de devolução, coordenando com o 
                 fornecedor original para garantir que sua solicitação seja atendida adequadamente.
               </p>
             </section>
@@ -165,7 +165,7 @@ const ReturnPolicy = () => {
             <section>
               <h2 className="text-2xl font-semibold text-foreground mb-4">12. Resolução de Conflitos</h2>
               <p>
-                Caso haja divergências no processo de devolução, o Xegai Outlet atuará como mediador 
+                Caso haja divergências no processo de devolução, o Xegai Shop atuará como mediador 
                 entre você e o fornecedor, sempre priorizando os direitos do consumidor estabelecidos 
                 pela legislação brasileira.
               </p>
