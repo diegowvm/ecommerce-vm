@@ -1,5 +1,5 @@
 import { AdminLayout } from '@/layouts/AdminLayout';
-import { AdminDashboard } from "@/components/admin/AdminDashboard";
+import AnalyticsManager from "@/components/admin/analytics/AnalyticsManager";
 
 export default function AdminAnalytics() {
   return (
@@ -7,7 +7,7 @@ export default function AdminAnalytics() {
       title="Analytics Avançado" 
       description="Análises detalhadas e relatórios"
     >
-      <AdminDashboard />
+      <AnalyticsManager />
     </AdminLayout>
   );
 }
