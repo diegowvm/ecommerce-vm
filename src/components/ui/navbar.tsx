@@ -60,9 +60,13 @@ export function Navbar() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center">
-            <Link to="/" className="text-2xl font-bold gradient-text">
-              XEGAI OUTLET
+          <div className="flex items-center -ml-16">
+            <Link to="/" className="flex items-center">
+              <img 
+                src="/placeholder.png" 
+                alt="Xegai Outlet" 
+                className="h-32 w-auto scale-125" 
+              />
             </Link>
           </div>
 
