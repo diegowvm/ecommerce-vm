@@ -5,6 +5,7 @@ import { Button } from "./button";
 import { Input } from "./input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "./dropdown-menu";
 import { Badge } from "./badge";
+import { MegaMenu } from "./mega-menu";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -15,13 +16,32 @@ export function Navbar() {
   const { user, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
 
-  const navigationItems = [
-    { name: "Produtos", href: "/products" },
-    { name: "Masculino", href: "/products?category=masculino" },
-    { name: "Feminino", href: "/products?category=feminino" },
-    { name: "Infantil", href: "/products?category=infantil" },
-    { name: "Outlet", href: "/products?category=outlet" },
-  ];
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const { data, error } = await supabase.rpc('fetch_categories_with_subcategories');
+      if (error) throw error;
+      
+      // Transform subcategories from jsonb to array
+      const transformedData = (data || []).map((category: any) => ({
+        ...category,
+        subcategories: Array.isArray(category.subcategories) 
+          ? category.subcategories 
+          : typeof category.subcategories === 'string' 
+          ? JSON.parse(category.subcategories)
+          : []
+      }));
+      
+      setCategories(transformedData);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
 
   useEffect(() => {
     if (user) {
@@ -71,16 +91,8 @@ export function Navbar() {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navigationItems.map((item) => (
-              <Link
-                key={item.name}
-                to={item.href}
-                className="text-foreground/80 hover:text-foreground transition-colors duration-200 hover:gradient-text"
-              >
-                {item.name}
-              </Link>
-            ))}
+          <div className="hidden md:flex">
+            <MegaMenu />
           </div>
 
           {/* Search Bar */}
@@ -185,15 +197,37 @@ export function Navbar() {
                 <Search className="h-4 w-4 text-muted-foreground" />
               </button>
             </form>
-            {navigationItems.map((item) => (
-              <Link
-                key={item.name}
-                to={item.href}
-                className="block text-foreground/80 hover:text-primary transition-colors duration-200 py-2"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {item.name}
-              </Link>
+            <Link
+              to="/products"
+              className="block text-foreground/80 hover:text-primary transition-colors duration-200 py-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Produtos
+            </Link>
+            {categories.map((category) => (
+              <div key={category.id} className="space-y-2">
+                <Link
+                  to={`/products?category=${category.slug}`}
+                  className="block text-foreground/80 hover:text-primary transition-colors duration-200 py-2 font-medium"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {category.name}
+                </Link>
+                {category.subcategories && category.subcategories.length > 0 && (
+                  <div className="ml-4 space-y-1">
+                    {category.subcategories.map((subcategory) => (
+                      <Link
+                        key={subcategory.id}
+                        to={`/products?category=${category.slug}&subcategory=${subcategory.slug}`}
+                        className="block text-sm text-foreground/60 hover:text-primary transition-colors duration-200 py-1"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        {subcategory.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
             ))}
             {!user && (
               <Link

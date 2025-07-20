@@ -8,13 +8,14 @@ import { ArrowLeft, Save } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
-interface CategoryFormProps {
-  category?: any;
+interface SubcategoryFormProps {
+  categoryId: string;
+  subcategory?: any;
   onSave: () => void;
   onCancel: () => void;
 }
 
-export function CategoryForm({ category, onSave, onCancel }: CategoryFormProps) {
+export function SubcategoryForm({ categoryId, subcategory, onSave, onCancel }: SubcategoryFormProps) {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -26,16 +27,16 @@ export function CategoryForm({ category, onSave, onCancel }: CategoryFormProps) 
   });
 
   useEffect(() => {
-    if (category) {
+    if (subcategory) {
       setFormData({
-        name: category.name || '',
-        slug: category.slug || '',
-        description: category.description || '',
-        image_url: category.image_url || '',
-        order: category.order || 0
+        name: subcategory.name || '',
+        slug: subcategory.slug || '',
+        description: subcategory.description || '',
+        image_url: subcategory.image_url || '',
+        order: subcategory.order || 0
       });
     }
-  }, [category]);
+  }, [subcategory]);
 
   const generateSlug = (name: string) => {
     return name
@@ -61,7 +62,8 @@ export function CategoryForm({ category, onSave, onCancel }: CategoryFormProps) 
     setLoading(true);
 
     try {
-      const categoryData = {
+      const subcategoryData = {
+        category_id: categoryId,
         name: formData.name,
         slug: formData.slug,
         description: formData.description || null,
@@ -70,30 +72,30 @@ export function CategoryForm({ category, onSave, onCancel }: CategoryFormProps) 
       };
 
       let result;
-      if (category) {
+      if (subcategory) {
         result = await supabase
-          .from('categories')
-          .update(categoryData)
-          .eq('id', category.id);
+          .from('subcategories')
+          .update(subcategoryData)
+          .eq('id', subcategory.id);
       } else {
         result = await supabase
-          .from('categories')
-          .insert([categoryData]);
+          .from('subcategories')
+          .insert([subcategoryData]);
       }
 
       if (result.error) throw result.error;
 
       toast({
         title: "Sucesso",
-        description: category ? "Categoria atualizada com sucesso" : "Categoria criada com sucesso",
+        description: subcategory ? "Subcategoria atualizada com sucesso" : "Subcategoria criada com sucesso",
       });
 
       onSave();
     } catch (error) {
-      console.error('Error saving category:', error);
+      console.error('Error saving subcategory:', error);
       toast({
         title: "Erro",
-        description: "Não foi possível salvar a categoria",
+        description: "Não foi possível salvar a subcategoria",
         variant: "destructive",
       });
     } finally {
@@ -116,10 +118,10 @@ export function CategoryForm({ category, onSave, onCancel }: CategoryFormProps) 
         </Button>
         <div>
           <h2 className="text-3xl font-bold tracking-tight">
-            {category ? 'Editar Categoria' : 'Nova Categoria'}
+            {subcategory ? 'Editar Subcategoria' : 'Nova Subcategoria'}
           </h2>
           <p className="text-muted-foreground">
-            {category ? 'Atualize as informações da categoria' : 'Adicione uma nova categoria'}
+            {subcategory ? 'Atualize as informações da subcategoria' : 'Adicione uma nova subcategoria'}
           </p>
         </div>
       </div>
@@ -127,11 +129,11 @@ export function CategoryForm({ category, onSave, onCancel }: CategoryFormProps) 
       <form onSubmit={handleSubmit} className="max-w-2xl">
         <Card>
           <CardHeader>
-            <CardTitle>Informações da Categoria</CardTitle>
+            <CardTitle>Informações da Subcategoria</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Nome da Categoria *</Label>
+              <Label htmlFor="name">Nome da Subcategoria *</Label>
               <Input
                 id="name"
                 value={formData.name}
@@ -146,7 +148,7 @@ export function CategoryForm({ category, onSave, onCancel }: CategoryFormProps) 
                 id="slug"
                 value={formData.slug}
                 onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
-                placeholder="categoria-exemplo"
+                placeholder="subcategoria-exemplo"
               />
               <p className="text-sm text-muted-foreground">
                 O slug é gerado automaticamente baseado no nome, mas pode ser editado
@@ -159,7 +161,7 @@ export function CategoryForm({ category, onSave, onCancel }: CategoryFormProps) 
                 id="description"
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Descrição da categoria..."
+                placeholder="Descrição da subcategoria..."
                 rows={3}
               />
             </div>
@@ -214,7 +216,7 @@ export function CategoryForm({ category, onSave, onCancel }: CategoryFormProps) 
           </Button>
           <Button type="submit" disabled={loading}>
             <Save className="w-4 h-4 mr-2" />
-            {loading ? 'Salvando...' : 'Salvar Categoria'}
+            {loading ? 'Salvando...' : 'Salvar Subcategoria'}
           </Button>
         </div>
       </form>

@@ -298,24 +298,33 @@ export type Database = {
       categories: {
         Row: {
           created_at: string
+          description: string | null
           id: string
           image_url: string | null
           name: string
+          order: number | null
           slug: string
+          updated_at: string | null
         }
         Insert: {
           created_at?: string
+          description?: string | null
           id?: string
           image_url?: string | null
           name: string
+          order?: number | null
           slug: string
+          updated_at?: string | null
         }
         Update: {
           created_at?: string
+          description?: string | null
           id?: string
           image_url?: string | null
           name?: string
+          order?: number | null
           slug?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -764,6 +773,50 @@ export type Database = {
         }
         Relationships: []
       }
+      subcategories: {
+        Row: {
+          category_id: string
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+          order: number | null
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          category_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          order?: number | null
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          category_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          order?: number | null
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subcategories_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sync_executions: {
         Row: {
           api_connection_id: string
@@ -936,6 +989,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      fetch_categories_with_subcategories: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          name: string
+          slug: string
+          description: string
+          image_url: string
+          order: number
+          created_at: string
+          updated_at: string
+          subcategories: Json
+        }[]
+      }
+      generate_slug: {
+        Args: { input_text: string }
+        Returns: string
+      }
       is_admin: {
         Args: { user_id?: string }
         Returns: boolean

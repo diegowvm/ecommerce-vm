@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Plus, Layers, Search } from 'lucide-react';
+import { Plus, Layers, Search, Settings } from 'lucide-react';
 import { CategoryList } from './CategoryList';
 import { CategoryForm } from './CategoryForm';
+import { SubcategoryManager } from './SubcategoryManager';
 import { PaginationComponent } from '@/components/ui/pagination-component';
 import { usePagination, applyPagination, getSupabaseTotalCount } from '@/hooks/usePagination';
 import { supabase } from '@/integrations/supabase/client';
@@ -16,6 +17,8 @@ export function CategoriesManager() {
   const [showForm, setShowForm] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showSubcategories, setShowSubcategories] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   const {
     currentPage,
@@ -92,6 +95,16 @@ export function CategoriesManager() {
     fetchCategories();
   };
 
+  const handleManageSubcategories = (category) => {
+    setSelectedCategory(category);
+    setShowSubcategories(true);
+  };
+
+  const handleBackFromSubcategories = () => {
+    setShowSubcategories(false);
+    setSelectedCategory(null);
+  };
+
   const handleDeleteCategory = async (id) => {
     if (!confirm('Tem certeza que deseja excluir esta categoria?')) return;
 
@@ -136,6 +149,16 @@ export function CategoriesManager() {
 
   // Remove client-side filtering since we're doing server-side pagination
   const filteredCategories = categories;
+
+  if (showSubcategories && selectedCategory) {
+    return (
+      <SubcategoryManager
+        categoryId={selectedCategory.id}
+        categoryName={selectedCategory.name}
+        onBack={handleBackFromSubcategories}
+      />
+    );
+  }
 
   if (showForm) {
     return (
@@ -199,6 +222,7 @@ export function CategoriesManager() {
         loading={loading}
         onEdit={handleEditCategory}
         onDelete={handleDeleteCategory}
+        onManageSubcategories={handleManageSubcategories}
       />
 
       {/* Pagination */}

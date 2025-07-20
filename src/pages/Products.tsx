@@ -50,13 +50,25 @@ export default function Products() {
   }, [searchParams, pagination.currentPage, pagination.itemsPerPage]);
 
   const fetchCategories = async () => {
-    const { data } = await supabase
-      .from('categories')
-      .select('*')
-      .order('name');
-    
-    if (data) {
-      setCategories(data);
+    try {
+      const { data, error } = await supabase.rpc('fetch_categories_with_subcategories');
+      if (error) throw error;
+      
+      // Transform categories for select dropdown
+      const flatCategories = (data || []).map((category: any) => ({
+        id: category.id,
+        name: category.name,
+        slug: category.slug,
+        subcategories: Array.isArray(category.subcategories) 
+          ? category.subcategories 
+          : typeof category.subcategories === 'string' 
+          ? JSON.parse(category.subcategories)
+          : []
+      }));
+      
+      setCategories(flatCategories);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
     }
   };
 

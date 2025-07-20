@@ -8,13 +8,15 @@ import {
   TableHeader, 
   TableRow 
 } from '@/components/ui/table';
-import { Edit, Trash2, Eye, Image } from 'lucide-react';
+import { Edit, Trash2, Settings, Eye, Image } from 'lucide-react';
 
 interface Category {
   id: string;
   name: string;
   slug: string;
+  description?: string;
   image_url?: string;
+  order?: number;
   created_at: string;
 }
 
@@ -23,9 +25,10 @@ interface CategoryListProps {
   loading: boolean;
   onEdit: (category: Category) => void;
   onDelete: (id: string) => void;
+  onManageSubcategories?: (category: Category) => void;
 }
 
-export function CategoryList({ categories, loading, onEdit, onDelete }: CategoryListProps) {
+export function CategoryList({ categories, loading, onEdit, onDelete, onManageSubcategories }: CategoryListProps) {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('pt-BR');
   };
@@ -69,6 +72,8 @@ export function CategoryList({ categories, loading, onEdit, onDelete }: Category
               <TableRow>
                 <TableHead>Categoria</TableHead>
                 <TableHead>Slug</TableHead>
+                <TableHead>Descrição</TableHead>
+                <TableHead>Ordem</TableHead>
                 <TableHead>Imagem</TableHead>
                 <TableHead>Criado em</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
@@ -91,6 +96,16 @@ export function CategoryList({ categories, loading, onEdit, onDelete }: Category
                     </code>
                   </TableCell>
                   <TableCell>
+                    <p className="text-sm text-muted-foreground max-w-[200px] truncate">
+                      {category.description || 'Sem descrição'}
+                    </p>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm">
+                      {category.order || 0}
+                    </span>
+                  </TableCell>
+                  <TableCell>
                     <div className="w-12 h-12 rounded-lg bg-muted/20 flex items-center justify-center overflow-hidden">
                       {category.image_url ? (
                         <img 
@@ -108,6 +123,16 @@ export function CategoryList({ categories, loading, onEdit, onDelete }: Category
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center justify-end gap-2">
+                      {onManageSubcategories && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => onManageSubcategories(category)}
+                          title="Gerenciar Subcategorias"
+                        >
+                          <Settings className="w-4 h-4" />
+                        </Button>
+                      )}
                       <Button
                         variant="ghost"
                         size="sm"
