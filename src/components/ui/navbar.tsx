@@ -197,38 +197,47 @@ export function Navbar() {
                 <Search className="h-4 w-4 text-muted-foreground" />
               </button>
             </form>
-            <Link
-              to="/products"
-              className="block text-foreground/80 hover:text-primary transition-colors duration-200 py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Produtos
-            </Link>
-            {categories.map((category) => (
-              <div key={category.id} className="space-y-2">
-                <Link
-                  to={`/products?category=${category.slug}`}
-                  className="block text-foreground/80 hover:text-primary transition-colors duration-200 py-2 font-medium"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {category.name}
-                </Link>
-                {category.subcategories && category.subcategories.length > 0 && (
-                  <div className="ml-4 space-y-1">
-                    {category.subcategories.map((subcategory) => (
-                      <Link
-                        key={subcategory.id}
-                        to={`/products?category=${category.slug}&subcategory=${subcategory.slug}`}
-                        className="block text-sm text-foreground/60 hover:text-primary transition-colors duration-200 py-1"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        {subcategory.name}
-                      </Link>
-                    ))}
+            
+            {/* Produtos - Link principal */}
+            <div className="border-b border-border/20 pb-4">
+              <Link
+                to="/products"
+                className="block text-foreground/80 hover:text-primary transition-colors duration-200 py-2 font-semibold text-lg"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Produtos
+              </Link>
+              
+              {/* Categorias organizadas sob Produtos */}
+              <div className="ml-4 mt-2 space-y-3">
+                {categories.map((category) => (
+                  <div key={category.id} className="space-y-2">
+                    <Link
+                      to={`/products?category=${category.slug}`}
+                      className="block text-foreground/80 hover:text-primary transition-colors duration-200 py-2 font-medium"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {category.name}
+                    </Link>
+                    {category.subcategories && category.subcategories.length > 0 && (
+                      <div className="ml-4 space-y-1">
+                        {category.subcategories.map((subcategory) => (
+                          <Link
+                            key={subcategory.id}
+                            to={`/products?category=${category.slug}&subcategory=${subcategory.slug}`}
+                            className="block text-sm text-foreground/60 hover:text-primary transition-colors duration-200 py-1"
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            {subcategory.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                )}
+                ))}
               </div>
-            ))}
+            </div>
+            
             {!user && (
               <Link
                 to="/auth"
