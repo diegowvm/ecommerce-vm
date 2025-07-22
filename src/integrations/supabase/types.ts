@@ -65,6 +65,63 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_communications: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          metadata: Json | null
+          recipient_id: string | null
+          sender_id: string
+          sent_at: string | null
+          status: string
+          subject: string
+          template_id: string | null
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          metadata?: Json | null
+          recipient_id?: string | null
+          sender_id: string
+          sent_at?: string | null
+          status?: string
+          subject: string
+          template_id?: string | null
+          type?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          metadata?: Json | null
+          recipient_id?: string | null
+          sender_id?: string
+          sent_at?: string | null
+          status?: string
+          subject?: string
+          template_id?: string | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_communications_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "admin_communications_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       advanced_category_mappings: {
         Row: {
           api_connection_id: string
@@ -528,6 +585,56 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          action_url: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          message: string
+          metadata: Json | null
+          read_at: string | null
+          status: string
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          action_url?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          message: string
+          metadata?: Json | null
+          read_at?: string | null
+          status?: string
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          action_url?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          message?: string
+          metadata?: Json | null
+          read_at?: string | null
+          status?: string
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       order_items: {
         Row: {
           color: string | null
@@ -747,27 +854,51 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
+          date_of_birth: string | null
+          document: string | null
           full_name: string | null
+          gender: string | null
           id: string
+          last_login: string | null
+          login_count: number | null
+          marketing_consent: boolean | null
           phone: string | null
+          status: string | null
+          two_factor_enabled: boolean | null
           updated_at: string
           user_id: string
         }
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          date_of_birth?: string | null
+          document?: string | null
           full_name?: string | null
+          gender?: string | null
           id?: string
+          last_login?: string | null
+          login_count?: number | null
+          marketing_consent?: boolean | null
           phone?: string | null
+          status?: string | null
+          two_factor_enabled?: boolean | null
           updated_at?: string
           user_id: string
         }
         Update: {
           avatar_url?: string | null
           created_at?: string
+          date_of_birth?: string | null
+          document?: string | null
           full_name?: string | null
+          gender?: string | null
           id?: string
+          last_login?: string | null
+          login_count?: number | null
+          marketing_consent?: boolean | null
           phone?: string | null
+          status?: string | null
+          two_factor_enabled?: boolean | null
           updated_at?: string
           user_id?: string
         }
@@ -942,6 +1073,103 @@ export type Database = {
           },
         ]
       }
+      user_activity_logs: {
+        Row: {
+          action: string
+          created_at: string
+          description: string | null
+          id: string
+          ip_address: unknown | null
+          metadata: Json | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_activity_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      user_preferences: {
+        Row: {
+          created_at: string
+          currency: string | null
+          email_notifications: boolean | null
+          id: string
+          language: string | null
+          marketing_emails: boolean | null
+          newsletter: boolean | null
+          privacy_level: string | null
+          sms_notifications: boolean | null
+          theme: string | null
+          timezone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string | null
+          email_notifications?: boolean | null
+          id?: string
+          language?: string | null
+          marketing_emails?: boolean | null
+          newsletter?: boolean | null
+          privacy_level?: string | null
+          sms_notifications?: boolean | null
+          theme?: string | null
+          timezone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string | null
+          email_notifications?: boolean | null
+          id?: string
+          language?: string | null
+          marketing_emails?: boolean | null
+          newsletter?: boolean | null
+          privacy_level?: string | null
+          sms_notifications?: boolean | null
+          theme?: string | null
+          timezone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -960,6 +1188,76 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_tag_assignments: {
+        Row: {
+          assigned_by: string | null
+          created_at: string
+          id: string
+          tag_id: string
+          user_id: string
+        }
+        Insert: {
+          assigned_by?: string | null
+          created_at?: string
+          id?: string
+          tag_id: string
+          user_id: string
+        }
+        Update: {
+          assigned_by?: string | null
+          created_at?: string
+          id?: string
+          tag_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_tag_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "user_tag_assignments_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "user_tags"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_tag_assignments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      user_tags: {
+        Row: {
+          color: string | null
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
         }
         Relationships: []
       }
@@ -986,7 +1284,18 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      user_statistics: {
+        Row: {
+          active_users: number | null
+          active_users_7d: number | null
+          avg_login_count: number | null
+          banned_users: number | null
+          new_users_30d: number | null
+          suspended_users: number | null
+          total_users: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       fetch_categories_with_subcategories: {
@@ -1007,9 +1316,30 @@ export type Database = {
         Args: { input_text: string }
         Returns: string
       }
+      get_user_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          total_users: number
+          active_users: number
+          suspended_users: number
+          banned_users: number
+          new_users_30d: number
+          active_users_7d: number
+          avg_login_count: number
+        }[]
+      }
       is_admin: {
         Args: { user_id?: string }
         Returns: boolean
+      }
+      log_user_activity: {
+        Args: {
+          p_user_id: string
+          p_action: string
+          p_description?: string
+          p_metadata?: Json
+        }
+        Returns: undefined
       }
     }
     Enums: {
