@@ -1284,18 +1284,7 @@ export type Database = {
       }
     }
     Views: {
-      user_statistics: {
-        Row: {
-          active_users: number | null
-          active_users_7d: number | null
-          avg_login_count: number | null
-          banned_users: number | null
-          new_users_30d: number | null
-          suspended_users: number | null
-          total_users: number | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       admin_update_user_role: {
@@ -1322,6 +1311,18 @@ export type Database = {
       generate_slug: {
         Args: { input_text: string }
         Returns: string
+      }
+      get_user_statistics: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          total_users: number
+          active_users: number
+          suspended_users: number
+          banned_users: number
+          new_users_30d: number
+          active_users_7d: number
+          avg_login_count: number
+        }[]
       }
       get_user_stats: {
         Args: Record<PropertyKey, never>
