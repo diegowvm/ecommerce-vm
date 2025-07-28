@@ -1298,6 +1298,13 @@ export type Database = {
       }
     }
     Functions: {
+      admin_update_user_role: {
+        Args: {
+          target_user_id: string
+          new_role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
+      }
       fetch_categories_with_subcategories: {
         Args: Record<PropertyKey, never>
         Returns: {
