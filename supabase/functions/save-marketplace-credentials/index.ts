@@ -24,8 +24,22 @@ serve(async (req) => {
     // Save credentials as Supabase secrets (simulated)
     const secretNames = getSecretNames(marketplace);
     
-    // In a real implementation, this would save to Supabase secrets
-    // For now, we'll save connection info to database
+    // Get the authenticated user from the request
+    const authHeader = req.headers.get('authorization');
+    if (!authHeader) {
+      throw new Error('Authorization header required');
+    }
+
+    // Verify the JWT and get user info
+    const { data: { user }, error: authError } = await supabase.auth.getUser(
+      authHeader.replace('Bearer ', '')
+    );
+
+    if (authError || !user) {
+      throw new Error('Invalid or expired token');
+    }
+
+    // Save connection info to database with proper user ID
     const { data, error } = await supabase
       .from('api_connections')
       .upsert({
@@ -33,10 +47,10 @@ serve(async (req) => {
         connection_name: `${marketplace} API`,
         connection_status: 'connected',
         is_active: true,
-        user_id: '00000000-0000-0000-0000-000000000000', // Will be replaced with actual user ID
+        user_id: user.id, // Use actual authenticated user ID
         settings: credentials
       }, {
-        onConflict: 'marketplace_name'
+        onConflict: 'marketplace_name,user_id'
       });
 
     if (error) throw error;
