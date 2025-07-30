@@ -115,16 +115,12 @@ export function Footer() {
           <div className="space-y-6">
             <h4 className="font-semibold text-lg">Produtos</h4>
             <ul className="space-y-3">
-              {footerLinks.produtos.map((link) => (
-                <li key={link}>
-                  <a 
-                    href="#" 
-                    className="text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    {link}
-                  </a>
-                </li>
-              ))}
+              <li><Link to="/products/new-releases" className="text-muted-foreground hover:text-primary transition-colors">Novos Lançamentos</Link></li>
+              <li><Link to="/products/men" className="text-muted-foreground hover:text-primary transition-colors">Masculino</Link></li>
+              <li><Link to="/products/women" className="text-muted-foreground hover:text-primary transition-colors">Feminino</Link></li>
+              <li><Link to="/products/kids" className="text-muted-foreground hover:text-primary transition-colors">Infantil</Link></li>
+              <li><Link to="/products/outlet" className="text-muted-foreground hover:text-primary transition-colors">Outlet</Link></li>
+              <li><Link to="/products/brands" className="text-muted-foreground hover:text-primary transition-colors">Marcas</Link></li>
             </ul>
           </div>
 
@@ -144,10 +140,10 @@ export function Footer() {
             <h4 className="font-semibold text-lg">Empresa</h4>
             <ul className="space-y-3">
               <li><Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">Sobre Nós</Link></li>
-              <li><Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">Carreiras</Link></li>
-              <li><Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">Imprensa</Link></li>
-              <li><Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">Sustentabilidade</Link></li>
-              <li><Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">Investidores</Link></li>
+              <li><Link to="/careers" className="text-muted-foreground hover:text-primary transition-colors">Carreiras</Link></li>
+              <li><Link to="/press" className="text-muted-foreground hover:text-primary transition-colors">Imprensa</Link></li>
+              <li><Link to="/sustainability" className="text-muted-foreground hover:text-primary transition-colors">Sustentabilidade</Link></li>
+              <li><Link to="/investors" className="text-muted-foreground hover:text-primary transition-colors">Investidores</Link></li>
               <li><Link to="/terms-of-service" className="text-muted-foreground hover:text-primary transition-colors">Termos de Uso</Link></li>
             </ul>
           </div>
@@ -162,15 +158,15 @@ export function Footer() {
               © 2025 Xegai Shop. Todos os direitos reservados.
             </p>
             <div className="flex space-x-6 text-sm">
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+              <Link to="/privacy-policy" className="text-muted-foreground hover:text-primary transition-colors">
                 Política de Privacidade
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+              </Link>
+              <Link to="/terms-of-service" className="text-muted-foreground hover:text-primary transition-colors">
                 Termos de Serviço
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+              </Link>
+              <Link to="/cookies-policy" className="text-muted-foreground hover:text-primary transition-colors">
                 Cookies
-              </a>
+              </Link>
             </div>
           </div>
         </div>

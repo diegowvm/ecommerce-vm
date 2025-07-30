@@ -34,6 +34,21 @@ const Contact = lazy(() => import("./pages/Contact"));
 const SizeGuide = lazy(() => import("./pages/SizeGuide"));
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
 
+// Product category pages (lazy loaded)
+const NewReleases = lazy(() => import("./pages/products/NewReleases"));
+const Men = lazy(() => import("./pages/products/Men"));
+const Women = lazy(() => import("./pages/products/Women"));
+const Kids = lazy(() => import("./pages/products/Kids"));
+const Outlet = lazy(() => import("./pages/products/Outlet"));
+const Brands = lazy(() => import("./pages/products/Brands"));
+
+// Company pages (lazy loaded)
+const Careers = lazy(() => import("./pages/Careers"));
+const Press = lazy(() => import("./pages/Press"));
+const Sustainability = lazy(() => import("./pages/Sustainability"));
+const Investors = lazy(() => import("./pages/Investors"));
+const CookiesPolicy = lazy(() => import("./pages/CookiesPolicy"));
+
 // Admin pages (lazy loaded)
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const AdminProducts = lazy(() => import("./pages/admin/AdminProducts"));
@@ -110,6 +125,21 @@ const App = () => (
               <Route path="/contact" element={<Contact />} />
               <Route path="/size-guide" element={<SizeGuide />} />
               <Route path="/how-it-works" element={<HowItWorks />} />
+              
+              {/* Product category pages - lazy loaded */}
+              <Route path="/products/new-releases" element={<NewReleases />} />
+              <Route path="/products/men" element={<Men />} />
+              <Route path="/products/women" element={<Women />} />
+              <Route path="/products/kids" element={<Kids />} />
+              <Route path="/products/outlet" element={<Outlet />} />
+              <Route path="/products/brands" element={<Brands />} />
+              
+              {/* Company pages - lazy loaded */}
+              <Route path="/careers" element={<Careers />} />
+              <Route path="/press" element={<Press />} />
+              <Route path="/sustainability" element={<Sustainability />} />
+              <Route path="/investors" element={<Investors />} />
+              <Route path="/cookies-policy" element={<CookiesPolicy />} />
               
               {/* Admin routes - lazy loaded */}
               <Route path="/admin" element={
