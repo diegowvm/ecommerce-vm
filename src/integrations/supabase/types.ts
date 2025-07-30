@@ -785,6 +785,33 @@ export type Database = {
         }
         Relationships: []
       }
+      performance_metrics: {
+        Row: {
+          created_at: string | null
+          id: string
+          metric_name: string
+          metric_type: string
+          metric_value: number
+          tags: Json | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          metric_name: string
+          metric_type?: string
+          metric_value: number
+          tags?: Json | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          metric_name?: string
+          metric_type?: string
+          metric_value?: number
+          tags?: Json | null
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           active: boolean | null
@@ -1073,6 +1100,42 @@ export type Database = {
           },
         ]
       }
+      system_alerts: {
+        Row: {
+          alert_type: string
+          created_at: string | null
+          id: string
+          is_resolved: boolean | null
+          message: string
+          metadata: Json | null
+          resolved_at: string | null
+          severity: string
+          title: string
+        }
+        Insert: {
+          alert_type: string
+          created_at?: string | null
+          id?: string
+          is_resolved?: boolean | null
+          message: string
+          metadata?: Json | null
+          resolved_at?: string | null
+          severity?: string
+          title: string
+        }
+        Update: {
+          alert_type?: string
+          created_at?: string | null
+          id?: string
+          is_resolved?: boolean | null
+          message?: string
+          metadata?: Json | null
+          resolved_at?: string | null
+          severity?: string
+          title?: string
+        }
+        Relationships: []
+      }
       user_activity_logs: {
         Row: {
           action: string
@@ -1294,6 +1357,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      auto_optimize_tables: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       cleanup_old_logs: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -1356,6 +1423,10 @@ export type Database = {
           p_metadata?: Json
         }
         Returns: undefined
+      }
+      system_health_check: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
     }
     Enums: {
