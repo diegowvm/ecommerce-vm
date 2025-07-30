@@ -116,11 +116,11 @@ export function Footer() {
             <h4 className="font-semibold text-lg">Produtos</h4>
             <ul className="space-y-3">
               <li><Link to="/products/new-releases" className="text-muted-foreground hover:text-primary transition-colors">Novos Lançamentos</Link></li>
-              <li><Link to="/products/men" className="text-muted-foreground hover:text-primary transition-colors">Masculino</Link></li>
-              <li><Link to="/products/women" className="text-muted-foreground hover:text-primary transition-colors">Feminino</Link></li>
-              <li><Link to="/products/kids" className="text-muted-foreground hover:text-primary transition-colors">Infantil</Link></li>
+              <li><Link to="/products?category=eletronicos" className="text-muted-foreground hover:text-primary transition-colors">Eletrônicos</Link></li>
+              <li><Link to="/products?category=moda-e-acessorios" className="text-muted-foreground hover:text-primary transition-colors">Moda e Acessórios</Link></li>
+              <li><Link to="/products?category=casa-e-cozinha" className="text-muted-foreground hover:text-primary transition-colors">Casa e Cozinha</Link></li>
+              <li><Link to="/products?category=esporte-e-lazer" className="text-muted-foreground hover:text-primary transition-colors">Esporte e Lazer</Link></li>
               <li><Link to="/products/outlet" className="text-muted-foreground hover:text-primary transition-colors">Outlet</Link></li>
-              <li><Link to="/products/brands" className="text-muted-foreground hover:text-primary transition-colors">Marcas</Link></li>
             </ul>
           </div>
 

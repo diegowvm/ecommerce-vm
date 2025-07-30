@@ -36,9 +36,6 @@ const HowItWorks = lazy(() => import("./pages/HowItWorks"));
 
 // Product category pages (lazy loaded)
 const NewReleases = lazy(() => import("./pages/products/NewReleases"));
-const Men = lazy(() => import("./pages/products/Men"));
-const Women = lazy(() => import("./pages/products/Women"));
-const Kids = lazy(() => import("./pages/products/Kids"));
 const Outlet = lazy(() => import("./pages/products/Outlet"));
 const Brands = lazy(() => import("./pages/products/Brands"));
 
@@ -128,9 +125,6 @@ const App = () => (
               
               {/* Product category pages - lazy loaded */}
               <Route path="/products/new-releases" element={<NewReleases />} />
-              <Route path="/products/men" element={<Men />} />
-              <Route path="/products/women" element={<Women />} />
-              <Route path="/products/kids" element={<Kids />} />
               <Route path="/products/outlet" element={<Outlet />} />
               <Route path="/products/brands" element={<Brands />} />
               
