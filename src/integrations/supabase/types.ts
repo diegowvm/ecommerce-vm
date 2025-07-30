@@ -1361,6 +1361,14 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      automated_maintenance: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
+      check_performance_alerts: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       cleanup_old_logs: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -1382,6 +1390,10 @@ export type Database = {
       generate_slug: {
         Args: { input_text: string }
         Returns: string
+      }
+      get_performance_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
       get_user_statistics: {
         Args: Record<PropertyKey, never>
@@ -1423,6 +1435,27 @@ export type Database = {
           p_metadata?: Json
         }
         Returns: undefined
+      }
+      monitor_table_health: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          table_name: string
+          total_rows: number
+          dead_tuples: number
+          dead_tuple_percent: number
+          table_size: string
+          needs_vacuum: boolean
+        }[]
+      }
+      monitor_unused_indexes: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          schema_name: string
+          table_name: string
+          index_name: string
+          index_size: string
+          index_scans: number
+        }[]
       }
       system_health_check: {
         Args: Record<PropertyKey, never>
