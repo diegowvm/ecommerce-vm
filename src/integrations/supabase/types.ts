@@ -1294,6 +1294,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      cleanup_old_logs: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       fetch_categories_with_subcategories: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -1337,6 +1341,10 @@ export type Database = {
         }[]
       }
       is_admin: {
+        Args: { user_id?: string }
+        Returns: boolean
+      }
+      is_admin_cached: {
         Args: { user_id?: string }
         Returns: boolean
       }

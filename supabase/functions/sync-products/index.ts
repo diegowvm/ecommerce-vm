@@ -6,75 +6,132 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const supabase = createClient(
-  Deno.env.get('SUPABASE_URL') ?? '',
-  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-);
+// Connection pooling singleton
+let supabaseClient: any = null;
 
-// Simple retry implementation for Edge Functions
+const getSupabaseClient = () => {
+  if (!supabaseClient) {
+    supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      {
+        auth: { persistSession: false },
+        global: { headers: { 'x-client-info': 'sync-products-optimized' } }
+      }
+    );
+  }
+  return supabaseClient;
+};
+
+// Enhanced retry with adaptive backoff and jitter
 async function retryWithBackoff<T>(
   operation: () => Promise<T>,
-  maxRetries: number = 3,
-  baseDelay: number = 1000
+  maxRetries: number = 5,
+  baseDelay: number = 500
 ): Promise<T> {
-  let lastError: any;
-  
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       return await operation();
-    } catch (error) {
-      lastError = error;
+    } catch (error: any) {
+      console.error(`[Retry] Attempt ${attempt} failed:`, error?.message || error);
       
       if (attempt === maxRetries) {
         throw error;
       }
-
-      const isRetryable = error?.status === 429 || error?.status >= 500;
-      if (!isRetryable) {
-        throw error;
+      
+      // Adaptive backoff with jitter to prevent thundering herd
+      const exponentialDelay = baseDelay * Math.pow(2, attempt - 1);
+      const jitter = Math.random() * 1000; // Add randomness
+      const delay = Math.min(exponentialDelay + jitter, 30000); // Cap at 30s
+      
+      // Rate limit detection
+      if (error?.message?.includes('rate limit') || error?.status === 429) {
+        console.log(`[Retry] Rate limit detected, waiting longer: ${delay * 2}ms`);
+        await new Promise(resolve => setTimeout(resolve, delay * 2));
+      } else {
+        console.log(`[Retry] Retrying in ${delay}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
       }
-
-      const delay = Math.min(baseDelay * Math.pow(2, attempt), 30000);
-      console.log(`[Retry] Attempt ${attempt + 1}/${maxRetries} failed, retrying in ${delay}ms:`, error.message);
-      await new Promise(resolve => setTimeout(resolve, delay));
     }
   }
-  
-  throw lastError;
+  throw new Error('Max retries exceeded');
 }
 
-// Circuit breaker for external API calls
-class SimpleCircuitBreaker {
-  private failures = 0;
-  private lastFailureTime = 0;
-  private readonly threshold = 5;
-  private readonly resetTimeout = 30000;
-
+// Enhanced circuit breaker with metrics
+class AdvancedCircuitBreaker {
+  private failures: number = 0;
+  private successes: number = 0;
+  private lastFailTime: number = 0;
+  private lastSuccessTime: number = 0;
+  private state: 'closed' | 'open' | 'half-open' = 'closed';
+  
+  constructor(
+    private threshold: number = 3,
+    private timeout: number = 30000,
+    private successThreshold: number = 2
+  ) {}
+  
   async execute<T>(operation: () => Promise<T>): Promise<T> {
-    if (this.failures >= this.threshold) {
-      if (Date.now() - this.lastFailureTime < this.resetTimeout) {
-        throw new Error('Circuit breaker is OPEN - too many failures');
+    if (this.state === 'open') {
+      if (Date.now() - this.lastFailTime > this.timeout) {
+        this.state = 'half-open';
+        console.log(`[CircuitBreaker] Moving to half-open state`);
+      } else {
+        throw new Error(`Circuit breaker is open. Waiting ${Math.ceil((this.timeout - (Date.now() - this.lastFailTime)) / 1000)}s`);
       }
-      this.failures = 0; // Reset on timeout
     }
-
+    
     try {
       const result = await operation();
-      this.failures = 0;
+      this.onSuccess();
       return result;
     } catch (error) {
-      this.failures++;
-      this.lastFailureTime = Date.now();
+      this.onFailure();
       throw error;
     }
   }
+  
+  private onSuccess() {
+    this.successes++;
+    this.lastSuccessTime = Date.now();
+    
+    if (this.state === 'half-open' && this.successes >= this.successThreshold) {
+      console.log(`[CircuitBreaker] Closing after ${this.successes} successes`);
+      this.state = 'closed';
+      this.failures = 0;
+      this.successes = 0;
+    } else if (this.state === 'closed') {
+      this.failures = 0;
+    }
+  }
+  
+  private onFailure() {
+    this.failures++;
+    this.successes = 0;
+    this.lastFailTime = Date.now();
+    
+    if (this.failures >= this.threshold) {
+      console.log(`[CircuitBreaker] Opening after ${this.failures} failures`);
+      this.state = 'open';
+    }
+  }
+  
+  getStats() {
+    return {
+      state: this.state,
+      failures: this.failures,
+      successes: this.successes,
+      lastFailTime: this.lastFailTime,
+      lastSuccessTime: this.lastSuccessTime
+    };
+  }
 }
 
-const circuitBreakers = new Map<string, SimpleCircuitBreaker>();
+const circuitBreakers = new Map<string, AdvancedCircuitBreaker>();
 
-function getCircuitBreaker(key: string): SimpleCircuitBreaker {
+function getCircuitBreaker(key: string): AdvancedCircuitBreaker {
   if (!circuitBreakers.has(key)) {
-    circuitBreakers.set(key, new SimpleCircuitBreaker());
+    circuitBreakers.set(key, new AdvancedCircuitBreaker());
   }
   return circuitBreakers.get(key)!;
 }
@@ -86,21 +143,23 @@ serve(async (req) => {
 
   try {
     const { connectionId, syncType = 'all' } = await req.json();
+    const supabase = getSupabaseClient();
     
-    console.log(`[Sync] Starting sync for connection ${connectionId}, type: ${syncType}`);
+    console.log(`[Sync] Starting optimized sync for connection ${connectionId}, type: ${syncType}`);
 
-    // Buscar conexão
+    // Optimized connection query with only needed fields
     const { data: connection, error: connectionError } = await supabase
       .from('api_connections')
-      .select('*')
+      .select('id, marketplace_name, oauth_access_token, oauth_refresh_token, settings, is_active, connection_name')
       .eq('id', connectionId)
+      .eq('is_active', true)
       .single();
 
     if (connectionError || !connection) {
-      throw new Error(`Conexão não encontrada: ${connectionError?.message}`);
+      throw new Error(`Connection not found or inactive: ${connectionError?.message}`);
     }
 
-    // Criar execução de sync
+    // Create sync execution record with batch processing info
     const { data: execution, error: executionError } = await supabase
       .from('sync_executions')
       .insert({
@@ -109,200 +168,304 @@ serve(async (req) => {
         status: 'running',
         started_at: new Date().toISOString()
       })
-      .select()
+      .select('id')
       .single();
 
-    if (executionError) {
-      throw new Error(`Falha ao criar execução de sync: ${executionError.message}`);
+    if (executionError || !execution) {
+      throw new Error(`Failed to create sync execution: ${executionError?.message}`);
     }
 
-    // Executar sync em background
-    EdgeRuntime.waitUntil(performSync(connection, syncType, execution.id));
+    // Start optimized sync in background with proper error handling
+    console.log(`[Sync] Starting optimized ${syncType} sync for connection ${connectionId} (execution: ${execution.id})`);
+    EdgeRuntime.waitUntil(
+      performOptimizedSync(connection, syncType, execution.id)
+        .catch(error => {
+          console.error(`[Sync] Background sync failed for execution ${execution.id}:`, error);
+          // Update execution status to failed
+          supabase
+            .from('sync_executions')
+            .update({ 
+              status: 'failed', 
+              completed_at: new Date().toISOString(),
+              execution_log: `Fatal error: ${error.message}`
+            })
+            .eq('id', execution.id)
+            .then();
+        })
+    );
 
     return new Response(
       JSON.stringify({ 
         success: true, 
+        message: 'Optimized sync started successfully',
         execution_id: execution.id,
-        message: 'Sincronização iniciada com tratamento de erros robusto'
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }}
-    );
-
-  } catch (error) {
-    console.error('[Sync] Error in sync-products:', error);
-    return new Response(
-      JSON.stringify({ 
-        success: false,
-        error: error.message,
-        error_type: 'sync_initialization_error'
+        marketplace: connection.marketplace_name,
+        type: syncType
       }),
       { 
-        status: 500, 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      }
+    );
+  } catch (error: any) {
+    console.error('[Sync] Error starting sync:', error);
+    return new Response(
+      JSON.stringify({ 
+        success: false, 
+        error: error.message || 'Unknown error occurred'
+      }),
+      { 
+        status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
     );
   }
 });
 
-async function performSync(connection: any, syncType: string, executionId: string) {
-  let results = {
-    products_processed: 0,
-    products_updated: 0,
-    products_failed: 0,
-    errors: [] as string[]
-  };
-
+// Optimized batch sync with connection pooling and intelligent batching
+async function performOptimizedSync(connection: any, syncType: string, executionId: string) {
   const startTime = Date.now();
+  let processedCount = 0;
+  let importedCount = 0;
+  let updatedCount = 0;
+  let errorCount = 0;
+  const errors: string[] = [];
+  const BATCH_SIZE = 20; // Optimized batch size
   
-  try {
-    console.log(`[Sync] Starting sync for ${connection.marketplace_name} (${connection.connection_name})`);
-    
-    // Buscar produtos para sincronizar
-    const { data: products, error: productsError } = await supabase
-      .from('marketplace_products')
-      .select('*')
-      .eq('api_connection_id', connection.id)
-      .eq('auto_sync_enabled', true);
+  const supabase = getSupabaseClient();
 
-    if (productsError) {
-      throw new Error(`Falha ao buscar produtos: ${productsError.message}`);
+  try {
+    console.log(`[Sync] Starting optimized sync for marketplace: ${connection.marketplace_name}`);
+
+    // Get products to sync with pagination
+    const { data: products, error, count } = await supabase
+      .from('marketplace_products')
+      .select('id, marketplace_product_id, title, price, last_sync_at, sync_status, is_imported, local_product_id, markup_value', { count: 'exact' })
+      .eq('api_connection_id', connection.id)
+      .eq('auto_sync_enabled', true)
+      .order('last_sync_at', { ascending: true, nullsFirst: true })
+      .limit(150); // Process more products but in batches
+
+    if (error) {
+      throw new Error(`Failed to fetch products: ${error.message}`);
     }
 
-    results.products_processed = products.length;
-    console.log(`[Sync] Found ${products.length} products to sync`);
+    const totalProducts = count || 0;
+    console.log(`[Sync] Found ${products?.length || 0} products to sync (total: ${totalProducts})`);
 
-    for (const product of products) {
+    // Update execution with products found
+    await supabase
+      .from('sync_executions')
+      .update({ products_found: totalProducts })
+      .eq('id', executionId);
+
+    if (!products || products.length === 0) {
+      await supabase
+        .from('sync_executions')
+        .update({
+          status: 'completed',
+          completed_at: new Date().toISOString(),
+          execution_log: 'No products found to sync'
+        })
+        .eq('id', executionId);
+      return;
+    }
+
+    // Process in optimized batches
+    const batches = [];
+    for (let i = 0; i < products.length; i += BATCH_SIZE) {
+      batches.push(products.slice(i, i + BATCH_SIZE));
+    }
+
+    console.log(`[Sync] Processing ${batches.length} batches of ${BATCH_SIZE} products each`);
+
+    for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
+      const batch = batches[batchIndex];
+      console.log(`[Sync] Processing batch ${batchIndex + 1}/${batches.length}`);
+
+      // Process batch with circuit breaker
+      const circuitBreaker = getCircuitBreaker(`sync-${connection.marketplace_name}`);
+      
       try {
-        await syncSingleProduct(connection, product, syncType);
-        results.products_updated++;
-        console.log(`[Sync] ✓ Product ${product.marketplace_product_id} synced successfully`);
-        
-        // Rate limiting
-        await new Promise(resolve => setTimeout(resolve, 200));
-      } catch (error) {
-        results.products_failed++;
-        const errorMsg = `Product ${product.marketplace_product_id}: ${error.message}`;
-        results.errors.push(errorMsg);
-        console.error(`[Sync] ✗ Sync error for product ${product.marketplace_product_id}:`, error);
-        
-        // Continue with next product instead of failing entirely
-        continue;
+        await circuitBreaker.execute(async () => {
+          const batchPromises = batch.map(async (product) => {
+            try {
+              const result = await syncSingleProductOptimized(connection, product, syncType);
+              processedCount++;
+              if (result.imported) importedCount++;
+              if (result.updated) updatedCount++;
+              return { success: true, productId: product.id };
+            } catch (error: any) {
+              errorCount++;
+              const errorMsg = `Product ${product.marketplace_product_id}: ${error.message}`;
+              errors.push(errorMsg);
+              console.error(`[Sync] Error syncing product ${product.marketplace_product_id}:`, error);
+              return { success: false, productId: product.id, error: error.message };
+            }
+          });
+
+          await Promise.allSettled(batchPromises);
+        });
+
+        // Adaptive delay between batches
+        if (batchIndex < batches.length - 1) {
+          const delay = errorCount > 0 ? 300 : 100; // Slower if errors occurred
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+
+      } catch (error: any) {
+        console.error(`[Sync] Batch ${batchIndex + 1} failed:`, error);
+        errorCount += batch.length;
+        errors.push(`Batch ${batchIndex + 1} failed: ${error.message}`);
+      }
+
+      // Update progress periodically
+      if (batchIndex % 3 === 0) {
+        await supabase
+          .from('sync_executions')
+          .update({
+            products_processed: processedCount,
+            products_imported: importedCount,
+            products_updated: updatedCount,
+            products_failed: errorCount
+          })
+          .eq('id', executionId);
       }
     }
 
+    // Final update
     const duration = Date.now() - startTime;
-    const successRate = results.products_processed > 0 ? 
-      (results.products_updated / results.products_processed * 100).toFixed(2) : '0';
-
-    console.log(`[Sync] Completed: ${results.products_updated}/${results.products_processed} products (${successRate}%) in ${duration}ms`);
-
-    // Atualizar execução como completada
+    const successRate = totalProducts > 0 ? (processedCount / totalProducts) * 100 : 100;
+    
     await supabase
       .from('sync_executions')
       .update({
-        status: 'completed',
+        status: errorCount > 0 ? 'completed_with_errors' : 'completed',
         completed_at: new Date().toISOString(),
-        products_processed: results.products_processed,
-        products_updated: results.products_updated,
-        products_failed: results.products_failed,
-        errors: results.errors,
+        products_processed: processedCount,
+        products_imported: importedCount,
+        products_updated: updatedCount,
+        products_failed: errorCount,
+        errors: errors.slice(0, 25), // Limit errors to prevent oversized records
         summary: {
-          sync_type: syncType,
-          success_rate: successRate + '%',
           duration_ms: duration,
-          marketplace: connection.marketplace_name,
-          connection_name: connection.connection_name
+          success_rate: successRate,
+          batches_processed: batches.length,
+          circuit_breaker_stats: getCircuitBreaker(`sync-${connection.marketplace_name}`).getStats()
         }
       })
       .eq('id', executionId);
 
-  } catch (error) {
-    console.error('[Sync] Sync execution failed:', error);
-    
-    // Marcar execução como falhou
+    console.log(`[Sync] Optimized sync completed. Processed: ${processedCount}, Imported: ${importedCount}, Updated: ${updatedCount}, Errors: ${errorCount}, Duration: ${duration}ms`);
+
+  } catch (error: any) {
+    console.error('[Sync] Optimized sync failed:', error);
     await supabase
       .from('sync_executions')
       .update({
         status: 'failed',
         completed_at: new Date().toISOString(),
-        errors: [error.message],
-        summary: { 
-          error: error.message,
-          sync_type: syncType,
-          marketplace: connection.marketplace_name,
-          connection_name: connection.connection_name
-        }
+        products_processed: processedCount,
+        products_failed: errorCount,
+        errors: [...errors, `Fatal error: ${error.message}`],
+        execution_log: error.stack || error.message
       })
       .eq('id', executionId);
   }
 }
 
-async function syncSingleProduct(connection: any, product: any, syncType: string) {
-  const circuitBreaker = getCircuitBreaker(`${connection.marketplace_name}-${syncType}`);
+async function syncSingleProductOptimized(connection: any, product: any, syncType: string) {
+  const circuitBreaker = getCircuitBreaker(`${connection.marketplace_name}-product`);
   
   return await circuitBreaker.execute(async () => {
     switch (connection.marketplace_name.toLowerCase()) {
       case 'mercadolivre':
-        return await syncMercadoLivreProduct(connection, product, syncType);
+        return await syncMercadoLivreProductOptimized(connection, product, syncType);
       case 'amazon':
-        return await syncAmazonProduct(connection, product, syncType);
+        return await syncAmazonProductOptimized(connection, product, syncType);
       default:
         throw new Error(`Marketplace ${connection.marketplace_name} não suportado`);
     }
   });
 }
 
-async function syncMercadoLivreProduct(connection: any, product: any, syncType: string) {
+async function syncMercadoLivreProductOptimized(connection: any, product: any, syncType: string) {
+  const supabase = getSupabaseClient();
+  
   const apiProduct = await retryWithBackoff(
     async () => {
-      console.log(`[MercadoLivre] Fetching product ${product.marketplace_product_id}`);
       const response = await fetch(`https://api.mercadolibre.com/items/${product.marketplace_product_id}`, {
         headers: {
-          'Authorization': `Bearer ${connection.oauth_access_token}`
+          'Authorization': `Bearer ${connection.oauth_access_token}`,
+          'User-Agent': 'Xegai-Sync/1.0'
         }
       });
 
       if (!response.ok) {
-        const error = new Error(`API Error: ${response.status} ${response.statusText}`);
+        const error = new Error(`MercadoLivre API Error: ${response.status} ${response.statusText}`);
         (error as any).status = response.status;
         throw error;
       }
 
       return await response.json();
     },
-    3, // maxRetries
-    1000 // baseDelay
+    3,
+    1000
   );
 
   const updates: any = {
     last_sync_at: new Date().toISOString(),
     sync_status: 'completed',
-    sync_errors: null // Clear previous errors on successful sync
+    sync_errors: null
   };
 
-  // Sincronizar diferentes aspectos baseado no tipo
+  let hasChanges = false;
+
+  // Optimized sync based on type
   if (syncType === 'all' || syncType === 'prices') {
     const originalPrice = apiProduct.price;
     const markupValue = product.markup_value || 1.30;
-    updates.original_price = originalPrice;
-    updates.price = Math.round(originalPrice * markupValue * 100) / 100;
-    console.log(`[MercadoLivre] Updated price: ${originalPrice} -> ${updates.price} (markup: ${markupValue})`);
+    const newPrice = Math.round(originalPrice * markupValue * 100) / 100;
+    
+    if (product.price !== newPrice || product.original_price !== originalPrice) {
+      updates.original_price = originalPrice;
+      updates.price = newPrice;
+      hasChanges = true;
+    }
   }
 
   if (syncType === 'all' || syncType === 'inventory') {
-    updates.available_quantity = apiProduct.available_quantity;
-    updates.sold_quantity = apiProduct.sold_quantity;
-    console.log(`[MercadoLivre] Updated inventory: ${apiProduct.available_quantity} available, ${apiProduct.sold_quantity} sold`);
+    if (product.available_quantity !== apiProduct.available_quantity) {
+      updates.available_quantity = apiProduct.available_quantity;
+      hasChanges = true;
+    }
+    if (product.sold_quantity !== apiProduct.sold_quantity) {
+      updates.sold_quantity = apiProduct.sold_quantity;
+      hasChanges = true;
+    }
   }
 
   if (syncType === 'all' || syncType === 'details') {
-    updates.title = apiProduct.title;
-    updates.condition = apiProduct.condition;
-    updates.images = apiProduct.pictures?.map((pic: any) => pic.secure_url) || [];
-    console.log(`[MercadoLivre] Updated details: ${apiProduct.title}`);
+    if (product.title !== apiProduct.title) {
+      updates.title = apiProduct.title;
+      hasChanges = true;
+    }
+    if (product.condition !== apiProduct.condition) {
+      updates.condition = apiProduct.condition;
+      hasChanges = true;
+    }
+    
+    const newImages = apiProduct.pictures?.map((pic: any) => pic.secure_url) || [];
+    if (JSON.stringify(product.images) !== JSON.stringify(newImages)) {
+      updates.images = newImages;
+      hasChanges = true;
+    }
   }
 
-  // Atualizar produto no banco
+  if (!hasChanges) {
+    return { updated: false, imported: false };
+  }
+
+  // Update marketplace product
   const { error } = await supabase
     .from('marketplace_products')
     .update(updates)
@@ -312,162 +475,43 @@ async function syncMercadoLivreProduct(connection: any, product: any, syncType: 
     throw new Error(`Database update failed: ${error.message}`);
   }
 
-  // Se produto foi importado para loja local, atualizar também
-  if (product.local_product_id) {
-    const { error: localError } = await supabase
-      .from('products')
-      .update({
-        name: updates.title || product.title,
-        price: updates.price || product.price,
-        stock: updates.available_quantity ?? product.available_quantity,
-        images: updates.images || product.images,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', product.local_product_id);
-
-    if (localError) {
-      console.error('[MercadoLivre] Failed to update local product:', localError);
-    } else {
-      console.log(`[MercadoLivre] Updated local product ${product.local_product_id}`);
+  // Update local product if imported
+  if (product.local_product_id && (updates.title || updates.price || updates.available_quantity || updates.images)) {
+    const localUpdates: any = {};
+    if (updates.title) localUpdates.name = updates.title;
+    if (updates.price) localUpdates.price = updates.price;
+    if (updates.available_quantity !== undefined) localUpdates.stock = updates.available_quantity;
+    if (updates.images) localUpdates.images = updates.images;
+    if (Object.keys(localUpdates).length > 0) {
+      localUpdates.updated_at = new Date().toISOString();
+      
+      await supabase
+        .from('products')
+        .update(localUpdates)
+        .eq('id', product.local_product_id);
     }
   }
+
+  return { updated: true, imported: false };
 }
 
-async function syncAmazonProduct(connection: any, product: any, syncType: string) {
-  console.log(`[Amazon] Syncing product: ${product.marketplace_product_id}`);
-  
-  // Amazon sync implementation would go here
-  // For now, just return a placeholder with error handling
-  return await retryWithBackoff(
+async function syncAmazonProductOptimized(connection: any, product: any, syncType: string) {
+  // Optimized Amazon sync placeholder
+  await retryWithBackoff(
     async () => {
-      // Simulate Amazon API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 500));
       
-      // Simulate occasional failures for testing
-      if (Math.random() < 0.1) {
+      if (Math.random() < 0.05) {
         const error = new Error('Amazon API temporary failure');
         (error as any).status = 500;
         throw error;
       }
       
-      return {
-        success: true,
-        updated: false,
-        message: 'Amazon sync placeholder - implementation pending'
-      };
+      return { success: true };
     },
-    2, // maxRetries
-    2000 // baseDelay
-  );
-}
-
-// Secure handlers for direct marketplace operations
-async function handleProductImport(marketplaceName: string, options: any) {
-  console.log(`[Import] Starting import from ${marketplaceName} with options:`, options);
-  
-  // Get credentials from environment
-  const credentials = getMarketplaceCredentials(marketplaceName);
-  if (!credentials) {
-    throw new Error(`No credentials configured for ${marketplaceName}`);
-  }
-
-  // Simulate product import process with retry logic
-  const result = await retryWithBackoff(
-    async () => {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Simulate occasional failures
-      if (Math.random() < 0.05) {
-        const error = new Error(`${marketplaceName} API temporary failure`);
-        (error as any).status = 500;
-        throw error;
-      }
-      
-      return {
-        success: true,
-        marketplaceName,
-        productsProcessed: options.maxProducts || 100,
-        productsImported: Math.floor(Math.random() * 20) + 5,
-        productsUpdated: Math.floor(Math.random() * 10) + 2,
-        errors: [],
-        startTime: new Date(),
-        endTime: new Date(),
-        status: 'completed'
-      };
-    },
-    3, // maxRetries
-    1500 // baseDelay
+    2,
+    1500
   );
 
-  console.log(`[Import] Completed for ${marketplaceName}:`, result);
-  return result;
-}
-
-async function handleProductUpdate(productId: string, marketplaceName: string, productName: string) {
-  console.log(`[Update] Updating product ${productId} from ${marketplaceName}`);
-  
-  // Get credentials from environment
-  const credentials = getMarketplaceCredentials(marketplaceName);
-  if (!credentials) {
-    throw new Error(`No credentials configured for ${marketplaceName}`);
-  }
-
-  // Simulate product update process with retry logic
-  await retryWithBackoff(
-    async () => {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Simulate occasional failures
-      if (Math.random() < 0.05) {
-        const error = new Error(`${marketplaceName} API temporary failure`);
-        (error as any).status = 500;
-        throw error;
-      }
-      
-      // Update product in database
-      const { error: updateError } = await supabase
-        .from('products')
-        .update({
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', productId);
-
-      if (updateError) {
-        throw new Error(`Failed to update product: ${updateError.message}`);
-      }
-    },
-    3, // maxRetries
-    1000 // baseDelay
-  );
-
-  return {
-    success: true,
-    message: `Product ${productId} updated successfully from ${marketplaceName}`
-  };
-}
-
-function getMarketplaceCredentials(marketplaceName: string) {
-  switch (marketplaceName) {
-    case 'MercadoLivre':
-      return {
-        clientId: Deno.env.get('MERCADO_LIVRE_CLIENT_ID'),
-        clientSecret: Deno.env.get('MERCADO_LIVRE_CLIENT_SECRET'),
-        redirectUri: Deno.env.get('MERCADO_LIVRE_REDIRECT_URI')
-      };
-    case 'Amazon':
-      return {
-        clientId: Deno.env.get('AMAZON_CLIENT_ID'),
-        clientSecret: Deno.env.get('AMAZON_CLIENT_SECRET'),
-        refreshToken: Deno.env.get('AMAZON_REFRESH_TOKEN'),
-        region: Deno.env.get('AMAZON_REGION'),
-        sellerId: Deno.env.get('AMAZON_SELLER_ID')
-      };
-    case 'AliExpress':
-      return {
-        appKey: Deno.env.get('ALIEXPRESS_APP_KEY'),
-        appSecret: Deno.env.get('ALIEXPRESS_APP_SECRET')
-      };
-    default:
-      return null;
-  }
+  return { updated: false, imported: false };
 }
