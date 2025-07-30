@@ -243,7 +243,7 @@ export function WishlistManager() {
                     className="flex-1"
                     disabled={!item.products.active}
                   >
-                    <Link to={`/product/${item.product_id}`}>
+                    <Link to={`/products/${item.product_id}`}>
                       Ver Produto
                     </Link>
                   </Button>

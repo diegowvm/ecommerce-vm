@@ -15,6 +15,8 @@ import { User, Package, MapPin, Phone, Mail, Calendar, Heart, Settings } from "l
 import { AvatarUpload } from "@/components/user/profile/AvatarUpload";
 import { AddressManager } from "@/components/user/addresses/AddressManager";
 import { WishlistManager } from "@/components/user/wishlist/WishlistManager";
+import { PasswordChangeDialog } from "@/components/user/profile/PasswordChangeDialog";
+import { NotificationSettings } from "@/components/user/profile/NotificationSettings";
 
 interface Profile {
   id: string;
@@ -460,37 +462,28 @@ export default function Profile() {
                   <div className="space-y-6">
                     <div>
                       <h3 className="text-lg font-medium mb-4">Segurança</h3>
-                      <Button variant="outline">
-                        Alterar Senha
-                      </Button>
+                      <PasswordChangeDialog />
                     </div>
 
                     <Separator />
 
+                    <NotificationSettings />
+
+                    <Separator />
+
                     <div>
-                      <h3 className="text-lg font-medium mb-4">Preferências</h3>
+                      <h3 className="text-lg font-medium mb-4">Zona de Perigo</h3>
                       <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="font-medium">Notificações por email</p>
-                            <p className="text-sm text-muted-foreground">
-                              Receber emails sobre pedidos e promoções
-                            </p>
-                          </div>
-                          <Button variant="outline" size="sm">
-                            Configurar
+                        <div>
+                          <h4 className="font-medium text-destructive mb-2">Sair da Conta</h4>
+                          <p className="text-sm text-muted-foreground mb-3">
+                            Isso irá desconectar você da sua conta atual.
+                          </p>
+                          <Button variant="destructive" onClick={signOut}>
+                            Sair da Conta
                           </Button>
                         </div>
                       </div>
-                    </div>
-
-                    <Separator />
-
-                    <div>
-                      <h3 className="text-lg font-medium mb-4">Conta</h3>
-                      <Button variant="destructive" onClick={signOut}>
-                        Sair da Conta
-                      </Button>
                     </div>
                   </div>
                 </CardContent>
