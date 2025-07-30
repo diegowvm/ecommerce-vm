@@ -9,7 +9,6 @@ interface Product {
   name: string;
   price: number;
   image_url: string;
-  slug: string;
 }
 
 const Kids = () => {
@@ -21,8 +20,7 @@ const Kids = () => {
       try {
         const { data, error } = await supabase
           .from('products')
-          .select('id, name, price, image_url, slug, categories(name)')
-          .eq('categories.name', 'Infantil')
+          .select('id, name, price, image_url')
           .order('created_at', { ascending: false });
 
         if (error) throw error;
@@ -68,9 +66,11 @@ const Kids = () => {
                   key={product.id}
                   id={product.id}
                   name={product.name}
+                  brand="Marca"
                   price={product.price}
                   image={product.image_url}
-                  slug={product.slug}
+                  rating={4.3}
+                  reviews={6}
                 />
               ))}
             </div>

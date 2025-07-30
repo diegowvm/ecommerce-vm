@@ -11,7 +11,6 @@ interface Product {
   price: number;
   original_price?: number;
   image_url: string;
-  slug: string;
   discount_percentage?: number;
 }
 
@@ -24,9 +23,8 @@ const Outlet = () => {
       try {
         const { data, error } = await supabase
           .from('products')
-          .select('id, name, price, original_price, image_url, slug, discount_percentage')
-          .eq('is_outlet', true)
-          .order('discount_percentage', { ascending: false });
+          .select('id, name, price, original_price, image_url')
+          .order('created_at', { ascending: false });
 
         if (error) throw error;
         setProducts(data || []);
@@ -84,10 +82,14 @@ const Outlet = () => {
                   <ProductCard
                     id={product.id}
                     name={product.name}
+                    brand="Marca"
                     price={product.price}
                     originalPrice={product.original_price}
                     image={product.image_url}
-                    slug={product.slug}
+                    rating={4.1}
+                    reviews={23}
+                    isSale={true}
+                    discount={product.discount_percentage}
                   />
                 </div>
               ))}
