@@ -1,5 +1,5 @@
 import { AdminLayout } from '@/layouts/AdminLayout';
-import { EnhancedUsersManager } from "@/components/admin/users/EnhancedUsersManager";
+import { UsersManager } from "@/components/admin/users/UsersManager";
 
 export default function AdminUsers() {
   return (
@@ -7,7 +7,7 @@ export default function AdminUsers() {
       title="Gestão de Usuários" 
       description="Gerenciar usuários e permissões"
     >
-      <EnhancedUsersManager />
+      <UsersManager />
     </AdminLayout>
   );
 }
