@@ -8,6 +8,7 @@ import { Badge } from "./badge";
 import { MegaMenu } from "./mega-menu";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { ThemeToggle } from "./theme-toggle";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -115,6 +116,9 @@ export function Navbar() {
             <Button variant="ghost" size="icon" className="md:hidden">
               <Search className="h-5 w-5" />
             </Button>
+
+            {/* Theme Toggle */}
+            <ThemeToggle />
             
             {/* User Account */}
             {user ? (
@@ -197,6 +201,12 @@ export function Navbar() {
                 <Search className="h-4 w-4 text-muted-foreground" />
               </button>
             </form>
+
+            {/* Theme Toggle (mobile) */}
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-muted-foreground">Tema</span>
+              <ThemeToggle />
+            </div>
             
             {/* Produtos - Link principal */}
             <div className="border-b border-border/20 pb-4">

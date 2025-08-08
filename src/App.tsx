@@ -6,6 +6,7 @@ import { Suspense, lazy } from "react";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { CacheProvider } from "@/lib/cache";
+import { ThemeProvider } from "next-themes";
 
 // Core pages (loaded immediately)
 import Index from "./pages/Index";
@@ -61,12 +62,13 @@ const AdminApiIntegrations = lazy(() => import("./pages/admin/AdminApiIntegratio
 const AdminApiMonitoring = lazy(() => import("./pages/admin/AdminApiMonitoring"));
 
 const App = () => (
-  <CacheProvider>
-    <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
+  <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+    <CacheProvider>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
           <Suspense fallback={
             <div className="min-h-screen flex items-center justify-center">
               <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
@@ -205,6 +207,7 @@ const App = () => (
       </TooltipProvider>
     </AuthProvider>
   </CacheProvider>
+  </ThemeProvider>
 );
 
 export default App;
