@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -1352,8 +1352,8 @@ export type Database = {
     Functions: {
       admin_update_user_role: {
         Args: {
-          target_user_id: string
           new_role: Database["public"]["Enums"]["app_role"]
+          target_user_id: string
         }
         Returns: boolean
       }
@@ -1376,15 +1376,15 @@ export type Database = {
       fetch_categories_with_subcategories: {
         Args: Record<PropertyKey, never>
         Returns: {
-          id: string
-          name: string
-          slug: string
-          description: string
-          image_url: string
-          order: number
           created_at: string
-          updated_at: string
+          description: string
+          id: string
+          image_url: string
+          name: string
+          order: number
+          slug: string
           subcategories: Json
+          updated_at: string
         }[]
       }
       generate_slug: {
@@ -1398,25 +1398,25 @@ export type Database = {
       get_user_statistics: {
         Args: Record<PropertyKey, never>
         Returns: {
-          total_users: number
           active_users: number
-          suspended_users: number
-          banned_users: number
-          new_users_30d: number
           active_users_7d: number
           avg_login_count: number
+          banned_users: number
+          new_users_30d: number
+          suspended_users: number
+          total_users: number
         }[]
       }
       get_user_stats: {
         Args: Record<PropertyKey, never>
         Returns: {
-          total_users: number
           active_users: number
-          suspended_users: number
-          banned_users: number
-          new_users_30d: number
           active_users_7d: number
           avg_login_count: number
+          banned_users: number
+          new_users_30d: number
+          suspended_users: number
+          total_users: number
         }[]
       }
       is_admin: {
@@ -1429,32 +1429,32 @@ export type Database = {
       }
       log_user_activity: {
         Args: {
-          p_user_id: string
           p_action: string
           p_description?: string
           p_metadata?: Json
+          p_user_id: string
         }
         Returns: undefined
       }
       monitor_table_health: {
         Args: Record<PropertyKey, never>
         Returns: {
-          table_name: string
-          total_rows: number
-          dead_tuples: number
           dead_tuple_percent: number
-          table_size: string
+          dead_tuples: number
           needs_vacuum: boolean
+          table_name: string
+          table_size: string
+          total_rows: number
         }[]
       }
       monitor_unused_indexes: {
         Args: Record<PropertyKey, never>
         Returns: {
+          index_name: string
+          index_scans: number
+          index_size: string
           schema_name: string
           table_name: string
-          index_name: string
-          index_size: string
-          index_scans: number
         }[]
       }
       system_health_check: {
