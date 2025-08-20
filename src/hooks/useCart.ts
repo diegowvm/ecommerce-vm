@@ -1,56 +1,47 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { db } from '@/lib/supabase';
+// import { db } from '@/lib/supabase';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
-import type { CartItem, Product } from '@/types';
+import type { Product } from '@/types';
+
+// Mock cart item type
+interface CartItem {
+  id: string;
+  product_id: string;
+  quantity: number;
+  size?: string;
+  color?: string;
+  products?: Product;
+}
 
 export const useCart = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
-  // Get cart items
-  const { data: cartItems = [], isLoading } = useQuery({
-    queryKey: ['cart', user?.id],
-    queryFn: () => user ? db.getCartItems(user.id) : Promise.resolve({ data: [] }),
-    enabled: !!user,
-    select: (data) => data.data || []
-  });
+  // Mock cart items for now
+  const isLoading = false;
 
-  // Add to cart mutation
-  const addToCartMutation = useMutation({
-    mutationFn: ({ productId, quantity, size, color }: {
-      productId: string;
-      quantity: number;
-      size?: string;
-      color?: string;
-    }) => {
-      if (!user) throw new Error('User not authenticated');
-      return db.addToCart(user.id, productId, quantity, size, color);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart', user?.id] });
+  // Mock mutations for now
+  const addToCartMutation = {
+    mutate: (data: any) => {
+      if (!user) {
+        toast.error('Faça login para adicionar produtos ao carrinho');
+        return;
+      }
       toast.success('Produto adicionado ao carrinho!');
     },
-    onError: (error) => {
-      toast.error('Erro ao adicionar produto ao carrinho');
-      console.error('Add to cart error:', error);
-    }
-  });
+    isPending: false
+  };
 
-  // Remove from cart mutation
-  const removeFromCartMutation = useMutation({
-    mutationFn: (itemId: string) => db.removeFromCart(itemId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart', user?.id] });
+  const removeFromCartMutation = {
+    mutate: (itemId: string) => {
       toast.success('Produto removido do carrinho');
     },
-    onError: (error) => {
-      toast.error('Erro ao remover produto do carrinho');
-      console.error('Remove from cart error:', error);
-    }
-  });
+    isPending: false
+  };
 
   // Calculate totals
   const subtotal = cartItems.reduce((total, item) => {

@@ -4,6 +4,7 @@ import { Search, ShoppingCart, User, Menu, X, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
 import { APP_CONFIG, ROUTES } from '@/lib/constants';
@@ -103,6 +104,9 @@ export const Header = () => {
                 </form>
               </SheetContent>
             </Sheet>
+
+            {/* Theme Toggle */}
+            <ThemeToggle />
 
             {/* Wishlist */}
             {user && (
