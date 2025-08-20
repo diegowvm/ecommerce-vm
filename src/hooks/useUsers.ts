@@ -68,7 +68,7 @@ export function useUsers(searchTerm: string = '', statusFilter: string = 'all') 
       const { error } = await supabase
         .from('profiles')
         .update({ status: newStatus })
-        .eq('user_id', userId);
+        .eq('id', userId);
 
       if (error) throw error;
 

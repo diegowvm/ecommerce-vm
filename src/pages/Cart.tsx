@@ -20,7 +20,7 @@ interface CartItem {
     id: string;
     name: string;
     price: number;
-    image_url: string;
+    images: string[];
     stock: number;
   };
 }
@@ -53,7 +53,7 @@ export default function Cart() {
           id,
           name,
           price,
-          image_url,
+          images,
           stock
         )
       `)
@@ -232,7 +232,7 @@ export default function Cart() {
                     {/* Product Image */}
                     <Link to={`/products/${item.products.id}`} className="flex-shrink-0">
                       <img
-                        src={item.products.image_url}
+                        src={item.products.images && item.products.images.length > 0 ? item.products.images[0] : '/placeholder.png'}
                         alt={item.products.name}
                         className="w-24 h-24 object-cover rounded-lg hover:scale-105 transition-transform"
                       />

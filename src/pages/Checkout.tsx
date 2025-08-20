@@ -20,7 +20,7 @@ interface CartItem {
     id: string;
     name: string;
     price: number;
-    image_url: string | null;
+    images: string[];
   };
 }
 
@@ -91,7 +91,7 @@ export default function Checkout() {
             id,
             name,
             price,
-            image_url
+            images
           )
         `)
         .eq('user_id', user.id);
@@ -117,7 +117,7 @@ export default function Checkout() {
       const { data, error } = await supabase
         .from('profiles')
         .select('full_name')
-        .eq('user_id', user.id)
+        .eq('id', user.id)
         .single();
 
       if (data && data.full_name) {
@@ -216,6 +216,7 @@ export default function Checkout() {
           total: total,
           status: 'paid',
           shipping_address: shippingInfo as any,
+          payment_method: 'cartao', // Default payment method
         })
         .select()
         .single();
@@ -336,9 +337,9 @@ export default function Checkout() {
               <div className="space-y-4">
                 {cartItems.map((item) => (
                   <div key={item.id} className="flex items-center space-x-4">
-                    {item.products.image_url && (
+                    {item.products.images && item.products.images.length > 0 && (
                       <img
-                        src={item.products.image_url}
+                        src={item.products.images[0]}
                         alt={item.products.name}
                         className="w-16 h-16 object-cover rounded"
                       />

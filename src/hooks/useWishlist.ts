@@ -7,14 +7,7 @@ export interface WishlistItem {
   user_id: string;
   product_id: string;
   created_at: string;
-  products: {
-    id: string;
-    name: string;
-    price: number;
-    original_price?: number;
-    images?: string[];
-    active: boolean;
-  };
+  products: any; // For database compatibility
 }
 
 export function useWishlist() {

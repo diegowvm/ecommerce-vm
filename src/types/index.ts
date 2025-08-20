@@ -27,7 +27,6 @@ export interface Product {
   reviews_count?: number;
   created_at: string;
   updated_at: string;
-  image_url?: string; // For compatibility
 }
 
 export interface Category {
@@ -50,7 +49,7 @@ export interface CartItem {
   size?: string;
   color?: string;
   product?: Product;
-  products?: Product; // For compatibility with database joins
+  products?: any; // For database compatibility
   created_at: string;
 }
 
@@ -66,7 +65,7 @@ export interface Order {
   created_at: string;
   updated_at: string;
   items?: OrderItem[];
-  order_items?: OrderItem[]; // For compatibility with database joins
+  order_items?: any[]; // For database compatibility
   return_status?: string;
   return_reason?: string;
   return_requested_at?: string;
@@ -83,7 +82,7 @@ export interface OrderItem {
   size?: string;
   color?: string;
   product?: Product;
-  products?: Product; // For compatibility with database joins
+  products?: any; // For database compatibility
 }
 
 export interface Address {
