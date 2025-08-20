@@ -29,7 +29,8 @@ export function useUsers(searchTerm: string = '', statusFilter: string = 'all') 
       }
 
       if (statusFilter !== 'all') {
-        query = query.eq('status', statusFilter);
+        // Note: status doesn't exist in profiles table
+        // query = query.eq('status', statusFilter);
       }
 
       const { data, error } = await query;

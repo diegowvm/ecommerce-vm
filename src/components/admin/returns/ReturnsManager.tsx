@@ -106,10 +106,9 @@ export function ReturnsManager() {
           *,
           order_items (
             *,
-            products (name, image_url)
+            products (name, images)
           )
         `)
-        .or('return_status.not.is.null,status.eq.cancelled')
         .order('created_at', { ascending: false });
 
       // Apply filters
@@ -117,7 +116,8 @@ export function ReturnsManager() {
         ordersQuery = ordersQuery.ilike('id', `%${searchTerm}%`);
       }
       if (statusFilter !== 'all') {
-        ordersQuery = ordersQuery.eq('return_status', statusFilter);
+        // Note: return_status doesn't exist in orders table
+        // ordersQuery = ordersQuery.eq('return_status', statusFilter);
       }
 
       // Apply pagination
