@@ -1217,10 +1217,12 @@ export type Database = {
     }
     Functions: {
       admin_update_user_role: {
-        Args: {
-          new_role: Database["public"]["Enums"]["app_role"]
-          target_user_id: string
-        }
+        Args:
+          | {
+              new_role: Database["public"]["Enums"]["app_role"]
+              target_user_id: string
+            }
+          | { new_role: string; target_user_id: string }
         Returns: boolean
       }
       auto_optimize_tables: {

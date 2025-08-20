@@ -31,8 +31,8 @@ export default function Auth() {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
-    const { error } = await signIn(email, password);
-    if (!error) {
+    const result = await signIn(email, password);
+    if (result) {
       navigate(from, { replace: true });
     }
     setIsLoading(false);

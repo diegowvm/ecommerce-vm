@@ -27,6 +27,7 @@ export interface Product {
   reviews_count?: number;
   created_at: string;
   updated_at: string;
+  image_url?: string; // For compatibility
 }
 
 export interface Category {
@@ -57,13 +58,18 @@ export interface Order {
   user_id: string;
   total: number;
   status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-  shipping_address: Address;
+  shipping_address: any; // Compatible with Json type
   payment_method: string;
   payment_status: 'pending' | 'paid' | 'failed' | 'refunded';
   tracking_code?: string;
   created_at: string;
   updated_at: string;
-  items: OrderItem[];
+  items?: OrderItem[];
+  return_status?: string;
+  return_reason?: string;
+  return_requested_at?: string;
+  marketplace_order_id?: string;
+  marketplace_status?: string;
 }
 
 export interface OrderItem {
@@ -143,6 +149,9 @@ export interface UserProfile {
   login_count?: number;
   created_at: string;
   updated_at: string;
+  user_id?: string; // For compatibility with database queries
+  user_roles?: Array<{ role: string }>;
+  user_tag_assignments?: Array<{ user_tags: { id: string; name: string; color: string } }>;
 }
 
 export interface UserStats {
