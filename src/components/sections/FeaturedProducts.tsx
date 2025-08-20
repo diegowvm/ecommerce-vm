@@ -7,52 +7,85 @@ import { useFeaturedProducts } from '@/hooks/useProducts';
 import { useCart } from '@/hooks/useCart';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { ROUTES } from '@/lib/constants';
+import { Product } from '@/types';
 
 // Mock data for demonstration
-const mockProducts = [
+const mockProducts: Product[] = [
   {
     id: '1',
     name: 'Tênis Nike Air Max 270',
+    description: 'Tênis esportivo com tecnologia Air Max para máximo conforto e estilo.',
     price: 299.90,
     original_price: 399.90,
     images: ['/product-1.jpg'],
+    category_id: '1',
+    brand: 'Nike',
+    sizes: ['38', '39', '40', '41', '42', '43'],
+    colors: ['Preto', 'Branco', 'Azul'],
+    stock: 50,
+    featured: true,
+    active: true,
     rating: 4.8,
     reviews_count: 124,
-    featured: true,
-    brand: 'Nike'
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     id: '2',
     name: 'Vestido Floral Primavera',
+    description: 'Vestido leve e elegante, perfeito para o dia a dia ou ocasiões especiais.',
     price: 159.90,
     original_price: 199.90,
     images: ['/product-2.jpg'],
+    category_id: '2',
+    brand: 'Zara',
+    sizes: ['P', 'M', 'G', 'GG'],
+    colors: ['Floral Rosa', 'Floral Azul', 'Floral Verde'],
+    stock: 30,
+    featured: true,
+    active: true,
     rating: 4.6,
     reviews_count: 89,
-    featured: true,
-    brand: 'Zara'
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     id: '3',
     name: 'Jaqueta Jeans Clássica',
+    description: 'Jaqueta jeans de alta qualidade, perfeita para looks casuais e modernos.',
     price: 189.90,
     original_price: 249.90,
     images: ['/product-3.jpg'],
+    category_id: '2',
+    brand: 'Levi\'s',
+    sizes: ['P', 'M', 'G', 'GG'],
+    colors: ['Azul Claro', 'Azul Escuro', 'Preto'],
+    stock: 40,
+    featured: true,
+    active: true,
     rating: 4.7,
     reviews_count: 156,
-    featured: true,
-    brand: 'Levi\'s'
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     id: '4',
     name: 'Bolsa Couro Premium',
+    description: 'Bolsa de couro legítimo com design moderno e compartimentos organizadores.',
     price: 249.90,
     original_price: 349.90,
     images: ['/product-4.jpg'],
+    category_id: '3',
+    brand: 'Coach',
+    sizes: ['Único'],
+    colors: ['Preto', 'Marrom', 'Caramelo'],
+    stock: 25,
+    featured: true,
+    active: true,
     rating: 4.9,
     reviews_count: 203,
-    featured: true,
-    brand: 'Coach'
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   }
 ];
 

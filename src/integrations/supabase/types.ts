@@ -335,6 +335,7 @@ export type Database = {
           image_url: string | null
           is_active: boolean | null
           name: string
+          order: number | null
           slug: string
           sort_order: number | null
         }
@@ -345,6 +346,7 @@ export type Database = {
           image_url?: string | null
           is_active?: boolean | null
           name: string
+          order?: number | null
           slug: string
           sort_order?: number | null
         }
@@ -355,6 +357,7 @@ export type Database = {
           image_url?: string | null
           is_active?: boolean | null
           name?: string
+          order?: number | null
           slug?: string
           sort_order?: number | null
         }

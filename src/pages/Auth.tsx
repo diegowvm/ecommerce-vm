@@ -66,10 +66,11 @@ export default function Auth() {
         <Card className="glass border-border/20">
           <CardHeader className="text-center">
             <img 
-              src="/placeholder.png" 
+              src="/logo-xegai.png" 
               alt="Xegai Shop" 
-              className="h-56 w-auto mx-auto mb-0" 
+              className="h-32 w-auto mx-auto mb-4" 
             />
+            <CardTitle className="text-2xl font-bold">Xegai Shop</CardTitle>
             <CardDescription>
               Faça login ou cadastre-se para continuar
             </CardDescription>

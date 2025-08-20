@@ -1,20 +1,9 @@
-import { createClient } from '@supabase/supabase-js';
-import type { Database } from '@/types/database';
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://ikwttetqfltpxpkbqgpj.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlrd3R0ZXRxZmx0cHhwa2JxZ3BqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxNTM5MDgsImV4cCI6MjA2NzcyOTkwOH0.Q4Z8BGLMgZCAAa7eB4VLfvgZXRivpmxsfdFCah1jb-0';
-
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true
-  }
-});
-
+// Re-export the main supabase client to avoid multiple instances
+export { supabase } from '@/integrations/supabase/client';
 // Helper functions for common operations
 export const auth = {
   signUp: async (email: string, password: string, metadata?: any) => {
+    const { supabase } = await import('@/integrations/supabase/client');
     return await supabase.auth.signUp({
       email,
       password,
@@ -25,6 +14,7 @@ export const auth = {
   },
 
   signIn: async (email: string, password: string) => {
+    const { supabase } = await import('@/integrations/supabase/client');
     return await supabase.auth.signInWithPassword({
       email,
       password
@@ -32,15 +22,18 @@ export const auth = {
   },
 
   signOut: async () => {
+    const { supabase } = await import('@/integrations/supabase/client');
     return await supabase.auth.signOut();
   },
 
   getCurrentUser: async () => {
+    const { supabase } = await import('@/integrations/supabase/client');
     const { data: { user } } = await supabase.auth.getUser();
     return user;
   },
 
-  onAuthStateChange: (callback: (event: string, session: any) => void) => {
+  onAuthStateChange: async (callback: (event: string, session: any) => void) => {
+    const { supabase } = await import('@/integrations/supabase/client');
     return supabase.auth.onAuthStateChange(callback);
   }
 };
@@ -48,6 +41,7 @@ export const auth = {
 export const db = {
   // Products
   getProducts: async (filters?: any) => {
+    const { supabase } = await import('@/integrations/supabase/client');
     let query = supabase
       .from('products')
       .select(`
@@ -72,6 +66,7 @@ export const db = {
   },
 
   getProduct: async (id: string) => {
+    const { supabase } = await import('@/integrations/supabase/client');
     return await supabase
       .from('products')
       .select(`
@@ -89,6 +84,7 @@ export const db = {
 
   // Categories
   getCategories: async () => {
+    const { supabase } = await import('@/integrations/supabase/client');
     return await supabase
       .from('categories')
       .select('*')
@@ -98,6 +94,7 @@ export const db = {
 
   // Cart
   getCartItems: async (userId: string) => {
+    const { supabase } = await import('@/integrations/supabase/client');
     return await supabase
       .from('cart_items')
       .select(`
@@ -114,6 +111,7 @@ export const db = {
   },
 
   addToCart: async (userId: string, productId: string, quantity: number, size?: string, color?: string) => {
+    const { supabase } = await import('@/integrations/supabase/client');
     return await supabase
       .from('cart_items')
       .upsert({
@@ -126,6 +124,7 @@ export const db = {
   },
 
   removeFromCart: async (id: string) => {
+    const { supabase } = await import('@/integrations/supabase/client');
     return await supabase
       .from('cart_items')
       .delete()
@@ -134,6 +133,7 @@ export const db = {
 
   // Orders
   createOrder: async (orderData: any) => {
+    const { supabase } = await import('@/integrations/supabase/client');
     return await supabase
       .from('orders')
       .insert(orderData)
@@ -142,6 +142,7 @@ export const db = {
   },
 
   getUserOrders: async (userId: string) => {
+    const { supabase } = await import('@/integrations/supabase/client');
     return await supabase
       .from('orders')
       .select(`
