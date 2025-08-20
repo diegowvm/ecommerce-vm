@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 // import { db } from '@/lib/supabase';
-import { useAuth } from './useAuth';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import type { Product } from '@/types';
 
