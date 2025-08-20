@@ -12,7 +12,7 @@ export interface WishlistItem {
     name: string;
     price: number;
     original_price?: number;
-    image_url?: string;
+    images?: string[];
     active: boolean;
   };
 }
@@ -40,7 +40,7 @@ export function useWishlist() {
       const productIds = wishlistData.map(item => item.product_id);
       const { data: productsData, error: productsError } = await supabase
         .from('products')
-        .select('id, name, price, original_price, image_url, active')
+        .select('id, name, price, original_price, images, active')
         .in('id', productIds);
 
       if (productsError) throw productsError;

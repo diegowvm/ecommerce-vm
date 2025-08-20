@@ -44,7 +44,7 @@ type NotificationFormData = z.infer<typeof notificationSchema>;
 
 export function NotificationsManager() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [users, setUsers] = useState<Array<{ user_id: string; full_name: string | null }>>([]);
+  const [users, setUsers] = useState<Array<{ id: string; full_name: string | null }>>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -95,7 +95,7 @@ export function NotificationsManager() {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('user_id, full_name')
+        .select('id, full_name')
         .order('full_name');
 
       if (error) throw error;
@@ -113,7 +113,7 @@ export function NotificationsManager() {
           .from('notifications')
           .insert(
             users.map(user => ({
-              user_id: user.user_id,
+              user_id: user.id,
               title: data.title,
               message: data.message,
               type: data.type,
@@ -347,7 +347,7 @@ export function NotificationsManager() {
                               </FormControl>
                               <SelectContent>
                                 {users.map((user) => (
-                                  <SelectItem key={user.user_id} value={user.user_id}>
+                                  <SelectItem key={user.id} value={user.id}>
                                     {user.full_name || 'Usuário sem nome'}
                                   </SelectItem>
                                 ))}

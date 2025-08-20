@@ -50,6 +50,7 @@ export interface CartItem {
   size?: string;
   color?: string;
   product?: Product;
+  products?: Product; // For compatibility with database joins
   created_at: string;
 }
 
@@ -65,6 +66,7 @@ export interface Order {
   created_at: string;
   updated_at: string;
   items?: OrderItem[];
+  order_items?: OrderItem[]; // For compatibility with database joins
   return_status?: string;
   return_reason?: string;
   return_requested_at?: string;
@@ -81,6 +83,7 @@ export interface OrderItem {
   size?: string;
   color?: string;
   product?: Product;
+  products?: Product; // For compatibility with database joins
 }
 
 export interface Address {
