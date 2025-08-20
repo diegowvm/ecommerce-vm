@@ -63,7 +63,7 @@ export default function ProductDetail() {
     }
 
     if (data) {
-      setProduct(data);
+      setProduct({ ...data, image_url: data.images?.[0] || '' });
       if (data.sizes?.length > 0) setSelectedSize(data.sizes[0]);
       if (data.colors?.length > 0) setSelectedColor(data.colors[0]);
     }

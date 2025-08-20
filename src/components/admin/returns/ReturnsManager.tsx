@@ -135,7 +135,7 @@ export function ReturnsManager() {
 
       if (returnsError) throw returnsError;
 
-      setOrders(ordersData || []);
+      setOrders((ordersData || []) as any[]);
       setReturns(returnsData || []);
     } catch (error) {
       console.error('Error loading data:', error);

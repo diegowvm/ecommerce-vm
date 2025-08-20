@@ -189,7 +189,7 @@ export class ProductSyncService {
       description: marketplaceProduct.description || null,
       price: marketplaceProduct.price,
       original_price: marketplaceProduct.originalPrice || null,
-      image_url: marketplaceProduct.imageUrl || null,
+      // image_url field removed - using images array instead
       images: marketplaceProduct.images?.length ? marketplaceProduct.images : null,
       colors: marketplaceProduct.colors?.length ? marketplaceProduct.colors : null,
       sizes: marketplaceProduct.sizes?.length ? marketplaceProduct.sizes : null,

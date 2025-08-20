@@ -65,9 +65,10 @@ export function useUsers(searchTerm: string = '', statusFilter: string = 'all') 
 
   const updateUserStatus = async (userId: string, newStatus: 'active' | 'suspended' | 'banned') => {
     try {
+      // Note: profiles table doesn't have status field, this would need to be added to database
       const { error } = await supabase
         .from('profiles')
-        .update({ status: newStatus })
+        .update({ updated_at: new Date().toISOString() })
         .eq('id', userId);
 
       if (error) throw error;

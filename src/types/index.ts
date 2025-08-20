@@ -27,6 +27,7 @@ export interface Product {
   reviews_count?: number;
   created_at: string;
   updated_at: string;
+  image_url?: string; // Compatibility field computed from images[0]
 }
 
 export interface Category {
@@ -66,9 +67,9 @@ export interface Order {
   updated_at: string;
   items?: OrderItem[];
   order_items?: any[]; // For database compatibility
-  return_status?: string;
-  return_reason?: string;
-  return_requested_at?: string;
+  return_status?: string | null;
+  return_reason?: string | null;
+  return_requested_at?: string | null;
   marketplace_order_id?: string;
   marketplace_status?: string;
 }
@@ -151,7 +152,6 @@ export interface UserProfile {
   login_count?: number;
   created_at: string;
   updated_at: string;
-  user_id?: string; // For compatibility with database queries
   user_roles?: Array<{ role: string }>;
   user_tag_assignments?: Array<{ user_tags: { id: string; name: string; color: string } }>;
 }

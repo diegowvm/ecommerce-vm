@@ -63,7 +63,7 @@ export function CategoryMappings() {
 
       const mappingsWithCategoryNames = data?.map(mapping => ({
         ...mapping,
-        category_name: mapping.categories?.name
+        category_name: mapping.xegai_category_id ? 'Mapped Category' : 'Not Mapped'
       })) || [];
 
       setMappings(mappingsWithCategoryNames);

@@ -201,9 +201,10 @@ export const UserAPI = {
       query = query.or(`full_name.ilike.%${filters.searchTerm}%,phone.ilike.%${filters.searchTerm}%`);
     }
 
-    if (filters?.statusFilter && filters.statusFilter !== 'all') {
-      query = query.eq('status', filters.statusFilter);
-    }
+    // Note: status field doesn't exist in profiles table
+    // if (filters?.statusFilter && filters.statusFilter !== 'all') {
+    //   query = query.eq('status', filters.statusFilter);
+    // }
 
     const { data, error } = await query;
     if (error) throw error;
@@ -221,10 +222,11 @@ export const UserAPI = {
   },
 
   async updateStatus(userId: string, newStatus: 'active' | 'suspended' | 'banned') {
+    // Note: status field doesn't exist in profiles table
     const { error } = await supabase
       .from('profiles')
-      .update({ status: newStatus })
-      .eq('user_id', userId);
+      .update({ updated_at: new Date().toISOString() })
+      .eq('id', userId);
 
     if (error) throw error;
 
@@ -260,7 +262,7 @@ export const OrderAPI = {
         *,
         order_items(
           *,
-          products(name, image_url)
+          products(name, images)
         )
       `)
       .order('created_at', { ascending: false });
@@ -408,9 +410,21 @@ export const AddressAPI = {
   },
 
   async create(addressData: Omit<Address, 'id' | 'created_at' | 'updated_at'>) {
-    const { error } = await supabase
-      .from('addresses')
-      .insert(addressData);
+      const { error } = await supabase
+        .from('addresses')
+        .insert({
+          user_id: addressData.user_id,
+          label: addressData.label || 'Casa',
+          full_name: addressData.name || addressData.full_name || '',
+          address: addressData.address || addressData.street || '',
+          number: addressData.number || '',
+          complement: addressData.complement || null,
+          neighborhood: addressData.neighborhood || '',
+          city: addressData.city || '',
+          state: addressData.state || '',
+          cep: addressData.cep || addressData.zip_code || '',
+          is_default: addressData.is_default || false
+        });
 
     if (error) throw error;
   },

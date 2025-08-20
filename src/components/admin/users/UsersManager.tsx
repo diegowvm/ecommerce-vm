@@ -218,20 +218,20 @@ export function UsersManager() {
                               Ver Detalhes
                             </DropdownMenuItem>
                             {user.status === 'active' && (
-                              <DropdownMenuItem onClick={() => updateUserStatus(user.user_id, 'suspended')}>
+                              <DropdownMenuItem onClick={() => updateUserStatus(user.id, 'suspended')}>
                                 <Ban className="mr-2 h-4 w-4" />
                                 Suspender
                               </DropdownMenuItem>
                             )}
                             {user.status === 'suspended' && (
-                              <DropdownMenuItem onClick={() => updateUserStatus(user.user_id, 'active')}>
+                              <DropdownMenuItem onClick={() => updateUserStatus(user.id, 'active')}>
                                 <CheckCircle className="mr-2 h-4 w-4" />
                                 Ativar
                               </DropdownMenuItem>
                             )}
                             {user.status !== 'banned' && (
                               <DropdownMenuItem 
-                                onClick={() => updateUserStatus(user.user_id, 'banned')}
+                                onClick={() => updateUserStatus(user.id, 'banned')}
                                 className="text-destructive"
                               >
                                 <Ban className="mr-2 h-4 w-4" />

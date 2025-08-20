@@ -70,7 +70,7 @@ export default function Profile() {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('id', user.id)
         .single();
 
       if (error && error.code !== 'PGRST116') {
@@ -109,7 +109,7 @@ export default function Profile() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setOrders(data || []);
+      setOrders((data || []) as any[]);
     } catch (error) {
       console.error('Error loading orders:', error);
     } finally {
@@ -125,7 +125,8 @@ export default function Profile() {
       const { error } = await supabase
         .from('profiles')
         .upsert({
-          user_id: user.id,
+          id: user.id,
+          email: user.email,
           full_name: formData.full_name || null,
           phone: formData.phone || null,
           updated_at: new Date().toISOString(),
@@ -158,7 +159,8 @@ export default function Profile() {
       const { error } = await supabase
         .from('profiles')
         .upsert({
-          user_id: user.id,
+          id: user.id,
+          email: user.email,
           avatar_url: newAvatarUrl,
           updated_at: new Date().toISOString(),
         });

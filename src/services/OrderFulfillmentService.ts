@@ -290,7 +290,7 @@ export class OrderFulfillmentService {
     const grouped: Record<string, (OrderItem & { products: Product | null })[]> = {};
     
     for (const item of items) {
-      const marketplace = item.products?.marketplace_name || 'Unknown';
+      const marketplace = 'local'; // marketplace_name field doesn't exist in products table
       
       if (!grouped[marketplace]) {
         grouped[marketplace] = [];

@@ -20,12 +20,15 @@ const NewReleases = () => {
       try {
         const { data, error } = await supabase
           .from('products')
-          .select('id, name, price, image_url')
+          .select('id, name, price, images')
           .order('created_at', { ascending: false })
           .limit(12);
 
         if (error) throw error;
-        setProducts(data || []);
+        setProducts((data || []).map(product => ({ 
+          ...product, 
+          image_url: product.images?.[0] || '' 
+        })));
       } catch (error) {
         console.error('Error fetching new releases:', error);
       } finally {

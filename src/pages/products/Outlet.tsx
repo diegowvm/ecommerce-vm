@@ -23,11 +23,14 @@ const Outlet = () => {
       try {
         const { data, error } = await supabase
           .from('products')
-          .select('id, name, price, original_price, image_url')
+          .select('id, name, price, original_price, images')
           .order('created_at', { ascending: false });
 
         if (error) throw error;
-        setProducts(data || []);
+        setProducts((data || []).map(product => ({ 
+          ...product, 
+          image_url: product.images?.[0] || '' 
+        })));
       } catch (error) {
         console.error('Error fetching outlet products:', error);
       } finally {

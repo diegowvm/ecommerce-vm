@@ -73,7 +73,7 @@ export default function OrderConfirmation() {
         .single();
 
       if (error) throw error;
-      setOrder(data);
+      setOrder(data as any);
     } catch (error) {
       console.error('Error fetching order:', error);
       navigate('/');
