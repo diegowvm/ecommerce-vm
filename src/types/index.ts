@@ -80,15 +80,18 @@ export interface OrderItem {
 export interface Address {
   id?: string;
   user_id?: string;
-  name: string;
-  street: string;
-  number: string;
+  name?: string;
+  street?: string;
+  address?: string;
+  number?: string;
   complement?: string;
-  neighborhood: string;
-  city: string;
-  state: string;
-  zip_code: string;
+  neighborhood?: string;
+  city?: string;
+  state?: string;
+  zip_code?: string;
+  cep?: string;
   is_default?: boolean;
+  [key: string]: any; // Make it compatible with Json type
 }
 
 export interface ApiResponse<T> {
@@ -114,4 +117,80 @@ export interface FilterOptions {
   sizes: string[];
   colors: string[];
   inStock: boolean;
+}
+
+// Additional types for complete functionality
+export interface Subcategory {
+  id: string;
+  category_id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  image_url?: string;
+  order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserProfile {
+  id: string;
+  email: string;
+  full_name?: string;
+  avatar_url?: string;
+  phone?: string;
+  status?: string;
+  last_login?: string;
+  login_count?: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserStats {
+  total_users: number;
+  active_users: number;
+  suspended_users: number;
+  banned_users: number;
+  new_users_30d: number;
+  active_users_7d: number;
+  avg_login_count: number;
+}
+
+export interface OrderReturn {
+  id: string;
+  order_id: string;
+  order_item_id?: string;
+  reason: string;
+  status: string;
+  refund_amount?: number;
+  marketplace_return_id?: string;
+  created_at: string;
+  updated_at: string;
+  processed_at?: string;
+}
+
+export interface WishlistItem {
+  id: string;
+  user_id: string;
+  product_id: string;
+  product?: Product;
+  created_at: string;
+}
+
+export interface MarketplaceConnection {
+  id: string;
+  user_id: string;
+  marketplace_name: string;
+  connection_name: string;
+  connection_status: string;
+  api_key_reference?: string;
+  oauth_access_token?: string;
+  oauth_refresh_token?: string;
+  oauth_expires_at?: string;
+  last_test_at?: string;
+  rate_limit_remaining?: number;
+  rate_limit_reset_at?: string;
+  settings: Record<string, any>;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
 }

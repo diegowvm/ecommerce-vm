@@ -105,22 +105,7 @@ export type Database = {
           template_id?: string | null
           type?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "admin_communications_recipient_id_fkey"
-            columns: ["recipient_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "admin_communications_sender_id_fkey"
-            columns: ["sender_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
       advanced_category_mappings: {
         Row: {
@@ -162,13 +147,6 @@ export type Database = {
             columns: ["api_connection_id"]
             isOneToOne: false
             referencedRelation: "api_connections"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "advanced_category_mappings_local_category_id_fkey"
-            columns: ["local_category_id"]
-            isOneToOne: false
-            referencedRelation: "categories"
             referencedColumns: ["id"]
           },
         ]
@@ -314,32 +292,29 @@ export type Database = {
       cart_items: {
         Row: {
           color: string | null
-          created_at: string
+          created_at: string | null
           id: string
           product_id: string
           quantity: number
           size: string | null
-          updated_at: string
           user_id: string
         }
         Insert: {
           color?: string | null
-          created_at?: string
+          created_at?: string | null
           id?: string
           product_id: string
           quantity?: number
           size?: string | null
-          updated_at?: string
           user_id: string
         }
         Update: {
           color?: string | null
-          created_at?: string
+          created_at?: string | null
           id?: string
           product_id?: string
           quantity?: number
           size?: string | null
-          updated_at?: string
           user_id?: string
         }
         Relationships: [
@@ -354,34 +329,34 @@ export type Database = {
       }
       categories: {
         Row: {
-          created_at: string
+          created_at: string | null
           description: string | null
           id: string
           image_url: string | null
+          is_active: boolean | null
           name: string
-          order: number | null
           slug: string
-          updated_at: string | null
+          sort_order: number | null
         }
         Insert: {
-          created_at?: string
+          created_at?: string | null
           description?: string | null
           id?: string
           image_url?: string | null
+          is_active?: boolean | null
           name: string
-          order?: number | null
           slug: string
-          updated_at?: string | null
+          sort_order?: number | null
         }
         Update: {
-          created_at?: string
+          created_at?: string | null
           description?: string | null
           id?: string
           image_url?: string | null
+          is_active?: boolean | null
           name?: string
-          order?: number | null
           slug?: string
-          updated_at?: string | null
+          sort_order?: number | null
         }
         Relationships: []
       }
@@ -413,15 +388,7 @@ export type Database = {
           updated_at?: string
           xegai_category_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "marketplace_category_mappings_xegai_category_id_fkey"
-            columns: ["xegai_category_id"]
-            isOneToOne: false
-            referencedRelation: "categories"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       marketplace_products: {
         Row: {
@@ -537,13 +504,6 @@ export type Database = {
             referencedRelation: "api_connections"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "marketplace_products_local_product_id_fkey"
-            columns: ["local_product_id"]
-            isOneToOne: false
-            referencedRelation: "products"
-            referencedColumns: ["id"]
-          },
         ]
       }
       marketplace_sync_logs: {
@@ -625,20 +585,11 @@ export type Database = {
           type?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "notifications_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
       order_items: {
         Row: {
           color: string | null
-          created_at: string
           id: string
           order_id: string
           price: number
@@ -648,7 +599,6 @@ export type Database = {
         }
         Insert: {
           color?: string | null
-          created_at?: string
           id?: string
           order_id: string
           price: number
@@ -658,7 +608,6 @@ export type Database = {
         }
         Update: {
           color?: string | null
-          created_at?: string
           id?: string
           order_id?: string
           price?: number
@@ -720,67 +669,43 @@ export type Database = {
           status?: string
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "order_returns_order_id_fkey"
-            columns: ["order_id"]
-            isOneToOne: false
-            referencedRelation: "orders"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "order_returns_order_item_id_fkey"
-            columns: ["order_item_id"]
-            isOneToOne: false
-            referencedRelation: "order_items"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       orders: {
         Row: {
-          created_at: string
+          created_at: string | null
           id: string
-          marketplace_order_id: string | null
-          marketplace_status: string | null
-          return_reason: string | null
-          return_requested_at: string | null
-          return_status: string | null
-          shipping_address: Json | null
-          status: string
+          payment_method: string
+          payment_status: string | null
+          shipping_address: Json
+          status: string | null
           total: number
           tracking_code: string | null
-          updated_at: string
+          updated_at: string | null
           user_id: string
         }
         Insert: {
-          created_at?: string
+          created_at?: string | null
           id?: string
-          marketplace_order_id?: string | null
-          marketplace_status?: string | null
-          return_reason?: string | null
-          return_requested_at?: string | null
-          return_status?: string | null
-          shipping_address?: Json | null
-          status?: string
+          payment_method: string
+          payment_status?: string | null
+          shipping_address: Json
+          status?: string | null
           total: number
           tracking_code?: string | null
-          updated_at?: string
+          updated_at?: string | null
           user_id: string
         }
         Update: {
-          created_at?: string
+          created_at?: string | null
           id?: string
-          marketplace_order_id?: string | null
-          marketplace_status?: string | null
-          return_reason?: string | null
-          return_requested_at?: string | null
-          return_status?: string | null
-          shipping_address?: Json | null
-          status?: string
+          payment_method?: string
+          payment_status?: string | null
+          shipping_address?: Json
+          status?: string | null
           total?: number
           tracking_code?: string | null
-          updated_at?: string
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: []
@@ -815,57 +740,60 @@ export type Database = {
       products: {
         Row: {
           active: boolean | null
+          brand: string | null
           category_id: string | null
           colors: string[] | null
-          created_at: string
-          description: string | null
+          created_at: string | null
+          description: string
           featured: boolean | null
           id: string
-          image_url: string | null
           images: string[] | null
-          marketplace_name: string | null
           name: string
           original_price: number | null
           price: number
+          rating: number | null
+          reviews_count: number | null
           sizes: string[] | null
           stock: number | null
-          updated_at: string
+          updated_at: string | null
         }
         Insert: {
           active?: boolean | null
+          brand?: string | null
           category_id?: string | null
           colors?: string[] | null
-          created_at?: string
-          description?: string | null
+          created_at?: string | null
+          description: string
           featured?: boolean | null
           id?: string
-          image_url?: string | null
           images?: string[] | null
-          marketplace_name?: string | null
           name: string
           original_price?: number | null
           price: number
+          rating?: number | null
+          reviews_count?: number | null
           sizes?: string[] | null
           stock?: number | null
-          updated_at?: string
+          updated_at?: string | null
         }
         Update: {
           active?: boolean | null
+          brand?: string | null
           category_id?: string | null
           colors?: string[] | null
-          created_at?: string
-          description?: string | null
+          created_at?: string | null
+          description?: string
           featured?: boolean | null
           id?: string
-          image_url?: string | null
           images?: string[] | null
-          marketplace_name?: string | null
           name?: string
           original_price?: number | null
           price?: number
+          rating?: number | null
+          reviews_count?: number | null
           sizes?: string[] | null
           stock?: number | null
-          updated_at?: string
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -880,54 +808,30 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
-          created_at: string
-          date_of_birth: string | null
-          document: string | null
+          created_at: string | null
+          email: string
           full_name: string | null
-          gender: string | null
           id: string
-          last_login: string | null
-          login_count: number | null
-          marketing_consent: boolean | null
           phone: string | null
-          status: string | null
-          two_factor_enabled: boolean | null
-          updated_at: string
-          user_id: string
+          updated_at: string | null
         }
         Insert: {
           avatar_url?: string | null
-          created_at?: string
-          date_of_birth?: string | null
-          document?: string | null
+          created_at?: string | null
+          email: string
           full_name?: string | null
-          gender?: string | null
-          id?: string
-          last_login?: string | null
-          login_count?: number | null
-          marketing_consent?: boolean | null
+          id: string
           phone?: string | null
-          status?: string | null
-          two_factor_enabled?: boolean | null
-          updated_at?: string
-          user_id: string
+          updated_at?: string | null
         }
         Update: {
           avatar_url?: string | null
-          created_at?: string
-          date_of_birth?: string | null
-          document?: string | null
+          created_at?: string | null
+          email?: string
           full_name?: string | null
-          gender?: string | null
           id?: string
-          last_login?: string | null
-          login_count?: number | null
-          marketing_consent?: boolean | null
           phone?: string | null
-          status?: string | null
-          two_factor_enabled?: boolean | null
-          updated_at?: string
-          user_id?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -965,15 +869,7 @@ export type Database = {
           slug?: string
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "subcategories_category_id_fkey"
-            columns: ["category_id"]
-            isOneToOne: false
-            referencedRelation: "categories"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       sync_executions: {
         Row: {
@@ -1167,15 +1063,7 @@ export type Database = {
           user_agent?: string | null
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "user_activity_logs_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
       user_preferences: {
         Row: {
@@ -1223,33 +1111,25 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "user_preferences_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "profiles"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
       user_roles: {
         Row: {
-          created_at: string
+          created_at: string | null
           id: string
-          role: Database["public"]["Enums"]["app_role"]
+          role: string
           user_id: string
         }
         Insert: {
-          created_at?: string
+          created_at?: string | null
           id?: string
-          role?: Database["public"]["Enums"]["app_role"]
+          role?: string
           user_id: string
         }
         Update: {
-          created_at?: string
+          created_at?: string | null
           id?: string
-          role?: Database["public"]["Enums"]["app_role"]
+          role?: string
           user_id?: string
         }
         Relationships: []
@@ -1278,25 +1158,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "user_tag_assignments_assigned_by_fkey"
-            columns: ["assigned_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["user_id"]
-          },
-          {
             foreignKeyName: "user_tag_assignments_tag_id_fkey"
             columns: ["tag_id"]
             isOneToOne: false
             referencedRelation: "user_tags"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "user_tag_assignments_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["user_id"]
           },
         ]
       }
