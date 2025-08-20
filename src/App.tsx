@@ -3,10 +3,11 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Suspense, lazy } from "react";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { CacheProvider } from "@/lib/cache";
 import { ThemeProvider } from "next-themes";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 // Core pages (loaded immediately)
 import Index from "./pages/Index";
@@ -61,20 +62,28 @@ const AdminReturns = lazy(() => import("./pages/admin/AdminReturns"));
 const AdminApiIntegrations = lazy(() => import("./pages/admin/AdminApiIntegrations"));
 const AdminApiMonitoring = lazy(() => import("./pages/admin/AdminApiMonitoring"));
 
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
 const App = () => (
-  <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-    <CacheProvider>
+  <QueryClientProvider client={queryClient}>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
       <AuthProvider>
         <TooltipProvider>
           <Toaster />
           <Sonner />
           <BrowserRouter>
-          <Suspense fallback={
-            <div className="min-h-screen flex items-center justify-center">
-              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-            </div>
-          }>
-            <Routes>
+            <Suspense fallback={<LoadingSpinner />}>
+              <Routes>
               {/* Core routes - loaded immediately */}
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
@@ -201,13 +210,13 @@ const App = () => (
               
               {/* 404 fallback */}
               <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-        </BrowserRouter>
-      </TooltipProvider>
-    </AuthProvider>
-  </CacheProvider>
-  </ThemeProvider>
+              </Routes>
+            </Suspense>
+          </BrowserRouter>
+        </TooltipProvider>
+      </AuthProvider>
+    </ThemeProvider>
+  </QueryClientProvider>
 );
 
 export default App;

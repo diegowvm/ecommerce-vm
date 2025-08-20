@@ -1,173 +1,76 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Product } from '@/types';
-import { useToast } from '@/hooks/use-toast';
+import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
+import { db } from '@/lib/supabase';
+import type { Product, FilterOptions, PaginationParams } from '@/types';
 
-export function useProducts(searchTerm: string = '', categoryId: string = '', featured: boolean | null = null) {
-  const { toast } = useToast();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export const useProducts = (filters?: Partial<FilterOptions & PaginationParams>) => {
+  return useQuery({
+    queryKey: ['products', filters],
+    queryFn: () => db.getProducts(filters),
+    select: (data) => data.data || [],
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+};
 
-  const fetchProducts = async () => {
-    setLoading(true);
-    setError(null);
-    
-    try {
-      let query = supabase
-        .from('products')
-        .select(`
-          *,
-          categories(name, slug)
-        `)
-        .eq('active', true)
-        .order('created_at', { ascending: false });
+export const useProduct = (id: string) => {
+  return useQuery({
+    queryKey: ['product', id],
+    queryFn: () => db.getProduct(id),
+    select: (data) => data.data,
+    enabled: !!id,
+    staleTime: 5 * 60 * 1000,
+  });
+};
 
-      if (searchTerm) {
-        query = query.ilike('name', `%${searchTerm}%`);
-      }
+export const useFeaturedProducts = () => {
+  return useQuery({
+    queryKey: ['products', 'featured'],
+    queryFn: () => db.getProducts({ featured: true }),
+    select: (data) => data.data || [],
+    staleTime: 10 * 60 * 1000,
+  });
+};
 
-      if (categoryId) {
-        query = query.eq('category_id', categoryId);
-      }
+export const useProductsByCategory = (categoryId: string) => {
+  return useQuery({
+    queryKey: ['products', 'category', categoryId],
+    queryFn: () => db.getProducts({ category: categoryId }),
+    select: (data) => data.data || [],
+    enabled: !!categoryId,
+    staleTime: 5 * 60 * 1000,
+  });
+};
 
-      if (featured !== null) {
-        query = query.eq('featured', featured);
-      }
+export const useInfiniteProducts = (filters?: Partial<FilterOptions & PaginationParams>) => {
+  return useInfiniteQuery({
+    queryKey: ['products', 'infinite', filters],
+    queryFn: ({ pageParam = 1 }) => 
+      db.getProducts({ 
+        ...filters, 
+        page: pageParam, 
+        limit: filters?.limit || 12 
+      }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      const hasMore = lastPage.data && lastPage.data.length === (filters?.limit || 12);
+      return hasMore ? allPages.length + 1 : undefined;
+    },
+    select: (data) => ({
+      pages: data.pages,
+      pageParams: data.pageParams,
+      products: data.pages.flatMap(page => page.data || [])
+    }),
+    staleTime: 5 * 60 * 1000,
+  });
+};
 
-      const { data, error } = await query;
-
-      if (error) throw error;
-      setProducts(data || []);
-    } catch (error) {
-      console.error('Error fetching products:', error);
-      setError('Erro ao carregar produtos');
-      toast({
-        title: "Erro",
-        description: "Erro ao carregar produtos",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const createProduct = async (productData: Omit<Product, 'id' | 'created_at' | 'updated_at'>) => {
-    try {
-      const { error } = await supabase
-        .from('products')
-        .insert(productData);
-
-      if (error) throw error;
-
-      toast({
-        title: "Sucesso",
-        description: "Produto criado com sucesso",
-      });
-
-      await fetchProducts();
-      return true;
-    } catch (error) {
-      console.error('Error creating product:', error);
-      toast({
-        title: "Erro",
-        description: "Erro ao criar produto",
-        variant: "destructive"
-      });
-      return false;
-    }
-  };
-
-  const updateProduct = async (id: string, productData: Partial<Product>) => {
-    try {
-      const { error } = await supabase
-        .from('products')
-        .update(productData)
-        .eq('id', id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Sucesso",
-        description: "Produto atualizado com sucesso",
-      });
-
-      await fetchProducts();
-      return true;
-    } catch (error) {
-      console.error('Error updating product:', error);
-      toast({
-        title: "Erro",
-        description: "Erro ao atualizar produto",
-        variant: "destructive"
-      });
-      return false;
-    }
-  };
-
-  const deleteProduct = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from('products')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Sucesso",
-        description: "Produto excluído com sucesso",
-      });
-
-      await fetchProducts();
-      return true;
-    } catch (error) {
-      console.error('Error deleting product:', error);
-      toast({
-        title: "Erro",
-        description: "Erro ao excluir produto",
-        variant: "destructive"
-      });
-      return false;
-    }
-  };
-
-  const getProductById = async (id: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('products')
-        .select(`
-          *,
-          categories(name, slug)
-        `)
-        .eq('id', id)
-        .single();
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error fetching product:', error);
-      toast({
-        title: "Erro",
-        description: "Erro ao carregar produto",
-        variant: "destructive"
-      });
-      return null;
-    }
-  };
-
-  useEffect(() => {
-    fetchProducts();
-  }, [searchTerm, categoryId, featured]);
-
-  return {
-    products,
-    loading,
-    error,
-    createProduct,
-    updateProduct,
-    deleteProduct,
-    getProductById,
-    refetch: fetchProducts
-  };
-}
+// Search products with debouncing
+export const useProductSearch = (searchTerm: string, delay = 300) => {
+  return useQuery({
+    queryKey: ['products', 'search', searchTerm],
+    queryFn: () => db.getProducts({ search: searchTerm }),
+    select: (data) => data.data || [],
+    enabled: searchTerm.length >= 2,
+    staleTime: 2 * 60 * 1000,
+  });
+};

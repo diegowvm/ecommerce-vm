@@ -1,9 +1,10 @@
 import { createRoot } from 'react-dom/client'
+import { HelmetProvider } from 'react-helmet-async'
 import App from './App.tsx'
-import { startScheduledSync } from './utils/scheduler.ts'
 import './index.css'
 
-// Start scheduled sync
-startScheduledSync();
-
-createRoot(document.getElementById("root")!).render(<App />);
+createRoot(document.getElementById("root")!).render(
+  <HelmetProvider>
+    <App />
+  </HelmetProvider>
+);

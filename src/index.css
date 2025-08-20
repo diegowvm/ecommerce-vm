@@ -2,80 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
-/* E-commerce Design System - Modern & Futuristic */
+/* XEGAI SHOP - Design System Profissional */
 
 @layer base {
   :root {
-    /* Modern Dark Theme */
-    --background: 222 15% 6%;
-    --foreground: 210 40% 98%;
+    /* Light Theme - Tema Principal */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
 
-    --card: 222 20% 8%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
 
-    --popover: 222 20% 8%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
 
-    /* Vibrant Primary - Electric Blue */
-    --primary: 220 100% 60%;
-    --primary-foreground: 222 15% 6%;
-    --primary-glow: 220 100% 70%;
+    /* Brand Colors - Xegai Identity */
+    --primary: 262 83% 58%;
+    --primary-foreground: 210 40% 98%;
+    --primary-hover: 262 83% 48%;
 
-    /* Premium Secondary - Purple Accent */
-    --secondary: 270 60% 50%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
 
-    /* Subtle Muted */
-    --muted: 222 20% 12%;
-    --muted-foreground: 215 25% 65%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
-    /* Accent - Neon Green */
-    --accent: 142 76% 50%;
-    --accent-foreground: 222 15% 6%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 222 20% 15%;
-    --input: 222 20% 12%;
-    --ring: 220 100% 60%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 262 83% 58%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
-    /* Custom Design Tokens */
-    --surface: 222 20% 10%;
-    --surface-hover: 222 20% 14%;
+    /* Success & Warning */
+    --success: 142 76% 36%;
+    --success-foreground: 355.7 100% 97.3%;
+    --warning: 32 95% 44%;
+    --warning-foreground: 210 40% 98%;
+
+    /* Xegai Brand Gradients */
+    --gradient-brand: linear-gradient(135deg, hsl(262 83% 58%), hsl(262 83% 48%));
+    --gradient-hero: linear-gradient(135deg, hsl(262 83% 58%), hsl(220 100% 60%));
+    --gradient-card: linear-gradient(135deg, hsla(262 83% 58% / 0.05), hsla(220 100% 60% / 0.05));
     
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(220 100% 60%), hsl(270 60% 50%));
-    --gradient-secondary: linear-gradient(135deg, hsl(270 60% 50%), hsl(142 76% 50%));
-    --gradient-hero: linear-gradient(135deg, hsl(222 15% 6%), hsl(222 20% 8%));
-    --gradient-glass: linear-gradient(135deg, hsla(222 20% 15% / 0.8), hsla(222 20% 10% / 0.4));
+    /* Professional Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
     
-    /* Shadows */
-    --shadow-soft: 0 4px 24px hsla(220 100% 60% / 0.12);
-    --shadow-glow: 0 0 32px hsla(220 100% 60% / 0.3);
-    --shadow-card: 0 8px 32px hsla(222 15% 2% / 0.6);
-    
-    /* Transitions */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Smooth Transitions */
+    --transition-fast: all 0.15s ease-out;
+    --transition-normal: all 0.3s ease-out;
+    --transition-slow: all 0.5s ease-out;
   }
 
   .dark {
@@ -88,8 +72,9 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
+    --primary: 262 83% 58%;
     --primary-foreground: 222.2 47.4% 11.2%;
+    --primary-hover: 262 83% 68%;
 
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
@@ -105,15 +90,10 @@
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --ring: 262 83% 58%;
+
+    --success: 142 76% 46%;
+    --warning: 32 95% 54%;
   }
 }
 
@@ -124,64 +104,183 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/50;
   }
 }
 
 @layer components {
-  /* Glass Effect */
-  .glass {
-    @apply backdrop-blur-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20;
+  /* Layout Components */
+  .container-custom {
+    @apply container mx-auto px-4 sm:px-6 lg:px-8;
   }
-  
-  /* Gradient Text */
-  .gradient-text {
-    @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
+
+  .section-padding {
+    @apply py-12 md:py-16 lg:py-20;
   }
-  
-  /* Hover Glow Effect */
-  .hover-glow {
-    @apply transition-all duration-300 hover:shadow-[0_0_32px_rgba(59,130,246,0.3)];
+
+  /* Card Variants */
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
   }
-  
-  /* Product Card Hover */
-  .product-hover {
-    @apply transition-all duration-300 hover:scale-105 hover:shadow-2xl;
+
+  .card-product {
+    @apply bg-card rounded-lg border shadow-sm overflow-hidden card-hover;
   }
-  
+
   /* Button Variants */
-  .btn-gradient {
-    @apply bg-gradient-to-r from-primary to-secondary text-primary-foreground;
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary-hover transition-colors;
   }
-  
-  .btn-glass {
-    @apply glass hover:bg-white/20;
+
+  .btn-gradient {
+    @apply bg-gradient-to-r from-primary to-primary-hover text-primary-foreground;
+  }
+
+  /* Text Variants */
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Loading States */
+  .skeleton {
+    @apply animate-pulse bg-muted rounded;
+  }
+
+  /* Focus States */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+  }
+
+  /* Image Optimization */
+  .img-responsive {
+    @apply w-full h-auto object-cover;
+  }
+
+  .img-product {
+    @apply aspect-square object-cover rounded-lg;
+  }
+
+  /* Grid Layouts */
+  .grid-products {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
+  }
+
+  .grid-categories {
+    @apply grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4;
+  }
+
+  /* Form Styles */
+  .form-group {
+    @apply space-y-2;
+  }
+
+  .form-error {
+    @apply text-sm text-destructive;
+  }
+
+  /* Badge Variants */
+  .badge-success {
+    @apply bg-success text-success-foreground;
+  }
+
+  .badge-warning {
+    @apply bg-warning text-warning-foreground;
+  }
+
+  /* Animation Classes */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.6s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  /* Mobile Optimizations */
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+
+  .tap-highlight-transparent {
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
 @layer utilities {
-  /* Animation Classes */
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
+  /* Spacing Utilities */
+  .space-y-section > * + * {
+    @apply mt-12 md:mt-16 lg:mt-20;
   }
-  
-  .animate-glow {
-    animation: glow 2s ease-in-out infinite alternate;
+
+  /* Typography Utilities */
+  .text-pretty {
+    text-wrap: pretty;
   }
-  
-  .animate-slide-up {
-    animation: slideUp 0.6s ease-out;
+
+  /* Line Clamp */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Accessibility */
+  .sr-only-focusable {
+    @apply sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-2 focus:bg-background focus:text-foreground;
+  }
+
+  /* Performance */
+  .will-change-transform {
+    will-change: transform;
+  }
+
+  .backface-hidden {
+    backface-visibility: hidden;
   }
 }
 
 /* Keyframes */
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-}
-
-@keyframes glow {
-  from { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
-  to { box-shadow: 0 0 30px rgba(59, 130, 246, 0.6); }
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+  }
+  to { 
+    opacity: 1; 
+  }
 }
 
 @keyframes slideUp {
@@ -192,5 +291,50 @@
   to { 
     opacity: 1; 
     transform: translateY(0); 
+  }
+}
+
+@keyframes scaleIn {
+  from { 
+    opacity: 0; 
+    transform: scale(0.95); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1); 
+  }
+}
+
+@keyframes float {
+  0%, 100% { 
+    transform: translateY(0px); 
+  }
+  50% { 
+    transform: translateY(-10px); 
+  }
+}
+
+/* Print Styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  :root {
+    --border: 0 0% 20%;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

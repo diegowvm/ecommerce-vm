@@ -1,73 +1,197 @@
-# Welcome to your Lovable project
+# 🛍️ Xegai Shop - E-commerce Moderno
 
-## Project info
+Uma plataforma de e-commerce completa e moderna, focada em moda, calçados e acessórios, desenvolvida com as melhores tecnologias do mercado.
 
-**URL**: https://lovable.dev/projects/0767a290-6a50-4291-a1f2-9b0431061acc
+## ✨ Principais Melhorias Implementadas
 
-## How can I edit this code?
+### 🏗️ **Arquitetura e Estrutura**
+- ✅ **Estrutura de pastas reorganizada** e padronizada
+- ✅ **Sistema de tipos TypeScript** completo e consistente
+- ✅ **Hooks customizados** para autenticação, carrinho e produtos
+- ✅ **Configuração otimizada** do Vite e Tailwind CSS
+- ✅ **Lazy loading estratégico** para melhor performance
 
-There are several ways of editing your application.
+### 🎨 **Design System Profissional**
+- ✅ **Design system moderno** com tokens de design padronizados
+- ✅ **Tema claro/escuro** com identidade visual da Xegai
+- ✅ **Componentes reutilizáveis** e acessíveis
+- ✅ **Animações suaves** e micro-interações
+- ✅ **Layout responsivo** otimizado para todos os dispositivos
 
-**Use Lovable**
+### 🚀 **Performance e SEO**
+- ✅ **Bundle otimizado** com code splitting inteligente
+- ✅ **Meta tags e SEO** configurados com React Helmet
+- ✅ **Imagens otimizadas** e lazy loading
+- ✅ **Cache estratégico** com React Query
+- ✅ **Compressão e minificação** automática
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/0767a290-6a50-4291-a1f2-9b0431061acc) and start prompting.
+### 🔐 **Funcionalidades Avançadas**
+- ✅ **Sistema de autenticação** completo com Supabase
+- ✅ **Carrinho persistente** com estado global
+- ✅ **Gestão de produtos** com filtros e busca
+- ✅ **Sistema de categorias** dinâmico
+- ✅ **Integração com pagamentos** (preparado)
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🛠️ Tecnologias Utilizadas
 
-**Use your preferred IDE**
+### Frontend
+- **React 18** - Biblioteca principal
+- **TypeScript** - Tipagem estática
+- **Vite** - Build tool moderna
+- **Tailwind CSS** - Framework CSS utilitário
+- **shadcn/ui** - Componentes UI modernos
+- **React Query** - Gerenciamento de estado servidor
+- **React Router** - Roteamento SPA
+- **React Helmet** - SEO e meta tags
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Backend & Database
+- **Supabase** - Backend as a Service
+- **PostgreSQL** - Banco de dados relacional
+- **Row Level Security** - Segurança de dados
+- **Real-time subscriptions** - Atualizações em tempo real
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Ferramentas de Desenvolvimento
+- **ESLint** - Linting de código
+- **Prettier** - Formatação de código
+- **Vitest** - Testes unitários
+- **TypeScript** - Verificação de tipos
 
-Follow these steps:
+## 📁 Estrutura do Projeto
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+```
+src/
+├── components/          # Componentes reutilizáveis
+│   ├── layout/         # Header, Footer, etc.
+│   ├── sections/       # Seções da página inicial
+│   ├── cart/          # Componentes do carrinho
+│   └── ui/            # Componentes base (shadcn/ui)
+├── hooks/              # Hooks customizados
+│   ├── useAuth.tsx    # Autenticação
+│   ├── useCart.ts     # Carrinho de compras
+│   └── useProducts.ts # Gestão de produtos
+├── lib/               # Utilitários e configurações
+│   ├── supabase.ts    # Cliente Supabase
+│   ├── constants.ts   # Constantes da aplicação
+│   └── utils.ts       # Funções utilitárias
+├── pages/             # Páginas da aplicação
+├── types/             # Definições de tipos TypeScript
+└── styles/            # Estilos globais
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## 🚀 Como Executar
 
-# Step 3: Install the necessary dependencies.
-npm i
+### Pré-requisitos
+- Node.js 18+ 
+- npm ou yarn
+- Conta no Supabase (opcional para desenvolvimento)
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+### Instalação
+
+1. **Clone o repositório**
+```bash
+git clone <repository-url>
+cd ecommerce-vm
+```
+
+2. **Instale as dependências**
+```bash
+npm install
+```
+
+3. **Configure as variáveis de ambiente**
+```bash
+cp .env.example .env
+# Edite o arquivo .env com suas configurações
+```
+
+4. **Execute o projeto**
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+5. **Acesse a aplicação**
+```
+http://localhost:8080
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 📋 Scripts Disponíveis
 
-**Use GitHub Codespaces**
+```bash
+# Desenvolvimento
+npm run dev              # Inicia servidor de desenvolvimento
+npm run build           # Build para produção
+npm run preview         # Preview do build de produção
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+# Qualidade de Código
+npm run lint            # Executa ESLint
+npm run lint:fix        # Corrige problemas do ESLint
+npm run type-check      # Verifica tipos TypeScript
 
-## What technologies are used for this project?
+# Testes
+npm run test            # Executa testes
+npm run test:ui         # Interface de testes
+npm run test:coverage   # Cobertura de testes
 
-This project is built with:
+# Formatação
+npm run format          # Formata código com Prettier
+npm run format:check    # Verifica formatação
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🌟 Funcionalidades Principais
 
-## How can I deploy this project?
+### Para Usuários
+- 🛍️ **Catálogo de produtos** com filtros avançados
+- 🛒 **Carrinho persistente** com cálculo automático
+- 💳 **Checkout seguro** com múltiplas formas de pagamento
+- 👤 **Perfil do usuário** com histórico de pedidos
+- ❤️ **Lista de desejos** personalizada
+- 📱 **Design responsivo** para todos os dispositivos
 
-Simply open [Lovable](https://lovable.dev/projects/0767a290-6a50-4291-a1f2-9b0431061acc) and click on Share -> Publish.
+### Para Administradores
+- 📊 **Dashboard completo** com métricas
+- 📦 **Gestão de produtos** (CRUD completo)
+- 🏷️ **Gestão de categorias** hierárquicas
+- 📋 **Gestão de pedidos** com status
+- 👥 **Gestão de usuários** e permissões
+- 🔄 **Integração com marketplaces**
 
-## Can I connect a custom domain to my Lovable project?
+## 🎯 Próximos Passos
 
-Yes, you can!
+### Funcionalidades Planejadas
+- [ ] Sistema de pagamentos (PIX, Cartão, Boleto)
+- [ ] Integração com correios para frete
+- [ ] Sistema de avaliações e comentários
+- [ ] Chat de suporte em tempo real
+- [ ] Programa de fidelidade
+- [ ] Notificações push
+- [ ] App mobile (React Native)
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### Melhorias Técnicas
+- [ ] Testes E2E com Playwright
+- [ ] CI/CD com GitHub Actions
+- [ ] Monitoramento com Sentry
+- [ ] Analytics com Google Analytics
+- [ ] PWA (Progressive Web App)
+- [ ] Internacionalização (i18n)
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## 🤝 Como Contribuir
+
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
+
+## 📞 Suporte
+
+- **WhatsApp:** (44) 99151-2466
+- **Email:** contato.xegaientregas@gmail.com
+- **Website:** [xegaishop.com](https://xegaishop.com)
+
+## 📄 Licença
+
+Este projeto é propriedade privada da Xegai Shop. Todos os direitos reservados.
+
+---
+
+**Desenvolvido com ❤️ pela equipe Xegai Shop**
