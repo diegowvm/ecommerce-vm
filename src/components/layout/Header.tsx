@@ -20,9 +20,20 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 export const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { user, signOut, isAdmin } = useAuth();
+  const { user, signOut, isAdmin, loading } = useAuth();
   const { itemCount, openCart } = useCart();
   const navigate = useNavigate();
+
+  // Don't render until auth context is loaded
+  if (loading) {
+    return (
+      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-center">
+          <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        </div>
+      </header>
+    );
+  }
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

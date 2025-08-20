@@ -14,10 +14,21 @@ export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [cartItemsCount, setCartItemsCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
-  const { user, signOut, isAdmin } = useAuth();
+  const { user, signOut, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
 
   const [categories, setCategories] = useState([]);
+
+  // Don't render until auth context is loaded
+  if (loading) {
+    return (
+      <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-center">
+          <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        </div>
+      </nav>
+    );
+  }
 
   useEffect(() => {
     fetchCategories();
