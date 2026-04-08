@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
+import { Logo } from '@/components/ui/logo';
 import { ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -65,11 +66,7 @@ export default function Auth() {
 
         <Card className="glass border-border/20">
           <CardHeader className="text-center">
-            <img 
-              src="/logo-xegai.png" 
-              alt="Xegai Shop" 
-              className="h-32 w-auto mx-auto mb-4" 
-            />
+            <Logo size="lg" linkTo={null as any} className="justify-center mb-4" />
             <CardTitle className="text-2xl font-bold">Xegai Shop</CardTitle>
             <CardDescription>
               Faça login ou cadastre-se para continuar

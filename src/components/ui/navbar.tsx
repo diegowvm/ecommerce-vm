@@ -6,6 +6,7 @@ import { Input } from "./input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "./dropdown-menu";
 import { Badge } from "./badge";
 import { MegaMenu } from "./mega-menu";
+import { Logo } from "./logo";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeToggle } from "./theme-toggle";
@@ -16,30 +17,23 @@ export function Navbar() {
   const [searchTerm, setSearchTerm] = useState('');
   const { user, signOut, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
-
-  const [categories, setCategories] = useState([]);
-
-  // Don't render until auth context is loaded
-  if (loading) {
-    return (
-      <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-center">
-          <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-        </div>
-      </nav>
-    );
-  }
+  const [categories, setCategories] = useState<any[]>([]);
 
   useEffect(() => {
     fetchCategories();
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      fetchCartItemsCount();
+    }
+  }, [user]);
 
   const fetchCategories = async () => {
     try {
       const { data, error } = await supabase.rpc('fetch_categories_with_subcategories');
       if (error) throw error;
       
-      // Transform subcategories from jsonb to array
       const transformedData = (data || []).map((category: any) => ({
         ...category,
         subcategories: Array.isArray(category.subcategories) 
@@ -52,25 +46,24 @@ export function Navbar() {
       setCategories(transformedData);
     } catch (error) {
       console.error('Error fetching categories:', error);
+      setCategories([]);
     }
   };
-
-  useEffect(() => {
-    if (user) {
-      fetchCartItemsCount();
-    }
-  }, [user]);
 
   const fetchCartItemsCount = async () => {
     if (!user) return;
     
-    const { data } = await supabase
-      .from('cart_items')
-      .select('quantity')
-      .eq('user_id', user.id);
-    
-    const count = data?.reduce((sum, item) => sum + item.quantity, 0) || 0;
-    setCartItemsCount(count);
+    try {
+      const { data } = await supabase
+        .from('cart_items')
+        .select('quantity')
+        .eq('user_id', user.id);
+      
+      const count = data?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+      setCartItemsCount(count);
+    } catch {
+      setCartItemsCount(0);
+    }
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -87,19 +80,23 @@ export function Navbar() {
     navigate('/');
   };
 
+  if (loading) {
+    return (
+      <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-center">
+          <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        </div>
+      </nav>
+    );
+  }
+
   return (
     <nav className="glass fixed top-0 left-0 right-0 z-50 border-b border-border/20">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center ml-2 md:ml-4">
-            <Link to="/" className="flex items-center">
-              <img 
-                src="/placeholder.png" 
-                alt="Xegai Shop" 
-                className="h-16 md:h-20 lg:h-24 w-auto" 
-              />
-            </Link>
+            <Logo size="lg" linkTo="/" />
           </div>
 
           {/* Desktop Navigation */}
@@ -123,15 +120,12 @@ export function Navbar() {
 
           {/* Actions */}
           <div className="flex items-center space-x-4">
-            {/* Mobile Search */}
             <Button variant="ghost" size="icon" className="md:hidden">
               <Search className="h-5 w-5" />
             </Button>
 
-            {/* Theme Toggle */}
             <ThemeToggle />
             
-            {/* User Account */}
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -173,7 +167,6 @@ export function Navbar() {
               </Button>
             )}
             
-            {/* Shopping Bag */}
             <Button variant="ghost" size="icon" className="hover-glow relative" asChild>
               <Link to="/cart">
                 <ShoppingBag className="h-5 w-5" />
@@ -185,7 +178,6 @@ export function Navbar() {
               </Link>
             </Button>
 
-            {/* Mobile Menu Button */}
             <Button
               variant="ghost"
               size="icon"
@@ -213,13 +205,11 @@ export function Navbar() {
               </button>
             </form>
 
-            {/* Theme Toggle (mobile) */}
             <div className="flex items-center gap-3">
               <span className="text-sm text-muted-foreground">Tema</span>
               <ThemeToggle />
             </div>
             
-            {/* Produtos - Link principal */}
             <div className="border-b border-border/20 pb-4">
               <Link
                 to="/products"
@@ -229,9 +219,8 @@ export function Navbar() {
                 Produtos
               </Link>
               
-              {/* Categorias organizadas sob Produtos */}
               <div className="ml-4 mt-2 space-y-3">
-                {categories.map((category) => (
+                {categories.map((category: any) => (
                   <div key={category.id} className="space-y-2">
                     <Link
                       to={`/products?category=${category.slug}`}
@@ -242,7 +231,7 @@ export function Navbar() {
                     </Link>
                     {category.subcategories && category.subcategories.length > 0 && (
                       <div className="ml-4 space-y-1">
-                        {category.subcategories.map((subcategory) => (
+                        {category.subcategories.map((subcategory: any) => (
                           <Link
                             key={subcategory.id}
                             to={`/products?category=${category.slug}&subcategory=${subcategory.slug}`}

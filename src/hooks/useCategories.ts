@@ -31,11 +31,15 @@ export function useCategories() {
     } catch (error) {
       console.error('Error fetching categories:', error);
       setError('Erro ao carregar categorias');
-      toast({
-        title: "Erro",
-        description: "Erro ao carregar categorias",
-        variant: "destructive"
-      });
+      // Don't show toast on network errors (DB paused) to avoid spamming
+      const isNetworkError = error instanceof TypeError && error.message.includes('fetch');
+      if (!isNetworkError) {
+        toast({
+          title: "Erro",
+          description: "Erro ao carregar categorias",
+          variant: "destructive"
+        });
+      }
     } finally {
       setLoading(false);
     }

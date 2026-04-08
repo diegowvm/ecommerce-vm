@@ -8,6 +8,7 @@ import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/hooks/useCart';
 import { APP_CONFIG, ROUTES } from '@/lib/constants';
+import { Logo } from '@/components/ui/logo';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -56,12 +57,7 @@ export const Header = () => {
       <div className="container-custom">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to={ROUTES.HOME} className="flex items-center space-x-2">
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary-hover flex items-center justify-center">
-              <span className="text-white font-bold text-sm">X</span>
-            </div>
-            <span className="font-bold text-xl text-gradient">{APP_CONFIG.name}</span>
-          </Link>
+          <Logo size="sm" linkTo={ROUTES.HOME} />
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
