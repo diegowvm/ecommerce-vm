@@ -81,12 +81,7 @@ export const Footer = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
             {/* Brand Section */}
             <div className="lg:col-span-1">
-              <Link to={ROUTES.HOME} className="flex items-center space-x-2 mb-4">
-                <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary-hover flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">X</span>
-                </div>
-                <span className="font-bold text-xl text-gradient">{APP_CONFIG.name}</span>
-              </Link>
+              <Logo size="sm" linkTo={ROUTES.HOME} className="mb-4" />
               <p className="text-sm text-muted-foreground mb-4">
                 {APP_CONFIG.description}
               </p>
