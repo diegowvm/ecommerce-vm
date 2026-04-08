@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { APP_CONFIG, ROUTES } from '@/lib/constants';
+import { Logo } from '@/components/ui/logo';
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
