@@ -8,6 +8,7 @@ import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/hooks/useCart';
 import { APP_CONFIG, ROUTES } from '@/lib/constants';
+import { Logo } from '@/components/ui/logo';
 import {
   DropdownMenu,
   DropdownMenuContent,
