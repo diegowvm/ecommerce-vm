@@ -66,11 +66,7 @@ export default function Auth() {
 
         <Card className="glass border-border/20">
           <CardHeader className="text-center">
-            <img 
-              src="/logo-xegai.png" 
-              alt="Xegai Shop" 
-              className="h-32 w-auto mx-auto mb-4" 
-            />
+            <Logo size="lg" linkTo={null as any} className="justify-center mb-4" />
             <CardTitle className="text-2xl font-bold">Xegai Shop</CardTitle>
             <CardDescription>
               Faça login ou cadastre-se para continuar
